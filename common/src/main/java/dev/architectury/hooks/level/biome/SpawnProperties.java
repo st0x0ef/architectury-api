@@ -37,7 +37,7 @@ public interface SpawnProperties {
     interface Mutable extends SpawnProperties {
         Mutable setCreatureProbability(float probability);
         
-        Mutable addSpawn(MobCategory category, MobSpawnSettings.SpawnerData data);
+        Mutable addSpawn(MobCategory category, MobSpawnSettings.SpawnerData data, int weight);
         
         boolean removeSpawns(BiPredicate<MobCategory, MobSpawnSettings.SpawnerData> predicate);
         

@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        mavenLocal()
         maven { url "https://maven.fabricmc.net/" }
         maven { url "https://maven.architectury.dev/" }
         maven { url "https://files.minecraftforge.net/maven/" }
@@ -16,10 +15,10 @@ include("common")
 include("fabric")
 //include("forge")
 //include("minecraftforge")
-include("neoforge")
+//include("neoforge")
 include("testmod-common")
 include("testmod-fabric")
 //include("testmod-forge")
-include("testmod-neoforge")
+//include("testmod-neoforge")
 
 rootProject.name = "architectury"

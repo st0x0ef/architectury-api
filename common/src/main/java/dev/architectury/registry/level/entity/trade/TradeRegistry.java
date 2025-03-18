@@ -20,6 +20,7 @@
 package dev.architectury.registry.level.entity.trade;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 
@@ -35,7 +36,7 @@ public class TradeRegistry {
      * @param level      The level the villager needs. Vanilla range is 1 to 5, however mods may extend that upper limit further.
      * @param trades     The trades to add to this profession at the specified level.
      */
-    public static void registerVillagerTrade(VillagerProfession profession, int level, VillagerTrades.ItemListing... trades) {
+    public static void registerVillagerTrade(ResourceKey<VillagerProfession> profession, int level, VillagerTrades.ItemListing... trades) {
         if (level < 1) {
             throw new IllegalArgumentException("Villager Trade level has to be at least 1!");
         }
@@ -43,7 +44,7 @@ public class TradeRegistry {
     }
     
     @ExpectPlatform
-    private static void registerVillagerTrade0(VillagerProfession profession, int level, VillagerTrades.ItemListing... trades) {
+    private static void registerVillagerTrade0(ResourceKey<VillagerProfession> profession, int level, VillagerTrades.ItemListing... trades) {
         throw new AssertionError();
     }
     

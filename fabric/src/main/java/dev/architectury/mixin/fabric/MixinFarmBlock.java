@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(FarmBlock.class)
 public abstract class MixinFarmBlock {
     @Unique
-    private static ThreadLocal<Triple<Long, Float, Entity>> turnToDirtLocal = new ThreadLocal<>();
+    private static ThreadLocal<Triple<Long, Double, Entity>> turnToDirtLocal = new ThreadLocal<>();
     
     @Inject(
             method = "fallOn",
@@ -46,8 +46,8 @@ public abstract class MixinFarmBlock {
                     target = "Lnet/minecraft/world/level/block/FarmBlock;turnToDirt(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"
             )
     )
-    private void fallOn(Level level, BlockState blockState, BlockPos blockPos, Entity entity, float f, CallbackInfo ci) {
-        turnToDirtLocal.set(Triple.of(blockPos.asLong(), f, entity));
+    private void fallOn(Level level, BlockState blockState, BlockPos blockPos, Entity entity, double d, CallbackInfo ci) {
+        turnToDirtLocal.set(Triple.of(blockPos.asLong(), d, entity));
     }
     
     @Inject(method = "turnToDirt", at = @At("HEAD"), cancellable = true)

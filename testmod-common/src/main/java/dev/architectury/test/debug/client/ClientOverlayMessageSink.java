@@ -20,7 +20,6 @@
 package dev.architectury.test.debug.client;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.test.debug.ConsoleMessageSink;
 import net.fabricmc.api.EnvType;
@@ -65,8 +64,6 @@ public class ClientOverlayMessageSink extends ConsoleMessageSink {
             var messageIterator = messages.iterator();
             var y = 1;
             
-            RenderSystem.enableBlend();
-            
             while (messageIterator.hasNext()) {
                 var message = messageIterator.next();
                 var timeExisted = (int) (currentMills - message.created);
@@ -85,7 +82,6 @@ public class ClientOverlayMessageSink extends ConsoleMessageSink {
             }
         }
         
-        RenderSystem.disableBlend();
         graphics.pose().popPose();
     }
     

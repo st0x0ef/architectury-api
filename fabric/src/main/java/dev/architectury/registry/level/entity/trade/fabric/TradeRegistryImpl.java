@@ -20,13 +20,14 @@
 package dev.architectury.registry.level.entity.trade.fabric;
 
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 
 import java.util.Collections;
 
 public class TradeRegistryImpl {
-    public static void registerVillagerTrade0(VillagerProfession profession, int level, VillagerTrades.ItemListing... trades) {
+    public static void registerVillagerTrade0(ResourceKey<VillagerProfession> profession, int level, VillagerTrades.ItemListing... trades) {
         TradeOfferHelper.registerVillagerOffers(profession, level, allTradesList -> Collections.addAll(allTradesList, trades));
     }
     

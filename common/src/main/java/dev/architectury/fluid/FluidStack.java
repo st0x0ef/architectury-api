@@ -86,7 +86,7 @@ public final class FluidStack implements DataComponentHolder {
         
         void applyComponents(T value, DataComponentMap patch);
         
-        @Nullable <D> D set(T value, DataComponentType<? super D> type, @Nullable D component);
+        @Nullable <D> D set(T value, DataComponentType<D> type, @Nullable D component);
         
         @Nullable <D> D remove(T value, DataComponentType<? extends D> type);
         
@@ -192,7 +192,7 @@ public final class FluidStack implements DataComponentHolder {
     }
     
     @Nullable
-    public <T> T set(DataComponentType<? super T> type, @Nullable T component) {
+    public <T> T set(DataComponentType<T> type, @Nullable T component) {
         return ADAPTER.set(value, type, component);
     }
     

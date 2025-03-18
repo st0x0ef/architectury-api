@@ -23,7 +23,7 @@ import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.random.SimpleWeightedRandomList;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.*;
@@ -272,7 +272,7 @@ public final class BiomeHooks {
         }
         
         @Override
-        public EffectsProperties.Mutable setBackgroundMusic(@Nullable SimpleWeightedRandomList<Music> music) {
+        public EffectsProperties.Mutable setBackgroundMusic(@Nullable WeightedList<Music> music) {
             effects.backgroundMusic = Optional.ofNullable(music);
             return this;
         }
@@ -333,7 +333,7 @@ public final class BiomeHooks {
         }
         
         @Override
-        public Optional<SimpleWeightedRandomList<Music>> getBackgroundMusic() {
+        public Optional<WeightedList<Music>> getBackgroundMusic() {
             return effects.backgroundMusic;
         }
     }

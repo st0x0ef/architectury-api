@@ -35,7 +35,7 @@ public final class TestBlockInteractions {
         AxeItemHooks.addStrippable(Blocks.QUARTZ_PILLAR, Blocks.OAK_LOG);
         ShovelItemHooks.addFlattenable(Blocks.IRON_ORE, Blocks.DIAMOND_BLOCK.defaultBlockState());
         HoeItemHooks.addTillable(Blocks.COAL_BLOCK, ctx -> {
-            return ctx.getLevel().isNight();
+            return ctx.getLevel().isDarkOutside();
         }, ctx -> {
             BlockPos pos = ctx.getClickedPos();
             if (!ctx.getLevel().isClientSide) {

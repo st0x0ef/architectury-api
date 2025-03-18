@@ -140,7 +140,7 @@ public enum FluidStackImpl implements FluidStack.FluidStackAdapter<FluidStackImp
     
     @Override
     @Nullable
-    public <D> D set(Pair value, DataComponentType<? super D> type, @Nullable D component) {
+    public <D> D set(Pair value, DataComponentType<D> type, @Nullable D component) {
         return value.components.set(type, component);
     }
     

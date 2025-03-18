@@ -30,7 +30,7 @@ import java.util.Optional;
 
 public class TestTrades {
     public static void init() {
-        for (var villagerProfession : BuiltInRegistries.VILLAGER_PROFESSION) {
+        for (var villagerProfession : BuiltInRegistries.VILLAGER_PROFESSION.registryKeySet()) {
             TradeRegistry.registerVillagerTrade(villagerProfession, 1, TestTrades.createTrades());
         }
         TradeRegistry.registerTradeForWanderingTrader(false, TestTrades.createTrades());

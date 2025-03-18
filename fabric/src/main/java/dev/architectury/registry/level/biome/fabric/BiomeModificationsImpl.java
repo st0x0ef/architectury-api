@@ -34,7 +34,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.random.SimpleWeightedRandomList;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.*;
@@ -199,8 +199,8 @@ public class BiomeModificationsImpl {
         }
         
         @Override
-        public Mutable addSpawn(MobCategory category, MobSpawnSettings.SpawnerData data) {
-            context.addSpawn(category, data);
+        public Mutable addSpawn(MobCategory category, MobSpawnSettings.SpawnerData data, int weight) {
+            context.addSpawn(category, data, weight);
             return this;
         }
         
@@ -325,7 +325,7 @@ public class BiomeModificationsImpl {
             }
             
             @Override
-            public EffectsProperties.Mutable setBackgroundMusic(@Nullable SimpleWeightedRandomList<Music> music) {
+            public EffectsProperties.Mutable setBackgroundMusic(@Nullable WeightedList<Music> music) {
                 context.setMusic(Optional.ofNullable(music));
                 return this;
             }

@@ -33,7 +33,6 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import dev.architectury.test.TestMod;
 import dev.architectury.test.entity.TestEntity;
 import dev.architectury.test.recipes.TestRecipeSerializer;
-import dev.architectury.test.registry.objects.EquippableTickingItem;
 import dev.architectury.test.registry.objects.ItemWithTooltip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -114,8 +113,6 @@ public class TestRegistries {
     
     public static final RegistrySupplier<Item> TEST_ITEM = ITEMS.register("test_item", () ->
             new Item(new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_item"))));
-    public static final RegistrySupplier<Item> TEST_EQUIPPABLE = ITEMS.register("test_eqippable", () ->
-            new EquippableTickingItem(new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_eqippable"))));
     public static final RegistrySupplier<Item> TEST_EDIBLE = ITEMS.register("test_edible", () -> {
         return new Item(new Item.Properties()
                 .food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build(),

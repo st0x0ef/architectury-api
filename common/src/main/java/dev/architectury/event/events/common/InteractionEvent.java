@@ -57,7 +57,7 @@ public interface InteractionEvent {
      */
     Event<InteractEntity> INTERACT_ENTITY = EventFactory.createEventResult();
     /**
-     * @see FarmlandTrample#trample(Level, BlockPos, BlockState, float, Entity)
+     * @see FarmlandTrample#trample(Level, BlockPos, BlockState, double, Entity)
      */
     Event<FarmlandTrample> FARMLAND_TRAMPLE = EventFactory.createInteractionResult();
     
@@ -155,6 +155,6 @@ public interface InteractionEvent {
          * @return A {@link InteractionResult} determining the outcome of the event,
          * the action may be cancelled by the result.
          */
-        InteractionResult trample(Level world, BlockPos pos, BlockState state, float distance, Entity entity);
+        InteractionResult trample(Level world, BlockPos pos, BlockState state, double distance, Entity entity);
     }
 }

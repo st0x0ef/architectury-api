@@ -29,7 +29,7 @@ import net.minecraft.world.level.levelgen.PhantomSpawner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PhantomSpawner.class)
 public abstract class MixinPhantomSpawner {
@@ -45,10 +45,9 @@ public abstract class MixinPhantomSpawner {
             ),
             cancellable = true
     )
-    private void checkPhantomSpawn(ServerLevel level, boolean bl, boolean bl2, CallbackInfoReturnable<Integer> cir, @Local(ordinal = 1) BlockPos pos, @Local Phantom entity) {
+    private void checkPhantomSpawn(ServerLevel level, boolean bl, boolean bl2, CallbackInfo ci, @Local(ordinal = 1) BlockPos pos, @Local Phantom entity) {
         if (EntityEvent.LIVING_CHECK_SPAWN.invoker().canSpawn(entity, level, pos.getX(), pos.getY(), pos.getZ(), EntitySpawnReason.NATURAL, null).value() == Boolean.FALSE) {
-            cir.setReturnValue(0);
-            cir.cancel();
+            ci.cancel();
         }
     }
 }

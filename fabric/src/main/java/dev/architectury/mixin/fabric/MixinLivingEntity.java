@@ -20,13 +20,10 @@
 package dev.architectury.mixin.fabric;
 
 import dev.architectury.event.events.common.EntityEvent;
-import dev.architectury.extensions.ItemExtension;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,17 +36,6 @@ public class MixinLivingEntity {
         if ((Object) this instanceof Player) return;
         if (EntityEvent.LIVING_HURT.invoker().hurt((LivingEntity) (Object) this, damageSource, f).isFalse()) {
             cir.setReturnValue(false);
-        }
-    }
-    
-    @Inject(method = "getEquipmentSlotForItem", at = @At("HEAD"), cancellable = true)
-    private void getEquipmentSlotForItem(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
-        var item = stack.getItem();
-        if (item instanceof ItemExtension extension) {
-            var slot = extension.getCustomEquipmentSlot(stack);
-            if (slot != null) {
-                cir.setReturnValue(slot);
-            }
         }
     }
 }

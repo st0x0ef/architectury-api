@@ -38,7 +38,6 @@
     "MixinFallingBlockEntity",
     "MixinFarmBlock",
     "MixinFurnaceResultSlot",
-    "MixinInventory",
     "MixinItemEntity",
     "MixinLivingEntity",
     "MixinNaturalSpawner",
