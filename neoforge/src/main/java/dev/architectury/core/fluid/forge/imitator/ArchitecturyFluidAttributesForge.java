@@ -31,7 +31,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -262,7 +262,7 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     
     @Override
     @Nullable
-    public SoundEvent getSound(@Nullable Player player, BlockGetter getter, BlockPos pos, SoundAction action) {
+    public SoundEvent getSound(@Nullable LivingEntity entity, BlockGetter getter, BlockPos pos, SoundAction action) {
         if (getter instanceof BlockAndTintGetter level) {
             if (BUCKET_FILL.equals(action)) {
                 return attributes.getFillSound(null, level, pos);

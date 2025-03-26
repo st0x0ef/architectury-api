@@ -35,7 +35,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.random.SimpleWeightedRandomList;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.*;
@@ -237,7 +237,7 @@ public class BiomeModificationsImpl {
         }
         
         @Override
-        public Map<MobCategory, List<MobSpawnSettings.SpawnerData>> getSpawners() {
+        public Map<MobCategory, WeightedList.Builder<MobSpawnSettings.SpawnerData>> getSpawners() {
             return builder.spawners;
         }
         
@@ -398,7 +398,7 @@ public class BiomeModificationsImpl {
         }
         
         @Override
-        public Optional<SimpleWeightedRandomList<Music>> getBackgroundMusic() {
+        public Optional<WeightedList<Music>> getBackgroundMusic() {
             return builder.backgroundMusic;
         }
         
@@ -469,7 +469,7 @@ public class BiomeModificationsImpl {
         }
         
         @Override
-        public Mutable setBackgroundMusic(@Nullable SimpleWeightedRandomList<Music> music) {
+        public Mutable setBackgroundMusic(@Nullable WeightedList<Music> music) {
             builder.backgroundMusic = Optional.ofNullable(music);
             return this;
         }
@@ -551,8 +551,8 @@ public class BiomeModificationsImpl {
         }
         
         @Override
-        public Mutable addSpawn(MobCategory category, MobSpawnSettings.SpawnerData data) {
-            builder.addSpawn(category, data);
+        public Mutable addSpawn(MobCategory category, MobSpawnSettings.SpawnerData data, int weight) {
+            builder.addSpawn(category, weight, data);
             return this;
         }
         
@@ -560,7 +560,9 @@ public class BiomeModificationsImpl {
         public boolean removeSpawns(BiPredicate<MobCategory, MobSpawnSettings.SpawnerData> predicate) {
             boolean removed = false;
             for (MobCategory type : builder.getSpawnerTypes()) {
-                if (builder.getSpawner(type).removeIf(data -> predicate.test(type, data))) {
+                int size = builder.getSpawner(type).getList().size();
+                builder.getSpawner(type).removeIf(data -> predicate.test(type, data.value()));
+                if (size != builder.getSpawner(type).getList().size()) {
                     removed = true;
                 }
             }

@@ -111,7 +111,7 @@ public enum FluidStackImpl implements dev.architectury.fluid.FluidStack.FluidSta
     
     @Override
     @Nullable
-    public <D> D set(FluidStack value, DataComponentType<? super D> type, @Nullable D component) {
+    public <D> D set(FluidStack value, DataComponentType<D> type, @Nullable D component) {
         return value.set(type, component);
     }
     

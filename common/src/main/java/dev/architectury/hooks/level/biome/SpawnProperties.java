@@ -19,18 +19,18 @@
 
 package dev.architectury.hooks.level.biome;
 
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 
 public interface SpawnProperties {
     float getCreatureProbability();
     
-    Map<MobCategory, List<MobSpawnSettings.SpawnerData>> getSpawners();
+    Map<MobCategory, WeightedList.Builder<MobSpawnSettings.SpawnerData>> getSpawners();
     
     Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> getMobSpawnCosts();
     

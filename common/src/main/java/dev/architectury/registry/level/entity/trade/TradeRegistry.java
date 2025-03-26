@@ -52,12 +52,18 @@ public class TradeRegistry {
      * Register a trade ({@link VillagerTrades.ItemListing}) to a wandering trader by its rarity.
      * When the mod loader is Forge, the {@code WandererTradesEvent} event is used.
      *
-     * @param rare   Whether this trade is "rare". Rare trades have a five times lower chance of being used.
+     * @param type   The type of trade to add to the wandering trader.
      * @param trades The trades to add to the wandering trader.
      */
     @ExpectPlatform
-    public static void registerTradeForWanderingTrader(boolean rare, VillagerTrades.ItemListing... trades) {
+    public static void registerTradeForWanderingTrader(WandererTradeType type, VillagerTrades.ItemListing... trades) {
         throw new AssertionError();
+    }
+    
+    public enum WandererTradeType {
+        BUYING_TRADES,
+        GENERIC_TRADES,
+        RARE_TRADES,
     }
     
 }

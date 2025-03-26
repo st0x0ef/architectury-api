@@ -19,6 +19,7 @@
 
 package dev.architectury.registry.level.entity.trade.fabric;
 
+import dev.architectury.registry.level.entity.trade.TradeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -31,7 +32,13 @@ public class TradeRegistryImpl {
         TradeOfferHelper.registerVillagerOffers(profession, level, allTradesList -> Collections.addAll(allTradesList, trades));
     }
     
-    public static void registerTradeForWanderingTrader(boolean rare, VillagerTrades.ItemListing... trades) {
-        TradeOfferHelper.registerWanderingTraderOffers(rare ? 2 : 1, allTradesList -> Collections.addAll(allTradesList, trades));
+    public static void registerTradeForWanderingTrader(TradeRegistry.WandererTradeType type, VillagerTrades.ItemListing... trades) {
+        TradeOfferHelper.registerWanderingTraderOffers(builder -> {
+            builder.addAll(switch (type) {
+                case BUYING_TRADES -> TradeOfferHelper.WanderingTraderOffersBuilder.BUY_ITEMS_POOL;
+                case GENERIC_TRADES -> TradeOfferHelper.WanderingTraderOffersBuilder.SELL_COMMON_ITEMS_POOL;
+                case RARE_TRADES -> TradeOfferHelper.WanderingTraderOffersBuilder.SELL_SPECIAL_ITEMS_POOL;
+            }, trades);
+        });
     }
 }

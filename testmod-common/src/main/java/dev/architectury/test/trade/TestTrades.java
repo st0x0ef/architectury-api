@@ -33,7 +33,7 @@ public class TestTrades {
         for (var villagerProfession : BuiltInRegistries.VILLAGER_PROFESSION.registryKeySet()) {
             TradeRegistry.registerVillagerTrade(villagerProfession, 1, TestTrades.createTrades());
         }
-        TradeRegistry.registerTradeForWanderingTrader(false, TestTrades.createTrades());
+        TradeRegistry.registerTradeForWanderingTrader(TradeRegistry.WandererTradeType.GENERIC_TRADES, TestTrades.createTrades());
     }
     
     private static VillagerTrades.ItemListing[] createTrades() {

@@ -19,9 +19,11 @@
 
 package dev.architectury.registry.level.entity.trade.forge;
 
+import dev.architectury.registry.level.entity.trade.TradeRegistry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.neoforged.neoforge.common.NeoForge;
@@ -31,7 +33,8 @@ import net.neoforged.neoforge.event.village.WandererTradesEvent;
 import java.util.*;
 
 public class TradeRegistryImpl {
-    private static final Map<VillagerProfession, Int2ObjectMap<List<VillagerTrades.ItemListing>>> TRADES_TO_ADD = new HashMap<>();
+    private static final Map<ResourceKey<VillagerProfession>, Int2ObjectMap<List<VillagerTrades.ItemListing>>> TRADES_TO_ADD = new HashMap<>();
+    private static final List<VillagerTrades.ItemListing> WANDERER_TRADER_TRADES_BUYING = new ArrayList<>();
     private static final List<VillagerTrades.ItemListing> WANDERER_TRADER_TRADES_GENERIC = new ArrayList<>();
     private static final List<VillagerTrades.ItemListing> WANDERER_TRADER_TRADES_RARE = new ArrayList<>();
     
@@ -40,17 +43,19 @@ public class TradeRegistryImpl {
         NeoForge.EVENT_BUS.addListener(TradeRegistryImpl::onWanderingTradeRegistering);
     }
     
-    public static void registerVillagerTrade0(VillagerProfession profession, int level, VillagerTrades.ItemListing... trades) {
+    public static void registerVillagerTrade0(ResourceKey<VillagerProfession> profession, int level, VillagerTrades.ItemListing... trades) {
         Int2ObjectMap<List<VillagerTrades.ItemListing>> tradesForProfession = TRADES_TO_ADD.computeIfAbsent(profession, $ -> new Int2ObjectOpenHashMap<>());
         List<VillagerTrades.ItemListing> tradesForLevel = tradesForProfession.computeIfAbsent(level, $ -> new ArrayList<>());
         Collections.addAll(tradesForLevel, trades);
     }
     
-    public static void registerTradeForWanderingTrader(boolean rare, VillagerTrades.ItemListing... trades) {
-        if (rare) {
+    public static void registerTradeForWanderingTrader(TradeRegistry.WandererTradeType type, VillagerTrades.ItemListing... trades) {
+        if (type == TradeRegistry.WandererTradeType.RARE_TRADES) {
             Collections.addAll(WANDERER_TRADER_TRADES_RARE, trades);
-        } else {
+        } else if (type == TradeRegistry.WandererTradeType.GENERIC_TRADES) {
             Collections.addAll(WANDERER_TRADER_TRADES_GENERIC, trades);
+        } else {
+            Collections.addAll(WANDERER_TRADER_TRADES_BUYING, trades);
         }
     }
     
@@ -65,6 +70,9 @@ public class TradeRegistryImpl {
     }
     
     public static void onWanderingTradeRegistering(WandererTradesEvent event) {
+        if (!WANDERER_TRADER_TRADES_BUYING.isEmpty()) {
+            event.getBuyingTrades().addAll(WANDERER_TRADER_TRADES_BUYING);
+        }
         if (!WANDERER_TRADER_TRADES_GENERIC.isEmpty()) {
             event.getGenericTrades().addAll(WANDERER_TRADER_TRADES_GENERIC);
         }

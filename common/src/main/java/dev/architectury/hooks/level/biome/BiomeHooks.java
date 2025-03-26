@@ -385,7 +385,7 @@ public final class BiomeHooks {
         }
         
         @Override
-        public Map<MobCategory, List<MobSpawnSettings.SpawnerData>> getSpawners() {
+        public Map<MobCategory, WeightedList.Builder<MobSpawnSettings.SpawnerData>> getSpawners() {
             return null;
         }
         
