@@ -21,7 +21,7 @@ package dev.architectury.init.fabric;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.networking.SpawnEntityPacket;
+import dev.architectury.networking.ClientSpawnEntityPacket;
 import net.minecraft.client.Minecraft;
 
 public class ArchitecturyClient {
@@ -29,6 +29,6 @@ public class ArchitecturyClient {
         LifecycleEvent.SETUP.invoker().run();
         ClientLifecycleEvent.CLIENT_SETUP.invoker().stateChanged(Minecraft.getInstance());
         
-        SpawnEntityPacket.Client.register();
+        ClientSpawnEntityPacket.register();
     }
 }

@@ -19,41 +19,25 @@
 
 package dev.architectury.mixin.fabric.client;
 
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.architectury.event.events.client.ClientGuiEvent;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GameRenderer.class, priority = 1100)
 public abstract class MixinGameRenderer {
-    @Shadow
-    @Final
-    private Minecraft minecraft;
-    
-    @Shadow
-    public abstract void tick();
-    
-    @Inject(method = "render(Lnet/minecraft/client/DeltaTracker;Z)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
-                    ordinal = 0), cancellable = true)
-    public void renderScreenPre(DeltaTracker tickDelta, boolean tick, CallbackInfo ci, @Local(ordinal = 0) int mouseX, @Local(ordinal = 1) int mouseY, @Local GuiGraphics graphics) {
-        if (ClientGuiEvent.RENDER_PRE.invoker().render(minecraft.screen, graphics, mouseX, mouseY, tickDelta).isFalse()) {
-            ci.cancel();
+    @WrapOperation(method = "render(Lnet/minecraft/client/DeltaTracker;Z)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+                    ordinal = 0))
+    public void wrapRenderScreen(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float delta, Operation<Void> original) {
+        if (ClientGuiEvent.RENDER_PRE.invoker().render(screen, graphics, mouseX, mouseY, delta).isFalse()) {
+            return;
         }
-    }
-    
-    @Inject(method = "render(Lnet/minecraft/client/DeltaTracker;Z)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
-                    shift = At.Shift.AFTER, ordinal = 0))
-    public void renderScreenPost(DeltaTracker tickDelta, boolean tick, CallbackInfo ci, @Local(ordinal = 0) int mouseX, @Local(ordinal = 1) int mouseY, @Local GuiGraphics graphics) {
-        ClientGuiEvent.RENDER_POST.invoker().render(minecraft.screen, graphics, mouseX, mouseY, tickDelta);
+        original.call(screen, graphics, mouseX, mouseY, delta);
+        ClientGuiEvent.RENDER_POST.invoker().render(screen, graphics, mouseX, mouseY, delta);
     }
 }

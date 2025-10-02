@@ -20,18 +20,10 @@
 package dev.architectury.utils;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 
 public final class GameInstance {
-    @Environment(EnvType.CLIENT)
-    public static Minecraft getClient() {
-        return Minecraft.getInstance();
-    }
-    
     @Nullable
     @ExpectPlatform
     public static MinecraftServer getServer() {

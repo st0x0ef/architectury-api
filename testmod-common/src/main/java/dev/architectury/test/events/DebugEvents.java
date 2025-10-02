@@ -19,19 +19,13 @@
 
 package dev.architectury.test.events;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
-import dev.architectury.event.events.client.*;
 import dev.architectury.event.events.common.*;
 import dev.architectury.platform.Platform;
 import dev.architectury.test.TestMod;
 import dev.architectury.utils.Env;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.core.Position;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
@@ -50,7 +44,7 @@ public class DebugEvents {
     public static void initialize() {
         debugEvents();
         if (Platform.getEnvironment() == Env.CLIENT)
-            debugEventsClient();
+            ClientDebugEvents.debugEventsClient();
     }
     
     public static void debugEvents() {
@@ -251,116 +245,6 @@ public class DebugEvents {
         return " (server)";
     }
     
-    @Environment(EnvType.CLIENT)
-    public static void debugEventsClient() {
-        ClientTickEvent.CLIENT_LEVEL_PRE.register(instance -> {
-            try {
-                // Uncomment the following line to see the profiler spike for root.tick.level.architecturyClientLevelPreTick
-                //Thread.sleep(10);
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        });
-        ClientChatEvent.SEND.register((message, component) -> {
-            TestMod.SINK.accept("Client chat sent: " + message);
-            if (message.contains("error")) {
-                return EventResult.interruptFalse();
-            }
-            return EventResult.pass();
-        });
-        ClientChatEvent.RECEIVED.register((type, message) -> {
-            TestMod.SINK.accept("Client chat received: " + message.getString());
-            if (message.getString().contains("terraria")) {
-                return CompoundEventResult.interruptTrue(message.copy().append(" + terraria is a great game!"));
-            }
-            if (message.getString().contains("potato")) {
-                return CompoundEventResult.interruptFalse(Component.empty());
-            }
-            return CompoundEventResult.pass();
-        });
-        ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world -> {
-            TestMod.SINK.accept("Client world loaded: " + world.dimension().location().toString());
-        });
-        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
-            TestMod.SINK.accept(player.getScoreboardName() + " joined (client)");
-        });
-        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> {
-            if (player != null) {
-                TestMod.SINK.accept(player.getScoreboardName() + " quit (client)");
-            }
-        });
-        ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register((oldPlayer, newPlayer) -> {
-            TestMod.SINK.accept(newPlayer.getScoreboardName() + " respawned (client)");
-        });
-        ClientGuiEvent.INIT_PRE.register((screen, access) -> {
-            TestMod.SINK.accept(toSimpleName(screen) + " initializes");
-            return EventResult.pass();
-        });
-        ClientGuiEvent.INIT_POST.register(((screen, access) -> {
-            TestMod.SINK.accept(toSimpleName(screen) + " initialized");
-        }));
-        InteractionEvent.CLIENT_LEFT_CLICK_AIR.register((player, hand) -> {
-            TestMod.SINK.accept(player.getScoreboardName() + " left clicks air" + logSide(player.level()));
-        });
-        InteractionEvent.CLIENT_RIGHT_CLICK_AIR.register((player, hand) -> {
-            TestMod.SINK.accept(player.getScoreboardName() + " right clicks air" + logSide(player.level()));
-        });
-        ClientRecipeUpdateEvent.EVENT.register(recipeManager -> {
-            TestMod.SINK.accept("Client recipes received");
-        });
-//        ClientTextureStitchEvent.POST.register(atlas -> {
-//            TestMod.SINK.accept("Client texture stitched: " + atlas.location());
-//        });
-        ClientScreenInputEvent.MOUSE_SCROLLED_PRE.register((client, screen, mouseX, mouseY, amountX, amountY) -> {
-            TestMod.SINK.accept("Screen Mouse scrolled: %.2f x-distance %.2f y-distance", amountX, amountY);
-            return EventResult.pass();
-        });
-        ClientScreenInputEvent.MOUSE_CLICKED_PRE.register((client, screen, mouseX, mouseY, button) -> {
-            TestMod.SINK.accept("Screen Mouse clicked: " + button);
-            return EventResult.pass();
-        });
-        ClientScreenInputEvent.MOUSE_RELEASED_PRE.register((client, screen, mouseX, mouseY, button) -> {
-            TestMod.SINK.accept("Screen Mouse released: " + button);
-            return EventResult.pass();
-        });
-        ClientScreenInputEvent.MOUSE_DRAGGED_PRE.register((client, screen, mouseX1, mouseY1, button, mouseX2, mouseY2) -> {
-            TestMod.SINK.accept("Screen Mouse dragged: %d (%d,%d) by (%d,%d)", button, (int) mouseX1, (int) mouseY1, (int) mouseX2, (int) mouseY2);
-            return EventResult.pass();
-        });
-        ClientScreenInputEvent.CHAR_TYPED_PRE.register((client, screen, character, keyCode) -> {
-            TestMod.SINK.accept("Screen Char typed: " + character);
-            return EventResult.pass();
-        });
-        ClientScreenInputEvent.KEY_PRESSED_PRE.register((client, screen, keyCode, scanCode, modifiers) -> {
-            TestMod.SINK.accept("Screen Key pressed: " + InputConstants.getKey(keyCode, scanCode).getDisplayName().getString());
-            return EventResult.pass();
-        });
-        ClientScreenInputEvent.KEY_RELEASED_PRE.register((client, screen, keyCode, scanCode, modifiers) -> {
-            TestMod.SINK.accept("Screen Key released: " + InputConstants.getKey(keyCode, scanCode).getDisplayName().getString());
-            return EventResult.pass();
-        });
-        ClientRawInputEvent.MOUSE_SCROLLED.register((client, amountX, amountY) -> {
-            TestMod.SINK.accept("Raw Mouse scrolled: %.2f x-distance %.2f y-distance", amountX, amountY);
-            return EventResult.pass();
-        });
-        ClientRawInputEvent.MOUSE_CLICKED_PRE.register((client, button, action, mods) -> {
-            TestMod.SINK.accept("Raw Mouse clicked: " + button);
-            return EventResult.pass();
-        });
-        ClientRawInputEvent.KEY_PRESSED.register((client, keyCode, scanCode, action, modifiers) -> {
-            TestMod.SINK.accept("Raw Key pressed: " + InputConstants.getKey(keyCode, scanCode).getDisplayName().getString());
-            return EventResult.pass();
-        });
-        ClientGuiEvent.SET_SCREEN.register(screen -> {
-            if (screen instanceof AnvilScreen) {
-                return CompoundEventResult.interruptFalse(screen);
-            }
-            
-            TestMod.SINK.accept("Screen has been changed to " + toSimpleName(screen));
-            return CompoundEventResult.pass();
-        });
-    }
-    
     private static String chunkPos(int x, int z) {
         return "[" + x + ", " + z + "]";
     }
@@ -369,7 +253,7 @@ public class DebugEvents {
         return "[" + x + ", " + y + ", " + z + "]";
     }
     
-    private static String toSimpleName(Object o) {
+    static String toSimpleName(Object o) {
         return o == null ? "null" : o.getClass().getSimpleName() + "@" + Integer.toHexString(o.hashCode());
     }
 }

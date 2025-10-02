@@ -26,10 +26,7 @@ import dev.architectury.networking.transformers.PacketSink;
 import dev.architectury.networking.transformers.PacketTransformer;
 import dev.architectury.networking.transformers.SinglePacketCollector;
 import dev.architectury.utils.Env;
-import dev.architectury.utils.GameInstance;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -147,7 +144,6 @@ public final class NetworkManager {
         collectPackets(PacketSink.ofPlayers(players), serverToClient(), id, buf);
     }
     
-    @Environment(EnvType.CLIENT)
     @Deprecated(forRemoval = true)
     public static void sendToServer(ResourceLocation id, RegistryFriendlyByteBuf buf) {
         collectPackets(PacketSink.client(), clientToServer(), id, buf);
@@ -163,14 +159,11 @@ public final class NetworkManager {
         collectPackets(PacketSink.ofPlayers(players), serverToClient(), payload, iterator.next().registryAccess());
     }
     
-    @Environment(EnvType.CLIENT)
+    @ExpectPlatform
     public static <T extends CustomPacketPayload> void sendToServer(T payload) {
-        ClientPacketListener connection = GameInstance.getClient().getConnection();
-        if (connection == null) return;
-        collectPackets(PacketSink.client(), clientToServer(), payload, connection.registryAccess());
+        throw new AssertionError();
     }
     
-    @Environment(EnvType.CLIENT)
     @ExpectPlatform
     public static boolean canServerReceive(ResourceLocation id) {
         throw new AssertionError();
@@ -181,7 +174,6 @@ public final class NetworkManager {
         throw new AssertionError();
     }
     
-    @Environment(EnvType.CLIENT)
     public static boolean canServerReceive(CustomPacketPayload.Type<?> type) {
         return canServerReceive(type.id());
     }

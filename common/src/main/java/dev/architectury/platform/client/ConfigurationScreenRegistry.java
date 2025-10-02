@@ -17,5 +17,20 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-@Deprecated(forRemoval = true)
-package dev.architectury.networking.simple;
+package dev.architectury.platform.client;
+
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.architectury.platform.Mod;
+import net.minecraft.client.gui.screens.Screen;
+
+public class ConfigurationScreenRegistry {
+    @ExpectPlatform
+    public static void register(Mod mod, ConfigurationScreenProvider provider) {
+        throw new AssertionError();
+    }
+    
+    @FunctionalInterface
+    public interface ConfigurationScreenProvider {
+        Screen provide(Screen parent);
+    }
+}

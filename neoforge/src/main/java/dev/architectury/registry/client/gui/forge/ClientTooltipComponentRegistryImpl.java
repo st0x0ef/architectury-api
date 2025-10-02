@@ -23,8 +23,6 @@ import dev.architectury.platform.hooks.EventBusesHooks;
 import dev.architectury.utils.ArchitecturyConstants;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -34,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-@OnlyIn(Dist.CLIENT)
 @ApiStatus.Internal
 public class ClientTooltipComponentRegistryImpl {
     @Nullable

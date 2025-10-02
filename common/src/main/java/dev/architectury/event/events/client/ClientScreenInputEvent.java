@@ -22,12 +22,12 @@ package dev.architectury.event.events.client;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 
-@Environment(EnvType.CLIENT)
 public interface ClientScreenInputEvent {
     /**
      * @see MouseScrolled#mouseScrolled(Minecraft, Screen, double, double, double, double)
@@ -50,17 +50,17 @@ public interface ClientScreenInputEvent {
     Event<MouseDragged> MOUSE_DRAGGED_PRE = EventFactory.createEventResult();
     Event<MouseDragged> MOUSE_DRAGGED_POST = EventFactory.createEventResult();
     /**
-     * @see KeyTyped#charTyped(Minecraft, Screen, char, int)
+     * @see KeyTyped#charTyped(Minecraft, Screen, CharacterEvent)
      */
     Event<KeyTyped> CHAR_TYPED_PRE = EventFactory.createEventResult();
     Event<KeyTyped> CHAR_TYPED_POST = EventFactory.createEventResult();
     /**
-     * @see KeyPressed#keyPressed(Minecraft, Screen, int, int, int)
+     * @see KeyPressed#keyPressed(Minecraft, Screen, KeyEvent)
      */
     Event<KeyPressed> KEY_PRESSED_PRE = EventFactory.createEventResult();
     Event<KeyPressed> KEY_PRESSED_POST = EventFactory.createEventResult();
     /**
-     * @see KeyReleased#keyReleased(Minecraft, Screen, int, int, int)
+     * @see KeyReleased#keyReleased(Minecraft, Screen, KeyEvent)
      */
     Event<KeyReleased> KEY_RELEASED_PRE = EventFactory.createEventResult();
     Event<KeyReleased> KEY_RELEASED_POST = EventFactory.createEventResult();
@@ -73,15 +73,13 @@ public interface ClientScreenInputEvent {
          * <p> This event is handled in two phases PRE and POST, which are invoked
          * before and after the keys have been processed by the screen, respectively.
          *
-         * @param client    The Minecraft instance performing it.
-         * @param screen    The screen this keystroke was performed in.
-         * @param keyCode   The key code.
-         * @param scanCode  The raw keyboard scan code.
-         * @param modifiers Additional modifiers.
+         * @param client   The Minecraft instance performing it.
+         * @param screen   The screen this keystroke was performed in.
+         * @param keyEvent The key event.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla pressing mechanism may be cancelled by the result.
          */
-        EventResult keyPressed(Minecraft client, Screen screen, int keyCode, int scanCode, int modifiers);
+        EventResult keyPressed(Minecraft client, Screen screen, KeyEvent keyEvent);
     }
     
     interface KeyReleased {
@@ -92,15 +90,13 @@ public interface ClientScreenInputEvent {
          * <p> This event is handled in two phases PRE and POST, which are invoked
          * before and after the keys have been processed by the screen, respectively.
          *
-         * @param client    The Minecraft instance performing it.
-         * @param screen    The screen this keystroke was performed in.
-         * @param keyCode   The key code.
-         * @param scanCode  The raw keyboard scan code.
-         * @param modifiers Additional modifiers.
+         * @param client   The Minecraft instance performing it.
+         * @param screen   The screen this keystroke was performed in.
+         * @param keyEvent The key event.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla releasing mechanism may be cancelled by the result.
          */
-        EventResult keyReleased(Minecraft client, Screen screen, int keyCode, int scanCode, int modifiers);
+        EventResult keyReleased(Minecraft client, Screen screen, KeyEvent keyEvent);
     }
     
     interface KeyTyped {
@@ -111,14 +107,13 @@ public interface ClientScreenInputEvent {
          * <p> This event is handled in two phases PRE and POST, which are invoked
          * before and after the keys have been processed by the screen, respectively.
          *
-         * @param client    The Minecraft instance performing it.
-         * @param screen    The screen this keystroke was performed in.
-         * @param character The typed character.
-         * @param keyCode   The key code.
+         * @param client         The Minecraft instance performing it.
+         * @param screen         The screen this keystroke was performed in.
+         * @param characterEvent The character event.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla typing mechanism may be cancelled by the result.
          */
-        EventResult charTyped(Minecraft client, Screen screen, char character, int keyCode);
+        EventResult charTyped(Minecraft client, Screen screen, CharacterEvent characterEvent);
     }
     
     interface MouseScrolled {
@@ -149,15 +144,13 @@ public interface ClientScreenInputEvent {
          * <p> This event is handled in two phases PRE and POST, which are invoked
          * before and after the keys have been processed by the screen, respectively.
          *
-         * @param client The Minecraft instance performing it.
-         * @param screen The screen this keystroke was performed in.
-         * @param mouseX The scaled x-coordinate of the mouse cursor.
-         * @param mouseY The scaled y-coordinate of the mouse cursor.
-         * @param button The released mouse button.
+         * @param client      The Minecraft instance performing it.
+         * @param screen      The screen this keystroke was performed in.
+         * @param buttonEvent The button click event.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla releasing mechanism may be cancelled by the result.
          */
-        EventResult mouseReleased(Minecraft client, Screen screen, double mouseX, double mouseY, int button);
+        EventResult mouseReleased(Minecraft client, Screen screen, MouseButtonEvent buttonEvent);
     }
     
     interface MouseDragged {
@@ -168,17 +161,15 @@ public interface ClientScreenInputEvent {
          * <p> This event is handled in two phases PRE and POST, which are invoked
          * before and after the keys have been processed by the screen, respectively.
          *
-         * @param client  The Minecraft instance performing it.
-         * @param screen  The screen this keystroke was performed in.
-         * @param mouseX1 The initial scaled x-coordinate of the mouse cursor.
-         * @param mouseY1 The initial scaled y-coordinate of the mouse cursor.
-         * @param button  The dragged mouse button.
-         * @param mouseX2 The final scaled x-coordinate of the mouse cursor.
-         * @param mouseY2 The final scaled y-coordinate of the mouse cursor.
+         * @param client      The Minecraft instance performing it.
+         * @param screen      The screen this keystroke was performed in.
+         * @param buttonEvent The mouse event.
+         * @param mouseX2     The final scaled x-delta of the mouse cursor.
+         * @param mouseY2     The final scaled y-delta of the mouse cursor.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla dragging mechanism may be cancelled by the result.
          */
-        EventResult mouseDragged(Minecraft client, Screen screen, double mouseX1, double mouseY1, int button, double mouseX2, double mouseY2);
+        EventResult mouseDragged(Minecraft client, Screen screen, MouseButtonEvent buttonEvent, double mouseX2, double mouseY2);
     }
     
     interface MouseClicked {
@@ -189,14 +180,13 @@ public interface ClientScreenInputEvent {
          * <p> This event is handled in two phases PRE and POST, which are invoked
          * before and after the keys have been processed by the screen, respectively.
          *
-         * @param client The Minecraft instance performing it.
-         * @param screen The screen this keystroke was performed in.
-         * @param mouseX The scaled x-coordinate of the mouse cursor.
-         * @param mouseY The scaled y-coordinate of the mouse cursor.
-         * @param button The clicked mouse button.
+         * @param client      The Minecraft instance performing it.
+         * @param screen      The screen this keystroke was performed in.
+         * @param buttonEvent The button click event.
+         * @param doubleClick Whether the click is a double click.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla clicking mechanism may be cancelled by the result.
          */
-        EventResult mouseClicked(Minecraft client, Screen screen, double mouseX, double mouseY, int button);
+        EventResult mouseClicked(Minecraft client, Screen screen, MouseButtonEvent buttonEvent, boolean doubleClick);
     }
 }

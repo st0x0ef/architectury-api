@@ -20,8 +20,6 @@
 package dev.architectury.hooks.client.screen;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -30,7 +28,6 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
 public final class ScreenHooks {
     private ScreenHooks() {
     }

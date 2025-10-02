@@ -22,8 +22,6 @@ package dev.architectury.test.debug.client;
 import com.google.common.collect.Lists;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.test.debug.ConsoleMessageSink;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.Util;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -34,7 +32,6 @@ import net.minecraft.util.Mth;
 import java.util.Collections;
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
 public class ClientOverlayMessageSink extends ConsoleMessageSink {
     private final List<Message> messages = Collections.synchronizedList(Lists.newArrayList());
     
@@ -42,7 +39,7 @@ public class ClientOverlayMessageSink extends ConsoleMessageSink {
         ClientGuiEvent.RENDER_POST.register((screen, graphics, mouseX, mouseY, delta) -> render(graphics, delta));
         ClientGuiEvent.RENDER_HUD.register((graphics, delta) -> {
             if (Minecraft.getInstance().screen == null && !Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen()) {
-                render(graphics, delta);
+                render(graphics, delta.getRealtimeDeltaTicks());
             }
         });
     }
@@ -53,7 +50,7 @@ public class ClientOverlayMessageSink extends ConsoleMessageSink {
         messages.add(0, new Message(Component.literal(message), Util.getMillis()));
     }
     
-    public void render(GuiGraphics graphics, DeltaTracker delta) {
+    public void render(GuiGraphics graphics, float delta) {
         graphics.pose().pushMatrix();
         graphics.pose().scale(0.5f, 0.5f);
         var minecraft = Minecraft.getInstance();

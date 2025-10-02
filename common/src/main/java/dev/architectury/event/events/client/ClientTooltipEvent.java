@@ -23,8 +23,6 @@ import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
 import dev.architectury.impl.TooltipAdditionalContextsImpl;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -35,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
 public interface ClientTooltipEvent {
     /**
      * @see Item#append(ItemStack, List, net.minecraft.world.item.Item.TooltipContext, TooltipFlag)
@@ -62,7 +59,6 @@ public interface ClientTooltipEvent {
         void setItem(@Nullable ItemStack stack);
     }
     
-    @Environment(EnvType.CLIENT)
     interface Item {
         /**
          * Invoked whenever an item tooltip is rendered.
@@ -77,7 +73,6 @@ public interface ClientTooltipEvent {
         void append(ItemStack stack, List<Component> lines, net.minecraft.world.item.Item.TooltipContext tooltipContext, TooltipFlag flag);
     }
     
-    @Environment(EnvType.CLIENT)
     interface Render {
         /**
          * Invoked before the tooltip for a tooltip is rendered.
@@ -92,7 +87,6 @@ public interface ClientTooltipEvent {
         EventResult renderTooltip(GuiGraphics graphics, List<? extends ClientTooltipComponent> texts, int x, int y);
     }
     
-    @Environment(EnvType.CLIENT)
     interface RenderModifyPosition {
         /**
          * Event to manipulate the position of the tooltip.
@@ -103,7 +97,6 @@ public interface ClientTooltipEvent {
         void renderTooltip(GuiGraphics graphics, PositionContext context);
     }
     
-    @Environment(EnvType.CLIENT)
     interface PositionContext {
         int getTooltipX();
         

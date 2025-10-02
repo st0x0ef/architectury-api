@@ -20,19 +20,17 @@
 package dev.architectury.registry.client.rendering;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-@Environment(EnvType.CLIENT)
 public final class BlockEntityRendererRegistry {
     private BlockEntityRendererRegistry() {
     }
     
     @ExpectPlatform
-    public static <T extends BlockEntity> void register(BlockEntityType<T> type, BlockEntityRendererProvider<? super T> provider) {
+    public static <E extends BlockEntity, S extends BlockEntityRenderState> void register(BlockEntityType<E> type, BlockEntityRendererProvider<? super E, ? super S> provider) {
         throw new AssertionError();
     }
 }

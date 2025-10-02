@@ -22,7 +22,7 @@ package dev.architectury.compat.fabric;
 import com.google.common.collect.Maps;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dev.architectury.platform.fabric.PlatformImpl;
+import dev.architectury.platform.client.fabric.ConfigurationScreenRegistryImpl;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public class ModMenuCompatibility implements ModMenuApi {
     }
     
     private void validateMap() {
-        for (var entry : PlatformImpl.CONFIG_SCREENS.entrySet()) {
+        for (var entry : ConfigurationScreenRegistryImpl.CONFIG_SCREENS.entrySet()) {
             if (!FACTORIES.containsKey(entry.getKey())) {
                 FACTORIES.put(entry.getKey(), entry.getValue()::provide);
             }

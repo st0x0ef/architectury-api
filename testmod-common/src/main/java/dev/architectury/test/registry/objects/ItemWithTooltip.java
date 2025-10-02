@@ -44,25 +44,4 @@ public class ItemWithTooltip extends Item {
     public record MyTooltipComponent(int count) implements TooltipComponent {
         
     }
-    
-    @Environment(EnvType.CLIENT)
-    public record MyClientTooltipComponent(MyTooltipComponent component) implements ClientTooltipComponent {
-        @Override
-        public int getHeight(Font font) {
-            return 100;
-        }
-        
-        @Override
-        public int getWidth(Font font) {
-            return 100;
-        }
-        
-        @Override
-        public void renderImage(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
-            graphics.pose().pushMatrix();
-            graphics.pose().translate(0, 0);
-            graphics.drawString(font, "Count: " + component.count, x + getWidth(font) / 2, y + (getHeight(font) - font.lineHeight) / 2, 0xFF00FF00);
-            graphics.pose().popMatrix();
-        }
-    }
 }

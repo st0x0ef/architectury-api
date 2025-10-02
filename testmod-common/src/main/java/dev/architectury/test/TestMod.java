@@ -19,12 +19,7 @@
 
 package dev.architectury.test;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-import dev.architectury.event.events.client.ClientCommandRegistrationEvent;
-import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.registry.CreativeTabRegistry;
-import dev.architectury.registry.client.gui.ClientTooltipComponentRegistry;
-import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.test.debug.ConsoleMessageSink;
 import dev.architectury.test.debug.MessageSink;
 import dev.architectury.test.debug.client.ClientOverlayMessageSink;
@@ -35,16 +30,11 @@ import dev.architectury.test.loot.TestLoot;
 import dev.architectury.test.networking.TestModNet;
 import dev.architectury.test.particle.TestParticles;
 import dev.architectury.test.registry.TestRegistries;
-import dev.architectury.test.registry.client.TestKeybinds;
-import dev.architectury.test.registry.objects.ItemWithTooltip;
 import dev.architectury.test.tags.TestTags;
 import dev.architectury.test.trade.TestTrades;
 import dev.architectury.test.worldgen.TestWorldGeneration;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.entity.CowRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -66,34 +56,11 @@ public class TestMod {
         TestBlockInteractions.init();
         TestLoot.init();
         TestWorldGeneration.initialize();
-        EnvExecutor.runInEnv(Env.CLIENT, () -> TestMod.Client::initializeClient);
+        EnvExecutor.runInEnv(Env.CLIENT, () -> TestModClient::initializeClient);
         CreativeTabRegistry.modifyBuiltin(BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CreativeModeTabs.BUILDING_BLOCKS), (flags, output, canUseGameMasterBlocks) -> {
             ItemStack sword = Items.DIAMOND_SWORD.getDefaultInstance();
             output.acceptBefore(new ItemStack(Items.OAK_WOOD), sword);
             output.acceptAfter(Blocks.STRIPPED_OAK_LOG, Items.BEDROCK);
         });
-    }
-    
-    @Environment(EnvType.CLIENT)
-    public static class Client {
-        @Environment(EnvType.CLIENT)
-        public static void initializeClient() {
-            ClientLifecycleEvent.CLIENT_STARTED.register((client) -> SINK.accept("Client started!"));
-            ClientLifecycleEvent.CLIENT_STOPPING.register((client) -> SINK.accept("Client stopping!"));
-            TestKeybinds.initialize();
-            TestModNet.initializeClient();
-            EntityRendererRegistry.register(TestRegistries.TEST_ENTITY, CowRenderer::new);
-            EntityRendererRegistry.register(TestRegistries.TEST_ENTITY_2, CowRenderer::new);
-            ClientTooltipComponentRegistry.register(ItemWithTooltip.MyTooltipComponent.class, ItemWithTooltip.MyClientTooltipComponent::new);
-            ClientCommandRegistrationEvent.EVENT.register((dispatcher, access) -> {
-                dispatcher.register(ClientCommandRegistrationEvent.literal("cool_client")
-                        .then(ClientCommandRegistrationEvent.argument("string", StringArgumentType.string())
-                                .executes(context -> {
-                                    String string = StringArgumentType.getString(context, "string");
-                                    SINK.accept("Cool client command for " + string);
-                                    return 0;
-                                })));
-            });
-        }
     }
 }

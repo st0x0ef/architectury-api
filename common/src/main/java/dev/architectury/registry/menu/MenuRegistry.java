@@ -20,10 +20,7 @@
 package dev.architectury.registry.menu;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,6 +35,7 @@ import java.util.function.Consumer;
 
 /**
  * A utility class to register {@link MenuType}s and {@link Screen}s for containers
+ * @see dev.architectury.registry.client.gui.MenuScreenRegistry
  */
 public final class MenuRegistry {
     private MenuRegistry() {
@@ -115,40 +113,6 @@ public final class MenuRegistry {
     @ExpectPlatform
     public static <T extends AbstractContainerMenu> MenuType<T> ofExtended(ExtendedMenuTypeFactory<T> factory) {
         throw new AssertionError();
-    }
-    
-    /**
-     * Registers a Screen Factory on the client to display.
-     *
-     * @param type    The {@link MenuType} the screen visualizes
-     * @param factory A functional interface that is used to create new {@link Screen}s
-     * @param <H>     The type of {@link AbstractContainerMenu} for the screen
-     * @param <S>     The type for the {@link Screen}
-     */
-    @Environment(EnvType.CLIENT)
-    @ExpectPlatform
-    public static <H extends AbstractContainerMenu, S extends Screen & MenuAccess<H>> void registerScreenFactory(MenuType<? extends H> type, ScreenFactory<H, S> factory) {
-        throw new AssertionError();
-    }
-    
-    /**
-     * Creates new screens.
-     *
-     * @param <H> The type of {@link AbstractContainerMenu} for the screen
-     * @param <S> The type for the {@link Screen}
-     */
-    @Environment(EnvType.CLIENT)
-    @FunctionalInterface
-    public interface ScreenFactory<H extends AbstractContainerMenu, S extends Screen & MenuAccess<H>> {
-        /**
-         * Creates a new {@link S} that extends {@link Screen}
-         *
-         * @param containerMenu The {@link AbstractContainerMenu} that controls the game logic for the screen
-         * @param inventory     The {@link Inventory} for the screen
-         * @param component     The {@link Component} for the screen
-         * @return A new {@link S} that extends {@link Screen}
-         */
-        S create(H containerMenu, Inventory inventory, Component component);
     }
     
     /**

@@ -20,39 +20,27 @@
 package dev.architectury.test.networking;
 
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.BaseS2CMessage;
-import dev.architectury.networking.simple.MessageType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class SyncDataMessage extends BaseS2CMessage {
-    private final CompoundTag serverData;
-    
-    /**
-     * To send this message, call new SyncDataMessage(tag).sendToPlayer(player) / sendToAll(server) / etc.
-     *
-     * @see BaseS2CMessage
-     */
-    public SyncDataMessage(CompoundTag tag) {
-        serverData = tag;
-    }
-    
-    public SyncDataMessage(RegistryFriendlyByteBuf buf) {
-        serverData = buf.readNbt();
-    }
+public record SyncDataMessage(CompoundTag serverData) implements CustomPacketPayload {
+    public static final Type<SyncDataMessage> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("architectury", "sync_data"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncDataMessage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.COMPOUND_TAG,
+            SyncDataMessage::serverData,
+            SyncDataMessage::new
+    );
     
     @Override
-    public MessageType getType() {
-        return TestModNet.SYNC_DATA;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
     
-    @Override
-    public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeNbt(serverData);
-    }
-    
-    @Override
     public void handle(NetworkManager.PacketContext context) {
         context.getPlayer().displayClientMessage(Component.literal("Received data from server: " + serverData), false);
     }

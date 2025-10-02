@@ -38,7 +38,7 @@ public final class TestBlockInteractions {
             return ctx.getLevel().isDarkOutside();
         }, ctx -> {
             BlockPos pos = ctx.getClickedPos();
-            if (!ctx.getLevel().isClientSide) {
+            if (!ctx.getLevel().isClientSide()) {
                 Player player = ctx.getPlayer();
                 if (player != null)
                     player.displayClientMessage(Component.literal("Thou has successfully committed the dark arts of alchemy!!"), false);

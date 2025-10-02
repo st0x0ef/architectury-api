@@ -22,12 +22,9 @@ package dev.architectury.event.events.client;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.events.common.LifecycleEvent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 
-@Environment(EnvType.CLIENT)
 public interface ClientLifecycleEvent {
     /**
      * Invoked when client has been initialised.
@@ -55,11 +52,9 @@ public interface ClientLifecycleEvent {
      */
     Event<ClientState> CLIENT_SETUP = EventFactory.createLoop();
     
-    @Environment(EnvType.CLIENT)
     interface ClientState extends LifecycleEvent.InstanceState<Minecraft> {
     }
     
-    @Environment(EnvType.CLIENT)
     interface ClientLevelState extends LifecycleEvent.LevelState<ClientLevel> {
     }
 }

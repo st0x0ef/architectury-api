@@ -22,8 +22,6 @@ package dev.architectury.test.networking;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.MessageType;
-import dev.architectury.networking.simple.SimpleNetworkManager;
 import dev.architectury.networking.transformers.SplitPacketTransformer;
 import dev.architectury.test.TestMod;
 import io.netty.buffer.Unpooled;
@@ -37,13 +35,6 @@ import java.util.Collections;
 import java.util.List;
 
 public interface TestModNet {
-    SimpleNetworkManager NET = SimpleNetworkManager.create(TestMod.MOD_ID);
-    
-    // An example Client to Server message
-    MessageType BUTTON_CLICKED = NET.registerC2S("button_clicked", ButtonClickedMessage::new);
-    
-    // An example Server to Client message
-    MessageType SYNC_DATA = NET.registerS2C("sync_data", SyncDataMessage::new);
     ResourceLocation BIG_DATA = ResourceLocation.fromNamespaceAndPath(TestMod.MOD_ID, "big_data");
     ResourceLocation SERVER_TO_CLIENT_TEST = ResourceLocation.fromNamespaceAndPath(TestMod.MOD_ID, "s2c_test");
     CustomPacketPayload.Type<ServerToClientTestPayload> SERVER_TO_CLIENT_TEST_PAYLOAD = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TestMod.MOD_ID, "s2c_test_payload"));
@@ -51,6 +42,8 @@ public interface TestModNet {
     String BIG_STRING = StringUtils.repeat('a', 100000);
     
     static void initialize() {
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, ButtonClickedMessage.TYPE, ButtonClickedMessage.STREAM_CODEC, ButtonClickedMessage::handle);
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, SyncDataMessage.TYPE, SyncDataMessage.STREAM_CODEC, SyncDataMessage::handle);
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, BIG_DATA, Collections.singletonList(new SplitPacketTransformer()), (buf, context) -> {
             String utf = buf.readUtf(Integer.MAX_VALUE / 4);
             if (utf.equals(BIG_STRING)) {

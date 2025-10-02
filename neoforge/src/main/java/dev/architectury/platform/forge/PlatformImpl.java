@@ -25,10 +25,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +59,7 @@ public class PlatformImpl {
     }
     
     public static Dist getEnv() {
-        return FMLEnvironment.dist;
+        return FMLEnvironment.getDist();
     }
     
     public static boolean isModLoaded(String id) {
@@ -84,7 +82,7 @@ public class PlatformImpl {
     }
     
     public static boolean isDevelopmentEnvironment() {
-        return !FMLLoader.isProduction();
+        return !FMLEnvironment.isProduction();
     }
     
     private static class ModImpl implements Mod {
@@ -135,12 +133,12 @@ public class PlatformImpl {
         
         @Override
         public Path getFilePath() {
-            return this.info.getOwningFile().getFile().getSecureJar().getRootPath();
+            return this.info.getOwningFile().getFile().getFilePath();
         }
         
         @Override
         public Optional<Path> findResource(String... path) {
-            return Optional.of(this.info.getOwningFile().getFile().findResource(path)).filter(Files::exists);
+            return Optional.of(this.getFilePath().resolve(String.join("/", path))).filter(Files::exists);
         }
         
         @Override
@@ -174,11 +172,6 @@ public class PlatformImpl {
                         .map(URL::toString);
             }
             return Optional.empty();
-        }
-        
-        @Override
-        public void registerConfigurationScreen(ConfigurationScreenProvider configurationScreenProvider) {
-            container.registerExtensionPoint(IConfigScreenFactory.class, (container, screen) -> configurationScreenProvider.provide(screen));
         }
     }
 }

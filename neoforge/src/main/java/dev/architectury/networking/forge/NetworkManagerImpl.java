@@ -25,10 +25,10 @@ import dev.architectury.impl.NetworkAggregator;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.networking.NetworkManager.NetworkReceiver;
 import dev.architectury.networking.SpawnEntityPacket;
+import dev.architectury.networking.forge.client.ClientNetworkManagerImpl;
 import dev.architectury.platform.hooks.EventBusesHooks;
 import dev.architectury.utils.ArchitecturyConstants;
 import dev.architectury.utils.Env;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -42,8 +42,6 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.slf4j.Logger;
@@ -120,17 +118,16 @@ public class NetworkManagerImpl {
         };
     }
     
-    @OnlyIn(Dist.CLIENT)
     public static boolean canServerReceive(ResourceLocation id) {
-        if (Minecraft.getInstance().getConnection() != null) {
-            return Minecraft.getInstance().getConnection().hasChannel(id);
-        } else {
-            return false;
-        }
+        return ClientNetworkManagerImpl.canServerReceive(id);
     }
     
     public static boolean canPlayerReceive(ServerPlayer player, ResourceLocation id) {
         return player.connection.hasChannel(id);
+    }
+    
+    public static <T extends CustomPacketPayload> void sendToServer(T payload) {
+        ClientNetworkManagerImpl.sendToServer(payload);
     }
     
     public static Packet<ClientGamePacketListener> createAddEntityPacket(Entity entity, ServerEntity serverEntity) {

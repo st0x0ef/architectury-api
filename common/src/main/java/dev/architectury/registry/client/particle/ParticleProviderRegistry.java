@@ -20,10 +20,7 @@
 package dev.architectury.registry.client.particle;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -44,7 +41,6 @@ import java.util.List;
  * or use the helper methods {@link #register(RegistrySupplier, ParticleProvider)} and {@link #register(RegistrySupplier, DeferredParticleProvider)},
  * which will automatically handle the listening for you.
  */
-@Environment(EnvType.CLIENT)
 public final class ParticleProviderRegistry {
     public interface ExtendedSpriteSet extends SpriteSet {
         TextureAtlas getAtlas();

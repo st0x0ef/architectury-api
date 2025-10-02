@@ -21,7 +21,6 @@ package dev.architectury.test.registry;
 
 import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
 import dev.architectury.core.fluid.SimpleArchitecturyFluidAttributes;
-import dev.architectury.core.item.ArchitecturySpawnEggItem;
 import dev.architectury.hooks.level.entity.EntityHooks;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -45,10 +44,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.crafting.CustomRecipe;
@@ -58,10 +54,12 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -124,11 +122,9 @@ public class TestRegistries {
                 .setId(id(Registries.ITEM, "test_edible")));
     });
     public static final RegistrySupplier<Item> TEST_SPAWN_EGG = ITEMS.register("test_spawn_egg", () ->
-            new ArchitecturySpawnEggItem(TestRegistries.TEST_ENTITY,
-                    new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_spawn_egg"))));
+            new SpawnEggItem(new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_spawn_egg")).spawnEgg(TestRegistries.TEST_ENTITY.get())));
     public static final RegistrySupplier<Item> TEST_SPAWN_EGG_2 = ITEMS.register("test_spawn_egg_2", () ->
-            new ArchitecturySpawnEggItem(TestRegistries.TEST_ENTITY_2,
-                    new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_spawn_egg_2"))));
+            new SpawnEggItem(new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_spawn_egg_2")).spawnEgg(TestRegistries.TEST_ENTITY_2.get())));
     
     public static final RegistrySupplier<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> {
         try {
@@ -161,7 +157,7 @@ public class TestRegistries {
             // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
             return (LiquidBlock) Class.forName(!Platform.isForge() ? "dev.architectury.core.block.ArchitecturyLiquidBlock" : "dev.architectury.core.block.forge.imitator.ArchitecturyLiquidBlock")
                     .getDeclaredConstructor(Supplier.class, BlockBehaviour.Properties.class)
-                    .newInstance(TestRegistries.TEST_FLUID, BlockBehaviour.Properties.ofLegacyCopy(Blocks.WATER).noCollission().strength(100.0F).noLootTable().setId(id(Registries.BLOCK, "test_fluid")));
+                    .newInstance(TestRegistries.TEST_FLUID, BlockBehaviour.Properties.ofLegacyCopy(Blocks.WATER).replaceable().noCollision().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY).setId(id(Registries.BLOCK, "test_fluid")));
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -212,10 +208,10 @@ public class TestRegistries {
     public static void initialize() {
         TABS.register();
         MOB_EFFECTS.register();
+        ENTITY_TYPES.register();
         FLUIDS.register();
         BLOCKS.register();
         ITEMS.register();
-        ENTITY_TYPES.register();
         RECIPE_TYPES.register();
         RECIPE_SERIALIZERS.register();
         EntityAttributeRegistry.register(TEST_ENTITY, TestEntity::createAttributes);

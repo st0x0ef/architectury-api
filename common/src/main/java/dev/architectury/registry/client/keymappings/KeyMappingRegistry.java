@@ -20,11 +20,8 @@
 package dev.architectury.registry.client.keymappings;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.KeyMapping;
 
-@Environment(EnvType.CLIENT)
 public final class KeyMappingRegistry {
     private KeyMappingRegistry() {
     }

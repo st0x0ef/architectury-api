@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class PlatformImpl {
-    public static final Map<String, Mod.ConfigurationScreenProvider> CONFIG_SCREENS = new ConcurrentHashMap<>();
     private static final Map<String, Mod> mods = new ConcurrentHashMap<>();
     
     public static Path getGameFolder() {
@@ -163,13 +162,6 @@ public class PlatformImpl {
         @Override
         public Optional<String> getIssueTracker() {
             return metadata.getContact().get("sources");
-        }
-        
-        @Override
-        public void registerConfigurationScreen(ConfigurationScreenProvider provider) {
-            if (CONFIG_SCREENS.containsKey(getModId()))
-                throw new IllegalStateException("Can not register configuration screen for mod '" + getModId() + "' because it was already registered!");
-            CONFIG_SCREENS.put(getModId(), provider);
         }
     }
 }

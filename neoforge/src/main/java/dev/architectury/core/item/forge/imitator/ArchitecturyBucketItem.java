@@ -27,7 +27,7 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
+import net.neoforged.neoforge.transfer.fluid.BucketResourceHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +41,7 @@ public class ArchitecturyBucketItem extends BucketItem {
         EventBusesHooks.whenAvailable(ArchitecturyConstants.MOD_ID, bus -> {
             bus.<RegisterCapabilitiesEvent>addListener(event -> {
                 if (BuiltInRegistries.ITEM.containsValue(this)) {
-                    event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), this);
+                    event.registerItem(Capabilities.Fluid.ITEM, (stack, access) -> new BucketResourceHandler(access), this);
                 } else {
                     LOGGER.warn("Tried to register a bucket item capability for an item that is not registered: {}", this);
                 }

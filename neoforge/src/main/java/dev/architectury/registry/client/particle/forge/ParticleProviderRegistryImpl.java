@@ -24,13 +24,13 @@ import dev.architectury.platform.hooks.EventBusesHooks;
 import dev.architectury.registry.client.particle.ParticleProviderRegistry;
 import dev.architectury.utils.ArchitecturyConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import org.slf4j.Logger;
@@ -48,33 +48,30 @@ public class ParticleProviderRegistryImpl {
         });
     }
     
-    private static final class ExtendedSpriteSetImpl implements ParticleProviderRegistry.ExtendedSpriteSet {
-        private final ParticleEngine engine;
-        private final SpriteSet delegate;
-        
-        private ExtendedSpriteSetImpl(ParticleEngine engine, SpriteSet delegate) {
-            this.engine = engine;
-            this.delegate = delegate;
-        }
-        
+    private record ExtendedSpriteSetImpl(ParticleResources.MutableSpriteSet set) implements ParticleProviderRegistry.ExtendedSpriteSet {
         @Override
         public TextureAtlas getAtlas() {
-            return engine.textureAtlas;
+            return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.PARTICLES);
         }
         
         @Override
         public List<TextureAtlasSprite> getSprites() {
-            return ((ParticleEngine.MutableSpriteSet) delegate).sprites;
+            return set.sprites;
         }
         
         @Override
         public TextureAtlasSprite get(int i, int j) {
-            return delegate.get(i, j);
+            return set.get(i, j);
         }
         
         @Override
         public TextureAtlasSprite get(RandomSource random) {
-            return delegate.get(random);
+            return set.get(random);
+        }
+        
+        @Override
+        public TextureAtlasSprite first() {
+            return set.first();
         }
     }
     
@@ -86,7 +83,7 @@ public class ParticleProviderRegistryImpl {
     
     private static <T extends ParticleOptions> void doRegister(ParticleProviderRegistrar registrar, ParticleType<T> type, ParticleProviderRegistry.DeferredParticleProvider<T> provider) {
         registrar.register(type, sprites ->
-                provider.create(new ExtendedSpriteSetImpl(Minecraft.getInstance().particleEngine, sprites)));
+                provider.create(new ExtendedSpriteSetImpl((ParticleResources.MutableSpriteSet) sprites)));
     }
     
     public static <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider) {
@@ -122,7 +119,7 @@ public class ParticleProviderRegistryImpl {
     private interface ParticleProviderRegistrar {
         <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider);
         
-        <T extends ParticleOptions> void register(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration);
+        <T extends ParticleOptions> void register(ParticleType<T> type, ParticleResources.SpriteParticleRegistration<T> registration);
         
         static ParticleProviderRegistrar ofForge(RegisterParticleProvidersEvent event) {
             return new ParticleProviderRegistrar() {
@@ -132,7 +129,7 @@ public class ParticleProviderRegistryImpl {
                 }
                 
                 @Override
-                public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration) {
+                public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleResources.SpriteParticleRegistration<T> registration) {
                     event.registerSpriteSet(type, registration);
                 }
             };
@@ -142,12 +139,12 @@ public class ParticleProviderRegistryImpl {
             return new ParticleProviderRegistrar() {
                 @Override
                 public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider) {
-                    Minecraft.getInstance().particleEngine.register(type, provider);
+                    Minecraft.getInstance().particleResources.register(type, provider);
                 }
                 
                 @Override
-                public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration) {
-                    Minecraft.getInstance().particleEngine.register(type, registration);
+                public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleResources.SpriteParticleRegistration<T> registration) {
+                    Minecraft.getInstance().particleResources.register(type, registration);
                 }
             };
         }

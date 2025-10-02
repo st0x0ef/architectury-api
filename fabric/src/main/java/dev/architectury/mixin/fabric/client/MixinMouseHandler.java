@@ -27,28 +27,20 @@ import dev.architectury.event.events.client.ClientScreenInputEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(MouseHandler.class)
 public class MixinMouseHandler {
     @Shadow
     @Final
     private Minecraft minecraft;
-    
-    @Shadow
-    private int activeButton;
-    
-    @Shadow
-    private double xpos;
-    
-    @Shadow
-    private double ypos;
     
     @WrapOperation(method = "onScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseScrolled(DDDD)Z", ordinal = 0))
     private boolean onGuiMouseClicked(Screen instance, double mouseX, double mouseY, double amountX, double amountY, Operation<Boolean> original) {
@@ -66,8 +58,8 @@ public class MixinMouseHandler {
     
     @Inject(method = "onScroll",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSpectator()Z",
-                    ordinal = 0), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
-    public void onRawMouseScrolled(long handle, double xOffset, double yOffset, CallbackInfo info, boolean discreteMouseScroll, double mouseWheelSensitivity, double amountX, double doubleY) {
+                    ordinal = 0), cancellable = true)
+    public void onRawMouseScrolled(long handle, double xOffset, double yOffset, CallbackInfo info, @Local(ordinal = 3) double amountX, @Local(ordinal = 4) double doubleY) {
         if (!info.isCancelled()) {
             var result = ClientRawInputEvent.MOUSE_SCROLLED.invoker().mouseScrolled(minecraft, amountX, doubleY);
             if (result.isPresent())
@@ -75,68 +67,62 @@ public class MixinMouseHandler {
         }
     }
     
-    @WrapOperation(method = "onPress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseClicked(DDI)Z", ordinal = 0))
-    private boolean onGuiMouseClicked(Screen instance, double mouseX, double mouseY, int b, Operation<Boolean> original) {
-        var minecraft = Minecraft.getInstance();
-        var result = ClientScreenInputEvent.MOUSE_CLICKED_PRE.invoker().mouseClicked(minecraft, minecraft.screen, mouseX, mouseY, b);
+    @WrapOperation(method = "onButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z"))
+    private boolean wrapMouseClicked(Screen screen, MouseButtonEvent buttonEvent, boolean doubleClick, Operation<Boolean> original) {
+        var result = ClientScreenInputEvent.MOUSE_CLICKED_PRE.invoker().mouseClicked(minecraft, minecraft.screen, buttonEvent, doubleClick);
         if (result.isPresent()) {
             return true;
         }
-        if (original.call(instance, mouseX, mouseY, b)) {
+        if (original.call(screen, buttonEvent, doubleClick)) {
             return true;
         }
-        result = ClientScreenInputEvent.MOUSE_CLICKED_POST.invoker().mouseClicked(minecraft, minecraft.screen, mouseX, mouseY, b);
+        result = ClientScreenInputEvent.MOUSE_CLICKED_POST.invoker().mouseClicked(minecraft, minecraft.screen, buttonEvent, doubleClick);
         return result.isPresent();
     }
     
-    @Inject(method = "onPress", at = @At(value = "INVOKE",
+    @Inject(method = "onButton", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/Minecraft;getOverlay()Lnet/minecraft/client/gui/screens/Overlay;",
             ordinal = 0), cancellable = true)
-    public void onRawMouseClicked(long handle, int button, int action, int mods, CallbackInfo info) {
+    public void onRawMouseClicked(long handle, MouseButtonInfo buttonInfo, int action, CallbackInfo info) {
         if (!info.isCancelled()) {
-            var result = ClientRawInputEvent.MOUSE_CLICKED_PRE.invoker().mouseClicked(minecraft, button, action, mods);
+            var result = ClientRawInputEvent.MOUSE_CLICKED_PRE.invoker().mouseClicked(minecraft, buttonInfo, action);
             if (result.isPresent())
                 info.cancel();
         }
     }
     
-    @Inject(method = "onPress", at = @At("RETURN"), cancellable = true)
-    public void onRawMouseClickedPost(long handle, int button, int action, int mods, CallbackInfo info) {
-        if (handle == this.minecraft.getWindow().getWindow()) {
-            var result = ClientRawInputEvent.MOUSE_CLICKED_POST.invoker().mouseClicked(minecraft, button, action, mods);
+    @Inject(method = "onButton", at = @At("RETURN"), cancellable = true)
+    public void onRawMouseClickedPost(long handle, MouseButtonInfo buttonInfo, int action, CallbackInfo info) {
+        if (handle == this.minecraft.getWindow().handle()) {
+            var result = ClientRawInputEvent.MOUSE_CLICKED_POST.invoker().mouseClicked(minecraft, buttonInfo, action);
             if (result.isPresent())
                 info.cancel();
         }
     }
     
-    @WrapOperation(method = "onPress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseReleased(DDI)Z", ordinal = 0))
-    private boolean onGuiMouseReleased(Screen instance, double mouseX, double mouseY, int b, Operation<Boolean> original) {
-        var minecraft = Minecraft.getInstance();
-        var result = ClientScreenInputEvent.MOUSE_RELEASED_PRE.invoker().mouseReleased(minecraft, minecraft.screen, mouseX, mouseY, b);
+    @WrapOperation(method = "onButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseReleased(Lnet/minecraft/client/input/MouseButtonEvent;)Z"))
+    private boolean wrapMouseReleased(Screen screen, MouseButtonEvent buttonEvent, Operation<Boolean> original) {
+        var result = ClientScreenInputEvent.MOUSE_RELEASED_PRE.invoker().mouseReleased(minecraft, minecraft.screen, buttonEvent);
         if (result.isPresent()) {
             return true;
         }
-        if (original.call(instance, mouseX, mouseY, b)) {
+        if (original.call(screen, buttonEvent)) {
             return true;
         }
-        result = ClientScreenInputEvent.MOUSE_RELEASED_POST.invoker().mouseReleased(minecraft, minecraft.screen, mouseX, mouseY, b);
+        result = ClientScreenInputEvent.MOUSE_RELEASED_POST.invoker().mouseReleased(minecraft, minecraft.screen, buttonEvent);
         return result.isPresent();
     }
     
-    @Inject(method = "handleAccumulatedMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseDragged(DDIDD)Z", ordinal = 0), cancellable = true)
-    private void onGuiMouseDraggedPre(CallbackInfo ci, @Local(ordinal = 2) double mouseX, @Local(ordinal = 3) double mouseY, @Local(ordinal = 4) double deltaX, @Local(ordinal = 5) double deltaY) {
-        if (ClientScreenInputEvent.MOUSE_DRAGGED_PRE.invoker().mouseDragged(Minecraft.getInstance(), Minecraft.getInstance().screen, mouseX, mouseY, this.activeButton, deltaX, deltaY).isPresent()) {
-            ci.cancel();
+    @WrapOperation(method = "handleAccumulatedMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseDragged(Lnet/minecraft/client/input/MouseButtonEvent;DD)Z"))
+    private boolean wrapMouseDragged(Screen screen, MouseButtonEvent event, double deltaX, double deltaY, Operation<Boolean> original) {
+        var result = ClientScreenInputEvent.MOUSE_DRAGGED_POST.invoker().mouseDragged(minecraft, screen, event, deltaX, deltaY);
+        if (result.isPresent()) {
+            return true;
         }
-    }
-    
-    @SuppressWarnings({"UnresolvedMixinReference", "DefaultAnnotationParam"})
-    @WrapOperation(method = "handleAccumulatedMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;mouseDragged(DDIDD)Z"))
-    private boolean onGuiMouseDraggedPost(Screen screen, double mouseX, double mouseY, int button, double deltaX, double deltaY, Operation<Boolean> original) {
-        if (original.call(screen, mouseX, mouseY, button, deltaX, deltaY)) {
+        if (original.call(screen, event, deltaX, deltaY)) {
             return true;
         }
         
-        return ClientScreenInputEvent.MOUSE_DRAGGED_POST.invoker().mouseDragged(Minecraft.getInstance(), screen, mouseX, mouseY, button, deltaX, deltaY).isPresent();
+        return ClientScreenInputEvent.MOUSE_DRAGGED_POST.invoker().mouseDragged(Minecraft.getInstance(), screen, event, deltaX, deltaY).isPresent();
     }
 }

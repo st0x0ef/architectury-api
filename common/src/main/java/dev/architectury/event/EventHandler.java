@@ -22,8 +22,6 @@ package dev.architectury.event;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public final class EventHandler {
     private EventHandler() {
@@ -42,7 +40,6 @@ public final class EventHandler {
     }
     
     @ExpectPlatform
-    @Environment(EnvType.CLIENT)
     private static void registerClient() {
         throw new AssertionError();
     }
@@ -53,7 +50,6 @@ public final class EventHandler {
     }
     
     @ExpectPlatform
-    @Environment(EnvType.SERVER)
     private static void registerServer() {
         throw new AssertionError();
     }

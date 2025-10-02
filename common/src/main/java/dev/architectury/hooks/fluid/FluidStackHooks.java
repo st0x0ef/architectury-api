@@ -102,66 +102,6 @@ public class FluidStackHooks {
         throw new AssertionError();
     }
     
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public static TextureAtlasSprite getStillTexture(@Nullable BlockAndTintGetter level, @Nullable BlockPos pos, FluidState state) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public static TextureAtlasSprite getStillTexture(FluidStack stack) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public static TextureAtlasSprite getStillTexture(Fluid fluid) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public static TextureAtlasSprite getFlowingTexture(@Nullable BlockAndTintGetter level, @Nullable BlockPos pos, FluidState state) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public static TextureAtlasSprite getFlowingTexture(FluidStack stack) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public static TextureAtlasSprite getFlowingTexture(Fluid fluid) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    public static int getColor(@Nullable BlockAndTintGetter level, @Nullable BlockPos pos, FluidState state) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    public static int getColor(FluidStack stack) {
-        throw new AssertionError();
-    }
-    
-    @ExpectPlatform
-    @Environment(EnvType.CLIENT)
-    public static int getColor(Fluid fluid) {
-        throw new AssertionError();
-    }
-    
     /**
      * Returns the luminosity of the fluid.
      *

@@ -22,18 +22,14 @@ package dev.architectury.event.events.client;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 
-@Environment(EnvType.CLIENT)
 public interface ClientSystemMessageEvent {
     /**
      * @see Received#process(Component)
      */
     Event<Received> RECEIVED = EventFactory.createCompoundEventResult();
     
-    @Environment(EnvType.CLIENT)
     interface Received {
         /**
          * Event to intercept the receiving of a system message.

@@ -21,17 +21,10 @@ package dev.architectury.event.forge;
 
 import dev.architectury.platform.hooks.EventBusesHooks;
 import dev.architectury.utils.ArchitecturyConstants;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class EventHandlerImpl {
-    @OnlyIn(Dist.CLIENT)
     public static void registerClient() {
-        NeoForge.EVENT_BUS.register(EventHandlerImplClient.class);
-        EventBusesHooks.whenAvailable(ArchitecturyConstants.MOD_ID, bus -> {
-            bus.register(EventHandlerImplClient.ModBasedEventHandler.class);
-        });
     }
     
     public static void registerCommon() {
@@ -41,11 +34,6 @@ public class EventHandlerImpl {
         });
     }
     
-    @OnlyIn(Dist.DEDICATED_SERVER)
     public static void registerServer() {
-        // MinecraftForge.EVENT_BUS.register(EventHandlerImplServer.class);
-        // EventBusesHooks.whenAvailable(ArchitecturyConstants.MOD_ID, bus -> {
-        //     bus.register(EventHandlerImplServer.ModBasedEventHandler.class);
-        // });
     }
 }

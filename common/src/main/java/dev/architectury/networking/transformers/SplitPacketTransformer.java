@@ -19,15 +19,13 @@
 
 package dev.architectury.networking.transformers;
 
-import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.transformers.client.ClientSplitPacketTransformer;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -46,47 +44,17 @@ public class SplitPacketTransformer implements PacketTransformer {
     private static final byte END = 0x2;
     private static final byte ONLY = 0x3;
     
-    private static class PartKey {
-        private final NetworkManager.Side side;
-        @Nullable
-        private final UUID playerUUID;
-        
-        public PartKey(NetworkManager.Side side, @Nullable UUID playerUUID) {
-            this.side = side;
-            this.playerUUID = playerUUID;
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof PartKey)) return false;
-            PartKey key = (PartKey) o;
-            return side == key.side && Objects.equals(playerUUID, key.playerUUID);
-        }
-        
-        @Override
-        public int hashCode() {
-            return Objects.hash(side, playerUUID);
-        }
-        
-        @Override
-        public String toString() {
-            return "PartKey{" +
-                    "side=" + side +
-                    ", playerUUID=" + playerUUID +
-                    '}';
-        }
+    @ApiStatus.Internal
+    public record PartKey(NetworkManager.Side side, @Nullable UUID playerUUID) {
     }
     
-    private static class PartData {
-        private final ResourceLocation id;
-        private final int partsExpected;
-        private final List<RegistryFriendlyByteBuf> parts;
-        
-        public PartData(ResourceLocation id, int partsExpected) {
-            this.id = id;
-            this.partsExpected = partsExpected;
-            this.parts = new ArrayList<>();
+    public record PartData(
+            ResourceLocation id,
+            int partsExpected,
+            List<RegistryFriendlyByteBuf> parts
+    ) {
+        private PartData(ResourceLocation id, int partsExpected) {
+            this(id, partsExpected, new ArrayList<>());
         }
     }
     
@@ -96,16 +64,7 @@ public class SplitPacketTransformer implements PacketTransformer {
         PlayerEvent.PLAYER_QUIT.register(player -> {
             cache.keySet().removeIf(key -> Objects.equals(key.playerUUID, player.getUUID()));
         });
-        EnvExecutor.runInEnv(Env.CLIENT, () -> new Client()::init);
-    }
-    
-    private class Client {
-        @Environment(EnvType.CLIENT)
-        private void init() {
-            ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> {
-                cache.keySet().removeIf(key -> key.side == NetworkManager.Side.S2C);
-            });
-        }
+        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> ClientSplitPacketTransformer.init(cache));
     }
     
     @Override
@@ -204,7 +163,7 @@ public class SplitPacketTransformer implements PacketTransformer {
                 buf.skipBytes(next);
                 sink.accept(side, id, packetBuffer);
             }
-    
+            
             buf.release();
         }
     }

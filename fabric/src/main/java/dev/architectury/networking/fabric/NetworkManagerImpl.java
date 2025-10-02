@@ -24,12 +24,17 @@ import dev.architectury.impl.NetworkAggregator;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.networking.NetworkManager.NetworkReceiver;
 import dev.architectury.networking.SpawnEntityPacket;
+import dev.architectury.networking.client.fabric.ClientNetworkManagerImpl;
+import dev.architectury.networking.transformers.PacketSink;
+import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -54,33 +59,16 @@ public class NetworkManagerImpl {
                 LOGGER.info("Registering C2S receiver with id {}", type.id());
                 PayloadTypeRegistry.playC2S().register(type, codec);
                 ServerPlayNetworking.registerGlobalReceiver(type, (payload, fabricContext) -> {
-                    var context = context(fabricContext.player(), fabricContext.player().getServer(), false);
+                    var context = context(fabricContext.player(), fabricContext.server(), false);
                     receiver.receive(payload, context);
                 });
             }
             
             @Override
-            @Environment(EnvType.CLIENT)
             public <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, NetworkReceiver<T> receiver) {
-                LOGGER.info("Registering S2C receiver with id {}", type.id());
                 PayloadTypeRegistry.playS2C().register(type, codec);
-                ClientPlayNetworking.registerGlobalReceiver(type, new ClientPlayPayloadHandler<>(receiver));
-            }
-            
-            // Lambda methods aren't included in @EnvType, so this inelegant solution is used instead.
-            @Environment(EnvType.CLIENT)
-            class ClientPlayPayloadHandler<T extends CustomPacketPayload> implements ClientPlayNetworking.PlayPayloadHandler<T> {
-                private final NetworkReceiver<T> receiver;
-    
-                ClientPlayPayloadHandler(NetworkReceiver<T> receiver) {
-                    this.receiver = receiver;
-                }
-    
-                @Override
-                public void receive(T payload, ClientPlayNetworking.Context fabricContext) {
-                    var context = context(fabricContext.player(), fabricContext.client(), true);
-                    receiver.receive(payload, context);
-                }
+                if (Platform.getEnvironment() == Env.CLIENT)
+                    ClientNetworkManagerImpl.registerS2C(type, codec, receiver);
             }
             
             @Override
@@ -100,7 +88,7 @@ public class NetworkManagerImpl {
         };
     }
     
-    private static NetworkManager.PacketContext context(Player player, BlockableEventLoop<?> taskQueue, boolean client) {
+    public static NetworkManager.PacketContext context(Player player, BlockableEventLoop<?> taskQueue, boolean client) {
         return new NetworkManager.PacketContext() {
             @Override
             public Player getPlayer() {
@@ -131,6 +119,12 @@ public class NetworkManagerImpl {
     
     public static boolean canPlayerReceive(ServerPlayer player, ResourceLocation id) {
         return ServerPlayNetworking.canSend(player, id);
+    }
+    
+    public static <T extends CustomPacketPayload> void sendToServer(T payload) {
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        if (connection == null) return;
+        NetworkManager.collectPackets(PacketSink.client(), NetworkManager.clientToServer(), payload, connection.registryAccess());
     }
     
     public static Packet<ClientGamePacketListener> createAddEntityPacket(Entity entity, ServerEntity serverEntity) {

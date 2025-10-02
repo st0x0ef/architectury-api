@@ -20,15 +20,12 @@
 package dev.architectury.registry.client.level.entity;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.function.Supplier;
 
-@Environment(EnvType.CLIENT)
 public final class EntityRendererRegistry {
     private EntityRendererRegistry() {
     }

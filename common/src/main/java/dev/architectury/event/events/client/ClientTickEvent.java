@@ -21,11 +21,8 @@ package dev.architectury.event.events.client;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 
-@Environment(EnvType.CLIENT)
 public interface ClientTickEvent<T> {
     Event<Client> CLIENT_PRE = EventFactory.createLoop();
     Event<Client> CLIENT_POST = EventFactory.createLoop();
@@ -34,11 +31,9 @@ public interface ClientTickEvent<T> {
     
     void tick(T instance);
     
-    @Environment(EnvType.CLIENT)
     interface Client extends ClientTickEvent<Minecraft> {
     }
     
-    @Environment(EnvType.CLIENT)
     interface ClientLevel extends ClientTickEvent<net.minecraft.client.multiplayer.ClientLevel> {
     }
 }

@@ -21,12 +21,9 @@ package dev.architectury.event.events.client;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
 public interface ClientPlayerEvent {
     /**
      * @see ClientPlayerJoin#join(LocalPlayer)
@@ -41,7 +38,6 @@ public interface ClientPlayerEvent {
      */
     Event<ClientPlayerRespawn> CLIENT_PLAYER_RESPAWN = EventFactory.createLoop();
     
-    @Environment(EnvType.CLIENT)
     interface ClientPlayerJoin {
         /**
          * Invoked whenever a client player joins a level
@@ -51,7 +47,6 @@ public interface ClientPlayerEvent {
         void join(LocalPlayer player);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ClientPlayerQuit {
         /**
          * Invoked whenever a client player leaves a level and is cleared on the client side.
@@ -61,7 +56,6 @@ public interface ClientPlayerEvent {
         void quit(@Nullable LocalPlayer player);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ClientPlayerRespawn {
         /**
          * Invoked whenever the player respawn packet is received by the client.

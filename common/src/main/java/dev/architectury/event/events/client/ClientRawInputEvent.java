@@ -22,11 +22,10 @@ package dev.architectury.event.events.client;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 
-@Environment(EnvType.CLIENT)
 public interface ClientRawInputEvent {
     /**
      * @see MouseScrolled#mouseScrolled(Minecraft, double, double)
@@ -38,7 +37,7 @@ public interface ClientRawInputEvent {
     Event<MouseClicked> MOUSE_CLICKED_PRE = EventFactory.createEventResult();
     Event<MouseClicked> MOUSE_CLICKED_POST = EventFactory.createEventResult();
     /**
-     * @see KeyPressed#keyPressed(Minecraft, int, int, int, int)
+     * @see KeyPressed#keyPressed(Minecraft, int, KeyEvent)
      */
     Event<KeyPressed> KEY_PRESSED = EventFactory.createEventResult();
     
@@ -47,15 +46,13 @@ public interface ClientRawInputEvent {
          * Invoked whenever a key input is performed.
          * Equivalent to Forge's {@code InputEvent.KeyInputEvent} event.
          *
-         * @param client    The Minecraft instance performing it.
-         * @param keyCode   The key code.
-         * @param scanCode  The raw keyboard scan code.
-         * @param action    The action that should be performed.
-         * @param modifiers Additional modifiers.
+         * @param client   The Minecraft instance performing it.
+         * @param keyCode  The key code.
+         * @param keyEvent The key event.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla pressing mechanism may be cancelled by the result.
          */
-        EventResult keyPressed(Minecraft client, int keyCode, int scanCode, int action, int modifiers);
+        EventResult keyPressed(Minecraft client, int keyCode, KeyEvent keyEvent);
     }
     
     interface MouseScrolled {
@@ -77,13 +74,12 @@ public interface ClientRawInputEvent {
          * Invoked whenever a mouse button is pressed.
          * There are two variants, either a raw mouse input or the input after it is processed by the game.
          *
-         * @param client The Minecraft instance performing it.
-         * @param button The pressed mouse button.
-         * @param action The action that should be performed.
-         * @param mods   Additional modifiers.
+         * @param client     The Minecraft instance performing it.
+         * @param buttonInfo The pressed mouse button info.
+         * @param action     The action that should be performed.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla clicking mechanism may be cancelled by the result.
          */
-        EventResult mouseClicked(Minecraft client, int button, int action, int mods);
+        EventResult mouseClicked(Minecraft client, MouseButtonInfo buttonInfo, int action);
     }
 }

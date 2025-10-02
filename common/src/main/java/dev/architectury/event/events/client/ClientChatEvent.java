@@ -23,13 +23,10 @@ import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
-@Environment(EnvType.CLIENT)
 public interface ClientChatEvent {
     /**
      * @see Send#send(String, Component)
@@ -40,7 +37,6 @@ public interface ClientChatEvent {
      */
     Event<Received> RECEIVED = EventFactory.createCompoundEventResult();
     
-    @Environment(EnvType.CLIENT)
     interface Send {
         /**
          * Event to cancel clients sending the chat message.
@@ -54,7 +50,6 @@ public interface ClientChatEvent {
         EventResult send(String message, @Nullable Component component);
     }
     
-    @Environment(EnvType.CLIENT)
     interface Received {
         /**
          * Event to intercept the receiving of an chat message.

@@ -17,25 +17,18 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package dev.architectury.networking.simple;
+package dev.architectury.networking.transformers.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
+import dev.architectury.event.events.client.ClientPlayerEvent;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.transformers.SplitPacketTransformer;
 
-/**
- * The base class for client -&gt; server messages managed by a {@link SimpleNetworkManager}.
- */
-public abstract class BaseC2SMessage extends Message {
-    /**
-     * Sends this message to the server.
-     */
-    @Environment(EnvType.CLIENT)
-    public final void sendToServer() {
-        if (Minecraft.getInstance().getConnection() != null) {
-            Minecraft.getInstance().getConnection().send(toPacket(Minecraft.getInstance().level.registryAccess()));
-        } else {
-            throw new IllegalStateException("Unable to send packet to the server while not in game!");
-        }
+import java.util.Map;
+
+public class ClientSplitPacketTransformer {
+    public static void init(Map<SplitPacketTransformer.PartKey, SplitPacketTransformer.PartData> cache) {
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> {
+            cache.keySet().removeIf(key -> key.side() == NetworkManager.Side.S2C);
+        });
     }
 }

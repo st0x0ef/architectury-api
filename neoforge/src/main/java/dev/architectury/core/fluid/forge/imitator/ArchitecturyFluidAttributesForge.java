@@ -21,6 +21,7 @@ package dev.architectury.core.fluid.forge.imitator;
 
 import com.google.common.base.MoreObjects;
 import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
+import dev.architectury.fluid.forge.ArchitecturyFluidAttributesClient;
 import dev.architectury.hooks.client.forge.ClientExtensionsRegistryImpl;
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.architectury.platform.Platform;
@@ -64,7 +65,7 @@ class ArchitecturyFluidAttributesForge extends FluidType {
         this.attributes = attributes;
         this.defaultTranslationKey = Util.makeDescriptionId("fluid", BuiltInRegistries.FLUID.getKey(fluid));
         if (Platform.getEnvironment() == Env.CLIENT) {
-            this.registerClient();
+            ArchitecturyFluidAttributesClient.registerClient(this, () -> this.attributes);
         }
     }
     
@@ -84,93 +85,7 @@ class ArchitecturyFluidAttributesForge extends FluidType {
         return item == null ? super.getBucket(stack) : new ItemStack(item);
     }
     
-    @OnlyIn(Dist.CLIENT)
-    public void registerClient() {
-        ClientExtensionsRegistryImpl.register(event -> {
-            if (event != null) {
-                event.registerFluidType(initializeClient(), this);
-            } else {
-                try {
-                    Class<?> clazz = Class.forName("net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager");
-                    Field field = clazz.getDeclaredField("FLUID_TYPE_EXTENSIONS");
-                    field.setAccessible(true);
-                    Method method = clazz.getDeclaredMethod("register", Object.class, Map.class, Object[].class);
-                    method.setAccessible(true);
-                    method.invoke(null, initializeClient(), (Map<?, ?>) field.get(null), new Object[]{this});
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
     
-    @OnlyIn(Dist.CLIENT)
-    public IClientFluidTypeExtensions initializeClient() {
-        return new IClientFluidTypeExtensions() {
-            @Override
-            public int getTintColor() {
-                return attributes.getColor();
-            }
-            
-            @Override
-            public ResourceLocation getStillTexture() {
-                return attributes.getSourceTexture();
-            }
-            
-            @Override
-            public ResourceLocation getFlowingTexture() {
-                return attributes.getFlowingTexture();
-            }
-            
-            @Override
-            @Nullable
-            public ResourceLocation getOverlayTexture() {
-                return attributes.getOverlayTexture();
-            }
-            
-            @Override
-            public ResourceLocation getStillTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-                return attributes.getSourceTexture(state, getter, pos);
-            }
-            
-            @Override
-            public ResourceLocation getFlowingTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-                return attributes.getFlowingTexture(state, getter, pos);
-            }
-            
-            @Override
-            @Nullable
-            public ResourceLocation getOverlayTexture(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-                return attributes.getOverlayTexture(state, getter, pos);
-            }
-            
-            @Override
-            public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-                return attributes.getColor(state, getter, pos);
-            }
-            
-            @Override
-            public int getTintColor(FluidStack stack) {
-                return attributes.getColor(convertSafe(stack));
-            }
-            
-            @Override
-            public ResourceLocation getStillTexture(FluidStack stack) {
-                return attributes.getSourceTexture(convertSafe(stack));
-            }
-            
-            @Override
-            public ResourceLocation getFlowingTexture(FluidStack stack) {
-                return attributes.getFlowingTexture(convertSafe(stack));
-            }
-            
-            @Override
-            @Nullable
-            public ResourceLocation getOverlayTexture(FluidStack stack) {
-                return attributes.getOverlayTexture(convertSafe(stack));
-            }
-        };
-    }
     
     @Override
     public int getLightLevel(FluidStack stack) {

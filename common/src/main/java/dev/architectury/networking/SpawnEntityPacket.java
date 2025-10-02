@@ -22,9 +22,6 @@ package dev.architectury.networking;
 import dev.architectury.extensions.network.EntitySpawnExtension;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -37,7 +34,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.UUID;
@@ -46,9 +42,9 @@ import java.util.UUID;
  * @see net.minecraft.network.protocol.game.ClientboundAddEntityPacket
  */
 public class SpawnEntityPacket {
-    private static final ResourceLocation PACKET_ID = ResourceLocation.fromNamespaceAndPath("architectury", "spawn_entity_packet");
-    private static final CustomPacketPayload.Type<PacketPayload> PACKET_TYPE = new CustomPacketPayload.Type<>(PACKET_ID);
-    private static final StreamCodec<RegistryFriendlyByteBuf, PacketPayload> PACKET_CODEC = CustomPacketPayload.codec(PacketPayload::write, PacketPayload::new);
+    static final ResourceLocation PACKET_ID = ResourceLocation.fromNamespaceAndPath("architectury", "spawn_entity_packet");
+    static final CustomPacketPayload.Type<PacketPayload> PACKET_TYPE = new CustomPacketPayload.Type<>(PACKET_ID);
+    static final StreamCodec<RegistryFriendlyByteBuf, PacketPayload> PACKET_CODEC = CustomPacketPayload.codec(PacketPayload::write, PacketPayload::new);
     
     public static Packet<ClientGamePacketListener> create(Entity entity, ServerEntity serverEntity) {
         if (entity.level().isClientSide()) {
@@ -61,42 +57,7 @@ public class SpawnEntityPacket {
         NetworkManager.registerS2CPayloadType(PACKET_TYPE, PACKET_CODEC);
     }
     
-    
-    @Environment(EnvType.CLIENT)
-    public static class Client {
-        @Environment(EnvType.CLIENT)
-        public static void register() {
-            NetworkManager.registerReceiver(NetworkManager.s2c(), PACKET_TYPE, PACKET_CODEC, Client::receive);
-        }
-        
-        @Environment(EnvType.CLIENT)
-        private static void receive(PacketPayload payload, NetworkManager.PacketContext context) {
-            context.queue(() -> {
-                if (Minecraft.getInstance().level == null) {
-                    throw new IllegalStateException("Client world is null!");
-                }
-                var entity = payload.entityType().create(Minecraft.getInstance().level, EntitySpawnReason.LOAD);
-                if (entity == null) {
-                    throw new IllegalStateException("Created entity is null!");
-                }
-                entity.setUUID(payload.uuid());
-                entity.setId(payload.id());
-                entity.syncPacketPositionCodec(payload.x(), payload.y(), payload.z());
-                entity.snapTo(payload.x(), payload.y(), payload.z(), payload.xRot(), payload.yRot());
-                entity.setYHeadRot(payload.yHeadRot());
-                entity.setYBodyRot(payload.yHeadRot());
-                if (entity instanceof EntitySpawnExtension ext) {
-                    RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(payload.data()), context.registryAccess());
-                    ext.loadAdditionalSpawnData(buf);
-                    buf.release();
-                }
-                Minecraft.getInstance().level.addEntity(entity);
-                entity.lerpMotion(payload.deltaX(), payload.deltaY(), payload.deltaZ());
-            });
-        }
-    }
-    
-    private record PacketPayload(EntityType<?> entityType, UUID uuid, int id, double x, double y, double z, float xRot,
+    record PacketPayload(EntityType<?> entityType, UUID uuid, int id, double x, double y, double z, float xRot,
                                  float yRot,
                                  float yHeadRot,
                                  double deltaX, double deltaY, double deltaZ,

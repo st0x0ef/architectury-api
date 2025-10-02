@@ -20,12 +20,11 @@
 package dev.architectury.event.forge;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@OnlyIn(Dist.DEDICATED_SERVER)
+@EventBusSubscriber(modid = "architectury", value = Dist.DEDICATED_SERVER)
 public class EventHandlerImplServer {
-    @OnlyIn(Dist.DEDICATED_SERVER)
+    @EventBusSubscriber(modid = "architectury", value = Dist.DEDICATED_SERVER)
     public static class ModBasedEventHandler {
-        
     }
 }

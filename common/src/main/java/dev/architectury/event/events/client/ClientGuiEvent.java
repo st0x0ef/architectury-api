@@ -24,8 +24,6 @@ import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
 import dev.architectury.hooks.client.screen.ScreenAccess;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -33,7 +31,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
 public interface ClientGuiEvent {
     /**
      * @see RenderHud#renderHud(GuiGraphics, float)
@@ -73,7 +70,6 @@ public interface ClientGuiEvent {
      */
     Event<SetScreen> SET_SCREEN = EventFactory.createCompoundEventResult();
     
-    @Environment(EnvType.CLIENT)
     interface RenderHud {
         /**
          * Invoked after the in-game hud has been rendered.
@@ -85,7 +81,6 @@ public interface ClientGuiEvent {
         void renderHud(GuiGraphics graphics, DeltaTracker deltaTracker);
     }
     
-    @Environment(EnvType.CLIENT)
     interface DebugText {
         /**
          * Invoked when the debug text is being gathered for rendering.
@@ -97,7 +92,6 @@ public interface ClientGuiEvent {
         void gatherText(List<String> strings);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ScreenInitPre {
         /**
          * Invoked when a screen is being initialized and after the previous widgets have been cleared.
@@ -111,7 +105,6 @@ public interface ClientGuiEvent {
         EventResult init(Screen screen, ScreenAccess access);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ScreenInitPost {
         /**
          * Invoked after a screen has been initialized and all the vanilla initialization logic has happened.
@@ -123,7 +116,6 @@ public interface ClientGuiEvent {
         void init(Screen screen, ScreenAccess access);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ScreenRenderPre {
         /**
          * Invoked before any screen is rendered.
@@ -137,10 +129,9 @@ public interface ClientGuiEvent {
          * @return A {@link EventResult} determining the outcome of the event,
          * the vanilla render may be cancelled by the result.
          */
-        EventResult render(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, DeltaTracker delta);
+        EventResult render(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float delta);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ScreenRenderPost {
         /**
          * Invoked after a screen has finished rendering using the vanilla logic.
@@ -152,10 +143,9 @@ public interface ClientGuiEvent {
          * @param mouseY   The scaled y-coordinate of the mouse cursor.
          * @param delta    The current tick delta.
          */
-        void render(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, DeltaTracker delta);
+        void render(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float delta);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ContainerScreenRenderBackground {
         /**
          * Invoked after a container screen's background are rendered.
@@ -170,7 +160,6 @@ public interface ClientGuiEvent {
         void render(AbstractContainerScreen<?> screen, GuiGraphics graphics, int mouseX, int mouseY, float delta);
     }
     
-    @Environment(EnvType.CLIENT)
     interface ContainerScreenRenderForeground {
         /**
          * Invoked after a screen has finished rendering most of the foreground, but before any floating widgets are rendered.
@@ -185,7 +174,6 @@ public interface ClientGuiEvent {
         void render(AbstractContainerScreen<?> screen, GuiGraphics graphics, int mouseX, int mouseY, float delta);
     }
     
-    @Environment(EnvType.CLIENT)
     interface SetScreen {
         /**
          * Invoked before a new screen is set to open.

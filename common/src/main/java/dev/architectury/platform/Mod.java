@@ -19,9 +19,6 @@
 
 package dev.architectury.platform;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
@@ -80,13 +77,4 @@ public interface Mod {
     Optional<String> getSources();
     
     Optional<String> getIssueTracker();
-    
-    @Environment(EnvType.CLIENT)
-    void registerConfigurationScreen(ConfigurationScreenProvider provider);
-    
-    @Environment(EnvType.CLIENT)
-    @FunctionalInterface
-    interface ConfigurationScreenProvider {
-        Screen provide(Screen parent);
-    }
 }

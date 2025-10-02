@@ -45,7 +45,7 @@ public abstract class MixinPhantomSpawner {
             ),
             cancellable = true
     )
-    private void checkPhantomSpawn(ServerLevel level, boolean bl, boolean bl2, CallbackInfo ci, @Local(ordinal = 1) BlockPos pos, @Local Phantom entity) {
+    private void checkPhantomSpawn(ServerLevel level, boolean bl, CallbackInfo ci, @Local(ordinal = 1) BlockPos pos, @Local Phantom entity) {
         if (EntityEvent.LIVING_CHECK_SPAWN.invoker().canSpawn(entity, level, pos.getX(), pos.getY(), pos.getZ(), EntitySpawnReason.NATURAL, null).value() == Boolean.FALSE) {
             ci.cancel();
         }

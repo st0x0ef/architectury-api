@@ -20,36 +20,26 @@
 package dev.architectury.test.networking;
 
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.BaseC2SMessage;
-import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class ButtonClickedMessage extends BaseC2SMessage {
-    private final int buttonId;
-    
-    /**
-     * To send this message from client to server, call new ButtonClickedMessage(id).sendToServer()
-     */
-    public ButtonClickedMessage(int id) {
-        buttonId = id;
-    }
-    
-    public ButtonClickedMessage(RegistryFriendlyByteBuf buf) {
-        buttonId = buf.readVarInt();
-    }
+public record ButtonClickedMessage(int buttonId) implements CustomPacketPayload {
+    public static final Type<ButtonClickedMessage> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("architectury", "button_clicked"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ButtonClickedMessage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT,
+            ButtonClickedMessage::buttonId,
+            ButtonClickedMessage::new
+    );
     
     @Override
-    public MessageType getType() {
-        return TestModNet.BUTTON_CLICKED;
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
     
-    @Override
-    public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeVarInt(buttonId);
-    }
-    
-    @Override
     public void handle(NetworkManager.PacketContext context) {
         context.getPlayer().displayClientMessage(Component.literal("You clicked button #" + buttonId), false);
     }

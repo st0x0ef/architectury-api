@@ -20,13 +20,10 @@
 package dev.architectury.registry.client.rendering;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
-@Environment(EnvType.CLIENT)
 public final class RenderTypeRegistry {
     private RenderTypeRegistry() {
     }

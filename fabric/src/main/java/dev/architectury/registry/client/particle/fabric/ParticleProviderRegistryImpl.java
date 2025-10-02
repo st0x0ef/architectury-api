@@ -20,8 +20,8 @@
 package dev.architectury.registry.client.particle.fabric;
 
 import dev.architectury.registry.client.particle.ParticleProviderRegistry;
-//import net.fabricmc.fabric.api.client.particle.v1.FabricSpriteProvider;
-//import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.FabricSpriteProvider;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -32,7 +32,7 @@ import net.minecraft.util.RandomSource;
 import java.util.List;
 
 public class ParticleProviderRegistryImpl {
-    /*public record ExtendedSpriteSetImpl(
+    public record ExtendedSpriteSetImpl(
             FabricSpriteProvider delegate
     ) implements ParticleProviderRegistry.ExtendedSpriteSet {
         @Override
@@ -54,6 +54,11 @@ public class ParticleProviderRegistryImpl {
         public TextureAtlasSprite get(RandomSource random) {
             return delegate.get(random);
         }
+        
+        @Override
+        public TextureAtlasSprite first() {
+            return delegate.first();
+        }
     }
     
     public static <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider) {
@@ -63,5 +68,5 @@ public class ParticleProviderRegistryImpl {
     public static <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProviderRegistry.DeferredParticleProvider<T> provider) {
         ParticleFactoryRegistry.getInstance().register(type, sprites ->
                 provider.create(new ExtendedSpriteSetImpl(sprites)));
-    }*/
+    }
 }

@@ -20,23 +20,23 @@
 package dev.architectury.mixin.fabric.client;
 
 import dev.architectury.event.events.client.ClientGuiEvent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
 @Mixin(DebugScreenOverlay.class)
 public class MixinDebugScreenOverlay {
-    @Inject(method = "getGameInformation", at = @At("RETURN"))
-    private void getLeftTexts(CallbackInfoReturnable<List<String>> cir) {
-        ClientGuiEvent.DEBUG_TEXT_LEFT.invoker().gatherText(cir.getReturnValue());
-    }
-    
-    @Inject(method = "getSystemInformation", at = @At("RETURN"))
-    private void getRightTexts(CallbackInfoReturnable<List<String>> cir) {
-        ClientGuiEvent.DEBUG_TEXT_RIGHT.invoker().gatherText(cir.getReturnValue());
+    @Inject(method = "renderLines", at = @At("RETURN"))
+    private void getLeftTexts(GuiGraphics guiGraphics, List<String> list, boolean bl, CallbackInfo ci) {
+        if (bl) {
+            ClientGuiEvent.DEBUG_TEXT_LEFT.invoker().gatherText(list);
+        } else {
+            ClientGuiEvent.DEBUG_TEXT_RIGHT.invoker().gatherText(list);
+        }
     }
 }

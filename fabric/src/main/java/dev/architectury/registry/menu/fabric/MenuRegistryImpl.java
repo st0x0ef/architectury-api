@@ -21,18 +21,12 @@ package dev.architectury.registry.menu.fabric;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry.ExtendedMenuTypeFactory;
-import dev.architectury.registry.menu.MenuRegistry.ScreenFactory;
 import dev.architectury.registry.menu.MenuRegistry.SimpleMenuTypeFactory;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -82,10 +76,5 @@ public class MenuRegistryImpl {
             buf.release();
             return menu;
         }, ByteBufCodecs.BYTE_ARRAY.mapStream(Function.identity()));
-    }
-    
-    @Environment(EnvType.CLIENT)
-    public static <H extends AbstractContainerMenu, S extends Screen & MenuAccess<H>> void registerScreenFactory(MenuType<? extends H> type, ScreenFactory<H, S> factory) {
-        MenuScreens.register(type, factory::create);
     }
 }
