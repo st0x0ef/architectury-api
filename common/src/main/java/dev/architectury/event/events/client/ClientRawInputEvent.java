@@ -32,7 +32,7 @@ public interface ClientRawInputEvent {
      */
     Event<MouseScrolled> MOUSE_SCROLLED = EventFactory.createEventResult();
     /**
-     * @see MouseClicked#mouseClicked(Minecraft, int, int, int)
+     * @see MouseClicked#mouseClicked(Minecraft, MouseButtonInfo, int)
      */
     Event<MouseClicked> MOUSE_CLICKED_PRE = EventFactory.createEventResult();
     Event<MouseClicked> MOUSE_CLICKED_POST = EventFactory.createEventResult();
@@ -47,12 +47,12 @@ public interface ClientRawInputEvent {
          * Equivalent to Forge's {@code InputEvent.KeyInputEvent} event.
          *
          * @param client   The Minecraft instance performing it.
-         * @param keyCode  The key code.
+         * @param action   The action that should be performed.
          * @param keyEvent The key event.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla pressing mechanism may be cancelled by the result.
          */
-        EventResult keyPressed(Minecraft client, int keyCode, KeyEvent keyEvent);
+        EventResult keyPressed(Minecraft client, int action, KeyEvent keyEvent);
     }
     
     interface MouseScrolled {
