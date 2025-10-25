@@ -9,6 +9,7 @@ on:
       - '.github/**'
     branches:
       - "1.21.9"
+      - "1.21.10"
   workflow_dispatch:
     inputs:
       norelease:

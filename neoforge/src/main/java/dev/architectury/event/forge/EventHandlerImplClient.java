@@ -93,14 +93,6 @@ public class EventHandlerImplClient {
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void eventRenderGameOverlayEvent(CustomizeGuiOverlayEvent.DebugText event) {
-        if (Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen()) {
-            ClientGuiEvent.DEBUG_TEXT_LEFT.invoker().gatherText(event.getLeft());
-            ClientGuiEvent.DEBUG_TEXT_RIGHT.invoker().gatherText(event.getRight());
-        }
-    }
-    
-    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(net.neoforged.neoforge.client.event.ClientChatEvent event) {
         EventResult process = ClientChatEvent.SEND.invoker().send(event.getMessage(), null);
         if (process.isFalse()) {

@@ -29,18 +29,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
-import java.util.List;
-
 public interface ClientGuiEvent {
     /**
-     * @see RenderHud#renderHud(GuiGraphics, float)
+     * @see RenderHud#renderHud(GuiGraphics, DeltaTracker)
      */
     Event<RenderHud> RENDER_HUD = EventFactory.createLoop();
-    /**
-     * @see DebugText#gatherText(List)
-     */
-    Event<DebugText> DEBUG_TEXT_LEFT = EventFactory.createLoop();
-    Event<DebugText> DEBUG_TEXT_RIGHT = EventFactory.createLoop();
     /**
      * @see ScreenInitPre#init(Screen, ScreenAccess)
      */
@@ -79,17 +72,6 @@ public interface ClientGuiEvent {
          * @param tickDelta The tick delta.
          */
         void renderHud(GuiGraphics graphics, DeltaTracker deltaTracker);
-    }
-    
-    interface DebugText {
-        /**
-         * Invoked when the debug text is being gathered for rendering.
-         * There are two different versions of this event, one for the left and one for the right side.
-         * Equivalent to Forge's {@code RenderGameOverlayEvent.Text}, when {@code Minecraft.getInstance().options.renderDebug} is true.
-         *
-         * @param strings The current debug text strings.
-         */
-        void gatherText(List<String> strings);
     }
     
     interface ScreenInitPre {

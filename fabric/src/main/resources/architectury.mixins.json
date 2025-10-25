@@ -10,7 +10,6 @@
     "client.MixinChatListener",
     "client.MixinClientLevel",
     "client.MixinClientPacketListener",
-    "client.MixinDebugScreenOverlay",
     "client.MixinFabricClientCommandSource",
     "client.MixinGameRenderer",
     "client.MixinGuiGraphics",
