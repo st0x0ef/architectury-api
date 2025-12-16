@@ -23,7 +23,6 @@ import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.impl.ScreenAccessImpl;
 import dev.architectury.impl.fabric.ScreenInputDelegate;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,15 +63,15 @@ public abstract class MixinScreen implements ScreenInputDelegate {
         return inputDelegate;
     }
     
-    @Inject(method = "init(Lnet/minecraft/client/Minecraft;II)V", at = @At(value = "INVOKE",
+    @Inject(method = "Lnet/minecraft/client/gui/screens/Screen;init(II)V", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/screens/Screen;init()V"), cancellable = true)
-    private void preInit(Minecraft minecraft, int width, int height, CallbackInfo ci) {
+    private void preInit(int width, int height, CallbackInfo ci) {
         if (ClientGuiEvent.INIT_PRE.invoker().init((Screen) (Object) this, getAccess()).isFalse()) {
             ci.cancel();
         }
     }
     
-    @Inject(method = "init(Lnet/minecraft/client/Minecraft;II)V", at = @At(value = "INVOKE",
+    @Inject(method = "Lnet/minecraft/client/gui/screens/Screen;init(II)V", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/screens/Screen;init()V", shift = At.Shift.AFTER))
     private void postInit(CallbackInfo ci) {
         ClientGuiEvent.INIT_POST.invoker().init((Screen) (Object) this, getAccess());

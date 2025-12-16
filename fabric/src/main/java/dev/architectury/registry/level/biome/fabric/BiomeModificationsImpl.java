@@ -29,17 +29,15 @@ import net.fabricmc.fabric.api.biome.v1.BiomeModificationContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.Music;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.level.biome.*;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.TemperatureModifier;
 import net.minecraft.world.level.biome.BiomeSpecialEffects.GrassColorModifier;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -55,7 +53,7 @@ import java.util.function.Predicate;
 import static net.fabricmc.fabric.api.biome.v1.BiomeModificationContext.*;
 
 public class BiomeModificationsImpl {
-    private static final ResourceLocation FABRIC_MODIFICATION = ResourceLocation.fromNamespaceAndPath("architectury", "fabric_modification");
+    private static final Identifier FABRIC_MODIFICATION = Identifier.fromNamespaceAndPath("architectury", "fabric_modification");
     private static final List<Pair<Predicate<BiomeContext>, BiConsumer<BiomeContext, BiomeProperties.Mutable>>> ADDITIONS = Lists.newArrayList();
     private static final List<Pair<Predicate<BiomeContext>, BiConsumer<BiomeContext, BiomeProperties.Mutable>>> POST_PROCESSING = Lists.newArrayList();
     private static final List<Pair<Predicate<BiomeContext>, BiConsumer<BiomeContext, BiomeProperties.Mutable>>> REMOVALS = Lists.newArrayList();
@@ -102,8 +100,8 @@ public class BiomeModificationsImpl {
             BiomeProperties properties = BiomeHooks.getBiomeProperties(context.getBiome());
             
             @Override
-            public Optional<ResourceLocation> getKey() {
-                return Optional.ofNullable(context.getBiomeKey().location());
+            public Optional<Identifier> getKey() {
+                return Optional.ofNullable(context.getBiomeKey().identifier());
             }
             
             @Override
@@ -259,32 +257,20 @@ public class BiomeModificationsImpl {
     private static EffectsProperties.Mutable wrapEffects(Biome biome, EffectsContext context) {
         return new BiomeHooks.EffectsWrapped(biome) {
             @Override
-            public EffectsProperties.Mutable setFogColor(int color) {
-                context.setFogColor(color);
-                return this;
-            }
-            
-            @Override
             public EffectsProperties.Mutable setWaterColor(int color) {
                 context.setWaterColor(color);
                 return this;
             }
             
             @Override
-            public EffectsProperties.Mutable setWaterFogColor(int color) {
-                context.setWaterFogColor(color);
-                return this;
-            }
-            
-            @Override
-            public EffectsProperties.Mutable setSkyColor(int color) {
-                context.setSkyColor(color);
-                return this;
-            }
-            
-            @Override
             public EffectsProperties.Mutable setFoliageColorOverride(@Nullable Integer colorOverride) {
                 context.setFoliageColor(Optional.ofNullable(colorOverride));
+                return this;
+            }
+            
+            @Override
+            public EffectsProperties.Mutable setDryFoliageColorOverride(@Nullable Integer colorOverride) {
+                context.setDryFoliageColor(Optional.ofNullable(colorOverride));
                 return this;
             }
             
@@ -297,36 +283,6 @@ public class BiomeModificationsImpl {
             @Override
             public EffectsProperties.Mutable setGrassColorModifier(GrassColorModifier modifier) {
                 context.setGrassColorModifier(modifier);
-                return this;
-            }
-            
-            @Override
-            public EffectsProperties.Mutable setAmbientParticle(@Nullable AmbientParticleSettings settings) {
-                context.setParticleConfig(Optional.ofNullable(settings));
-                return this;
-            }
-            
-            @Override
-            public EffectsProperties.Mutable setAmbientLoopSound(@Nullable Holder<SoundEvent> sound) {
-                context.setAmbientSound(Optional.ofNullable(sound));
-                return this;
-            }
-            
-            @Override
-            public EffectsProperties.Mutable setAmbientMoodSound(@Nullable AmbientMoodSettings settings) {
-                context.setMoodSound(Optional.ofNullable(settings));
-                return this;
-            }
-            
-            @Override
-            public EffectsProperties.Mutable setAmbientAdditionsSound(@Nullable AmbientAdditionsSettings settings) {
-                context.setAdditionsSound(Optional.ofNullable(settings));
-                return this;
-            }
-            
-            @Override
-            public EffectsProperties.Mutable setBackgroundMusic(@Nullable WeightedList<Music> music) {
-                context.setMusic(Optional.ofNullable(music));
                 return this;
             }
         };

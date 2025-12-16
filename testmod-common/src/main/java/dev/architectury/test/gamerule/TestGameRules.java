@@ -19,18 +19,51 @@
 
 package dev.architectury.test.gamerule;
 
-import net.minecraft.world.level.GameRules;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.serialization.Codec;
+import dev.architectury.registry.registries.DeferredRegister;
+import dev.architectury.registry.registries.DeferredSupplier;
+import dev.architectury.test.TestMod;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
+import net.minecraft.world.level.gamerules.GameRuleType;
+import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class TestGameRules {
     private static final Logger LOGGER = LogManager.getLogger();
     
-    public static final GameRules.Key<GameRules.BooleanValue> SIMPLE_BOOL = GameRules.register("simpleBool", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
-    public static final GameRules.Key<GameRules.IntegerValue> SIMPLE_INT = GameRules.register("simpleInt", GameRules.Category.MISC, GameRules.IntegerValue.create(10));
-    public static final GameRules.Key<GameRules.BooleanValue> CALLBACK_BOOL = GameRules.register("callbackBool", GameRules.Category.MISC, GameRules.BooleanValue.create(true, (server, value) -> LOGGER.info("changed to {}", value.get())));
-    public static final GameRules.Key<GameRules.IntegerValue> CALLBACK_INT = GameRules.register("callbackInt", GameRules.Category.MISC, GameRules.IntegerValue.create(10, (server, value) -> LOGGER.info("changed to {}", value.get())));
+    public static final DeferredRegister<GameRule<?>> GAME_RULE = DeferredRegister.create(TestMod.MOD_ID, Registries.GAME_RULE);
     
+    public static final DeferredSupplier<GameRule<Boolean>> SIMPLE_BOOL = GAME_RULE.register("simple_bool", () -> new GameRule<>(
+            GameRuleCategory.MISC,
+            GameRuleType.BOOL,
+            BoolArgumentType.bool(),
+            GameRuleTypeVisitor::visitBoolean,
+            Codec.BOOL,
+            gameRuleValue -> gameRuleValue ? 1 : 0,
+            false,
+            FeatureFlagSet.of()
+    ));
+    
+    public static final DeferredSupplier<GameRule<Integer>> SIMPLE_INT = GAME_RULE.register(
+            "simple_int",
+            () -> new GameRule<>(
+                    GameRuleCategory.MISC,
+                    GameRuleType.INT,
+                    IntegerArgumentType.integer(0, 5),
+                    GameRuleTypeVisitor::visitInteger,
+                    Codec.intRange(0, 5),
+                    gameRuleValue -> gameRuleValue,
+                    3,
+                    FeatureFlagSet.of()
+            )
+    );
+
     public static void init() {
     }
 }
