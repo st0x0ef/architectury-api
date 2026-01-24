@@ -58,6 +58,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.event.entity.EntityEvent.EnteringSection;
 
 public class EventHandlerImplCommon {
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -245,11 +246,10 @@ public class EventHandlerImplCommon {
         }
     }
     
-    // TODO: Hook ourselves when mixin is available
-    //    @SubscribeEvent(priority = EventPriority.HIGH)
-    //    public static void event(EnteringChunk event) {
-    //        EntityEvent.ENTER_SECTION.invoker().enterChunk(event.getEntity(), event.getNewChunkX(), event.getNewChunkZ(), event.getOldChunkX(), event.getOldChunkZ());
-    //    }
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(EnteringSection event) {
+        EntityEvent.ENTER_SECTION.invoker().enterSection(event.getEntity(), event.getNewPos().getX(), event.getNewPos().getY(), event.getNewPos().getZ(), event.getOldPos().getX(), event.getOldPos().getY(), event.getOldPos().getZ());
+    }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventLivingSpawnEvent(FinalizeSpawnEvent event) {
