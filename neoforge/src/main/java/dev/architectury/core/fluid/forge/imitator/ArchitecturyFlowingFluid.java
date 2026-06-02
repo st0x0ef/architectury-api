@@ -57,11 +57,7 @@ public abstract class ArchitecturyFlowingFluid extends BaseFlowingFluid {
     }
     
     private static Properties toForgeProperties(ArchitecturyFluidAttributes attributes) {
-        Properties forge = new Properties(Suppliers.memoize(() -> {
-            return FLUID_TYPE_MAP.computeIfAbsent(attributes, attr -> {
-                return new ArchitecturyFluidAttributesForge(FluidType.Properties.create(), attr.getSourceFluid(), attr);
-            });
-        }), attributes::getSourceFluid, attributes::getFlowingFluid);
+        Properties forge = new Properties(Suppliers.memoize(() -> FLUID_TYPE_MAP.computeIfAbsent(attributes, attr -> new ArchitecturyFluidAttributesForge(FluidType.Properties.create(), attr.getSourceFluid(), attr))), attributes::getSourceFluid, attributes::getFlowingFluid);
         forge.slopeFindDistance(attributes.getSlopeFindDistance());
         forge.levelDecreasePerBlock(attributes.getDropOff());
         forge.bucket(() -> MoreObjects.firstNonNull(attributes.getBucketItem(), Items.AIR));

@@ -59,7 +59,7 @@ public class DeferredRegister<T> implements Iterable<RegistrySupplier<T>> {
     }
     
     public <R extends T> RegistrySupplier<R> register(Identifier id, Supplier<? extends R> supplier) {
-        var entry = new Entry<T>(id, (Supplier<T>) supplier);
+        var entry = new Entry<>(id, (Supplier<T>) supplier);
         this.entries.add(entry);
         if (registered) {
             var registrar = getRegistrar();

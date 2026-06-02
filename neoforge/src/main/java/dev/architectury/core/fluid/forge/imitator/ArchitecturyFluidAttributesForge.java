@@ -21,10 +21,8 @@ package dev.architectury.core.fluid.forge.imitator;
 
 import com.google.common.base.MoreObjects;
 import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
-import dev.architectury.fluid.forge.ArchitecturyFluidAttributesClient;
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -34,20 +32,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.common.SoundAction;
+import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
-import static net.minecraft.sounds.SoundEvents.BUCKET_EMPTY;
-import static net.minecraft.sounds.SoundEvents.BUCKET_FILL;
-
-class ArchitecturyFluidAttributesForge extends FluidType {
+public class ArchitecturyFluidAttributesForge extends FluidType {
     private final ArchitecturyFluidAttributes attributes;
     private final String defaultTranslationKey;
     
@@ -55,9 +51,6 @@ class ArchitecturyFluidAttributesForge extends FluidType {
         super(addArchIntoBuilder(builder, attributes));
         this.attributes = attributes;
         this.defaultTranslationKey = Util.makeDescriptionId("fluid", BuiltInRegistries.FLUID.getKey(fluid));
-        if (Platform.getEnvironment() == Env.CLIENT) {
-            ArchitecturyFluidAttributesClient.registerClient(this, () -> this.attributes);
-        }
     }
     
     private static Properties addArchIntoBuilder(Properties builder, ArchitecturyFluidAttributes attributes) {
@@ -84,8 +77,11 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getLightLevel(FluidState state, BlockAndTintGetter level, BlockPos pos) {
-        return attributes.getLuminosity(convertSafe(state), level, pos);
+    public int getLightLevel(FluidState state, BlockAndLightGetter level, BlockPos pos) {
+        if (level instanceof BlockAndTintGetter getter) {
+            return attributes.getLuminosity(convertSafe(state), getter, pos);
+        }
+        return super.getLightLevel(state, level, pos);
     }
     
     @Override
@@ -94,8 +90,11 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getDensity(FluidState state, BlockAndTintGetter level, BlockPos pos) {
-        return attributes.getDensity(convertSafe(state), level, pos);
+    public int getDensity(FluidState state, BlockAndLightGetter level, BlockPos pos) {
+        if (level instanceof BlockAndTintGetter getter) {
+            return attributes.getDensity(convertSafe(state), getter, pos);
+        }
+        return super.getDensity(state, level, pos);
     }
     
     @Override
@@ -104,8 +103,11 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getTemperature(FluidState state, BlockAndTintGetter level, BlockPos pos) {
-        return attributes.getTemperature(convertSafe(state), level, pos);
+    public int getTemperature(FluidState state, BlockAndLightGetter level, BlockPos pos) {
+        if (level instanceof BlockAndTintGetter getter) {
+            return attributes.getTemperature(convertSafe(state), getter, pos);
+        }
+        return super.getTemperature(state, level, pos);
     }
     
     @Override
@@ -114,8 +116,11 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getViscosity(FluidState state, BlockAndTintGetter level, BlockPos pos) {
-        return attributes.getViscosity(convertSafe(state), level, pos);
+    public int getViscosity(FluidState state, BlockAndLightGetter level, BlockPos pos) {
+        if (level instanceof BlockAndTintGetter getter) {
+            return attributes.getViscosity(convertSafe(state), getter, pos);
+        }
+        return super.getViscosity(state, level, pos);
     }
     
     @Override
@@ -158,9 +163,9 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     @Nullable
     public SoundEvent getSound(@Nullable FluidStack stack, SoundAction action) {
         var archStack = convertSafe(stack);
-        if (BUCKET_FILL.equals(action)) {
+        if (SoundActions.BUCKET_FILL.equals(action)) {
             return attributes.getFillSound(archStack);
-        } else if (BUCKET_EMPTY.equals(action)) {
+        } else if (SoundActions.BUCKET_EMPTY.equals(action)) {
             return attributes.getEmptySound(archStack);
         }
         return null;
@@ -170,9 +175,9 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     @Nullable
     public SoundEvent getSound(@Nullable LivingEntity entity, BlockGetter getter, BlockPos pos, SoundAction action) {
         if (getter instanceof BlockAndTintGetter level) {
-            if (BUCKET_FILL.equals(action)) {
+            if (SoundActions.BUCKET_FILL.equals(action)) {
                 return attributes.getFillSound(null, level, pos);
-            } else if (BUCKET_EMPTY.equals(action)) {
+            } else if (SoundActions.BUCKET_EMPTY.equals(action)) {
                 return attributes.getEmptySound(null, level, pos);
             }
         }
@@ -197,5 +202,9 @@ class ArchitecturyFluidAttributesForge extends FluidType {
     @Nullable
     public dev.architectury.fluid.FluidStack convertSafe(@Nullable FluidState state) {
         return state == null ? null : dev.architectury.fluid.FluidStack.create(state.getType(), dev.architectury.fluid.FluidStack.bucketAmount());
+    }
+    
+    public ArchitecturyFluidAttributes getAttributes() {
+        return attributes;
     }
 }

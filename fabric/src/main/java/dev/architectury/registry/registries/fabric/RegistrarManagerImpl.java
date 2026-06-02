@@ -137,7 +137,7 @@ public class RegistrarManagerImpl {
         @Override
         public Registrar<T> build() {
             final var builder = defaultId == null
-                    ? FabricRegistryBuilder.createSimple(type, registryId)
+                    ? FabricRegistryBuilder.create(type, registryId)
                     : FabricRegistryBuilder.createDefaulted(type, registryId, defaultId);
             apply.forEach(consumer -> consumer.accept(builder));
             return RegistrarManager.get(modId).get(builder.buildAndRegister());
@@ -167,7 +167,7 @@ public class RegistrarManagerImpl {
         public RegistrySupplier<T> delegate(Identifier id) {
             Supplier<T> value = Suppliers.memoize(() -> get(id));
             RegistrarImpl<T> registrar = this;
-            return new RegistrySupplierImpl<T>() {
+            return new RegistrySupplierImpl<>() {
                 @Nullable
                 Holder<T> holder = null;
                 

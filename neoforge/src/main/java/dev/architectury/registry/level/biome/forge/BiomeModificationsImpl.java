@@ -48,10 +48,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -117,11 +114,7 @@ public class BiomeModificationsImpl {
         
         @Override
         public MapCodec<? extends BiomeModifier> codec() {
-            if (noneBiomeModCodec != null) {
-                return noneBiomeModCodec;
-            } else {
-                return MapCodec.unit(INSTANCE);
-            }
+            return Objects.requireNonNullElseGet(noneBiomeModCodec, () -> MapCodec.unit(INSTANCE));
         }
     }
     

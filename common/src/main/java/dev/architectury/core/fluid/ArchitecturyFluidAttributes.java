@@ -26,7 +26,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
@@ -198,11 +198,11 @@ public interface ArchitecturyFluidAttributes {
      * @param level the level, can be {@code null}
      * @param pos   the position, can be {@code null}
      * @return the texture location
-     * @deprecated Please use and override {@link #getSourceTexture(FluidState, BlockAndTintGetter, BlockPos)}
+     * @deprecated Please use and override {@link #getSourceTexture(FluidState, BlockAndLightGetter, BlockPos)}
      * or {@link #getSourceTexture(FluidStack)} instead, this method will be removed in a future version.
      */
     @Deprecated(forRemoval = true)
-    Identifier getSourceTexture(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    Identifier getSourceTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the texture location of this fluid in its source form.
@@ -214,7 +214,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the texture location
      */
-    default Identifier getSourceTexture(@Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    default Identifier getSourceTexture(@Nullable FluidState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return getSourceTexture(state == null ? null : FluidStack.create(state.getType(), FluidStack.bucketAmount()), level, pos);
     }
     
@@ -250,11 +250,11 @@ public interface ArchitecturyFluidAttributes {
      * @param level the level, can be {@code null}
      * @param pos   the position, can be {@code null}
      * @return the texture location
-     * @deprecated Please use and override {@link #getFlowingTexture(FluidState, BlockAndTintGetter, BlockPos)}
+     * @deprecated Please use and override {@link #getFlowingTexture(FluidState, BlockAndLightGetter, BlockPos)}
      * or {@link #getFlowingTexture(FluidStack)} instead, this method will be removed in a future version.
      */
     @Deprecated(forRemoval = true)
-    Identifier getFlowingTexture(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    Identifier getFlowingTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the texture location of this fluid in its flowing form.
@@ -266,7 +266,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the texture location
      */
-    default Identifier getFlowingTexture(@Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    default Identifier getFlowingTexture(@Nullable FluidState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return getFlowingTexture(state == null ? null : FluidStack.create(state.getType(), FluidStack.bucketAmount()), level, pos);
     }
     
@@ -304,7 +304,7 @@ public interface ArchitecturyFluidAttributes {
      * @return the texture location, can be {@code null}
      */
     @Nullable
-    default Identifier getOverlayTexture(@Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    default Identifier getOverlayTexture(@Nullable FluidState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return null;
     }
     
@@ -340,11 +340,11 @@ public interface ArchitecturyFluidAttributes {
      * @param level the level, can be {@code null}
      * @param pos   the position, can be {@code null}
      * @return the color
-     * @deprecated Please use and override {@link #getColor(FluidState, BlockAndTintGetter, BlockPos)}
+     * @deprecated Please use and override {@link #getColor(FluidState, BlockAndLightGetter, BlockPos)}
      * or {@link #getColor(FluidStack)} instead, this method will be removed in a future version.
      */
     @Deprecated(forRemoval = true)
-    int getColor(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    int getColor(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the color of the fluid.
@@ -354,7 +354,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the color
      */
-    default int getColor(@Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    default int getColor(@Nullable FluidState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return getColor(state == null ? null : FluidStack.create(state.getType(), FluidStack.bucketAmount()), level, pos);
     }
     
@@ -385,7 +385,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the luminosity
      */
-    int getLuminosity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    int getLuminosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the luminosity of the fluid, this is between 0 and 15.
@@ -414,7 +414,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the density
      */
-    int getDensity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    int getDensity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the density of the fluid, this is 1000 for water and 3000 for lava on forge.
@@ -444,7 +444,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the temperature
      */
-    int getTemperature(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    int getTemperature(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the temperature of the fluid.
@@ -476,7 +476,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the viscosity
      */
-    int getViscosity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    int getViscosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the viscosity of the fluid. A lower viscosity means that the fluid will flow faster.
@@ -508,7 +508,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return {@code true} if the fluid is lighter than air
      */
-    boolean isLighterThanAir(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    boolean isLighterThanAir(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns whether this fluid is lighter than air. This is used to determine whether the fluid should be rendered
@@ -539,7 +539,7 @@ public interface ArchitecturyFluidAttributes {
      * @param pos   the position, can be {@code null}
      * @return the rarity
      */
-    Rarity getRarity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    Rarity getRarity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the rarity of the fluid.
@@ -571,7 +571,7 @@ public interface ArchitecturyFluidAttributes {
      * @see net.minecraft.sounds.SoundEvents#BUCKET_FILL_LAVA
      */
     @Nullable
-    SoundEvent getFillSound(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    SoundEvent getFillSound(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the fill sound of the fluid.
@@ -609,7 +609,7 @@ public interface ArchitecturyFluidAttributes {
      * @see net.minecraft.sounds.SoundEvents#BUCKET_EMPTY_LAVA
      */
     @Nullable
-    SoundEvent getEmptySound(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos);
+    SoundEvent getEmptySound(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
      * Returns the empty sound of the fluid.

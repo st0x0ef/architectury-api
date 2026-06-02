@@ -43,7 +43,7 @@ public class HorseTameInvoker {
             ), cancellable = true
     )
     private void tick(CallbackInfo ci) {
-        if (EntityEvent.ANIMAL_TAME.invoker().tame(this.horse, (Player) this.horse.getPassengers().get(0)).isFalse()) {
+        if (EntityEvent.ANIMAL_TAME.invoker().tame(this.horse, (Player) this.horse.getPassengers().getFirst()).isFalse()) {
             ci.cancel();
         }
     }

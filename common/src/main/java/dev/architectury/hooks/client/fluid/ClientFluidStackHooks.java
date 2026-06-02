@@ -23,7 +23,7 @@ import dev.architectury.fluid.FluidStack;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public class ClientFluidStackHooks {
     
     @ExpectPlatform
     @Nullable
-    public static TextureAtlasSprite getStillTexture(@Nullable BlockAndTintGetter level, @Nullable BlockPos pos, FluidState state) {
+    public static TextureAtlasSprite getStillTexture(@Nullable BlockAndLightGetter level, @Nullable BlockPos pos, FluidState state) {
         throw new AssertionError();
     }
     
@@ -52,7 +52,7 @@ public class ClientFluidStackHooks {
     
     @ExpectPlatform
     @Nullable
-    public static TextureAtlasSprite getFlowingTexture(@Nullable BlockAndTintGetter level, @Nullable BlockPos pos, FluidState state) {
+    public static TextureAtlasSprite getFlowingTexture(@Nullable BlockAndLightGetter level, @Nullable BlockPos pos, FluidState state) {
         throw new AssertionError();
     }
     
@@ -69,7 +69,7 @@ public class ClientFluidStackHooks {
     }
     
     @ExpectPlatform
-    public static int getColor(@Nullable BlockAndTintGetter level, @Nullable BlockPos pos, FluidState state) {
+    public static int getColor(@Nullable BlockAndLightGetter level, @Nullable BlockPos pos, FluidState state) {
         throw new AssertionError();
     }
     

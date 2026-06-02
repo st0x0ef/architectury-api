@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "com.gradleup.shadow" version "9.4.2"
     id "me.shedaniel.unified-publishing"
 }
 
@@ -25,7 +25,7 @@ configurations {
 dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
 }
 
@@ -41,8 +41,12 @@ shadowJar {
     exclude "architectury-common.accessWidener"
     exclude "architectury.common.json"
 
+    dependsOn jar
+    mainSpec.sourcePaths.clear()
+    from(zipTree(jar.archiveFile))
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier = "dev-shadow"
+    archiveClassifier = null
+    from rootProject.file("LICENSE.md")
 
     // Replace classes with forge's version
     exclude "dev/architectury/core/block/ArchitecturyLiquidBlock.class"
@@ -55,25 +59,21 @@ shadowJar {
     relocate "dev.architectury.core.item.forge.imitator", "dev.architectury.core.item"
 }
 
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveClassifier = null
-    atAccessWideners.add "architectury.accessWidener"
-}
-
-task renameJarForPublication(type: Zip, dependsOn: remapJar) {
-    from remapJar.archiveFile.map { zipTree(it) }
-    archiveExtension = "jar"
-    metadataCharset "UTF-8"
-    destinationDirectory = base.libsDirectory
-    archiveClassifier = project.name
-}
-
-assemble.dependsOn renameJarForPublication
-
 jar {
-    archiveClassifier = "dev"
+    archiveClassifier = "raw"
+}
+
+assemble.dependsOn shadowJar
+
+configurations {
+    apiElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
+    runtimeElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
 }
 
 sourcesJar {
@@ -123,7 +123,7 @@ unifiedPublishing {
         changelog = releaseChangelog()
         gameVersions = ["1.21.11"]
         gameLoaders = ["neoforge"]
-        mainPublication renameJarForPublication
+        mainPublication shadowJar
 
         var CURSE_API_KEY = project.findProperty("CURSE_API_KEY") ?: System.getenv("CURSE_API_KEY")
         if (CURSE_API_KEY != null) {

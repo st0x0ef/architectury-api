@@ -25,7 +25,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.material.Fluid;
@@ -71,7 +70,7 @@ public enum FluidStackImpl implements dev.architectury.fluid.FluidStack.FluidSta
     
     @Override
     public Supplier<Fluid> getRawFluidSupplier(FluidStack object) {
-        return () -> object.getFluidHolder().value();
+        return () -> object.typeHolder().value();
     }
     
     @Override
@@ -95,7 +94,7 @@ public enum FluidStackImpl implements dev.architectury.fluid.FluidStack.FluidSta
     }
     
     @Override
-    public PatchedDataComponentMap getComponents(FluidStack value) {
+    public DataComponentMap getComponents(FluidStack value) {
         return value.getComponents();
     }
     

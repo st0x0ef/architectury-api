@@ -262,7 +262,7 @@ public final class EventFactory {
         
         public void update() {
             if (listeners.size() == 1) {
-                invoker = listeners.get(0);
+                invoker = listeners.getFirst();
             } else {
                 invoker = function.apply(listeners);
             }

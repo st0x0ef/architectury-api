@@ -41,20 +41,6 @@ public final class Platform {
         return simpleLoaderCache == 0;
     }
     
-    @Deprecated(forRemoval = true)
-    public static boolean isForge() {
-        return isForgeLike();
-    }
-    
-    public static boolean isForgeLike() {
-        return isMinecraftForge() || isNeoForge();
-    }
-    
-    public static boolean isMinecraftForge() {
-        updateLoaderCache();
-        return simpleLoaderCache == 1;
-    }
-    
     public static boolean isNeoForge() {
         updateLoaderCache();
         return simpleLoaderCache == 2;

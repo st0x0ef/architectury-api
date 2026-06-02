@@ -80,7 +80,7 @@ public final class FluidStack implements DataComponentHolder {
         
         DataComponentPatch getPatch(T value);
         
-        PatchedDataComponentMap getComponents(T value);
+        DataComponentMap getComponents(T value);
         
         void applyComponents(T value, DataComponentPatch patch);
         
@@ -179,7 +179,7 @@ public final class FluidStack implements DataComponentHolder {
     }
     
     @Override
-    public PatchedDataComponentMap getComponents() {
+    public DataComponentMap getComponents() {
         return ADAPTER.getComponents(value);
     }
     

@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "com.gradleup.shadow" version "9.4.2"
     id "com.matthewprenger.cursegradle"
 }
 
@@ -31,7 +31,7 @@ configurations {
 dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 
-    implementation(project(path: ":neoforge", configuration: "namedElements")) { transitive false }
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    common(project(path: ":testmod-common", configuration: "namedElements")) { transitive false }
+    implementation(project(path: ":neoforge")) { transitive false }
+    common(project(path: ":common")) { transitive false }
+    common(project(path: ":testmod-common")) { transitive false }
 }

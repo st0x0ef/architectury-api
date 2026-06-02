@@ -25,6 +25,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.EntityHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,8 +37,8 @@ public class MixinMultiPlayerGameMode {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V",
                     shift = At.Shift.AFTER),
             cancellable = true)
-    private void entityInteract(Player player, Entity entity, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
-        var result = InteractionEvent.INTERACT_ENTITY.invoker().interact(player, entity, interactionHand);
+    private void entityInteract(Player player, Entity entity, EntityHitResult hitResult, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+        var result = InteractionEvent.INTERACT_ENTITY.invoker().interact(player, entity, hand);
         if (result.isPresent()) {
             cir.setReturnValue(result.asMinecraft());
         }

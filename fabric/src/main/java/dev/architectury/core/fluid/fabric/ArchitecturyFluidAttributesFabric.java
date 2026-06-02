@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-@SuppressWarnings("UnstableApiUsage")
 class ArchitecturyFluidAttributesFabric implements FluidVariantAttributeHandler {
     private final ArchitecturyFluidAttributes attributes;
     
@@ -55,7 +54,7 @@ class ArchitecturyFluidAttributesFabric implements FluidVariantAttributeHandler 
     }
     
     @Override
-    public int getLuminance(FluidVariant variant) {
+    public int getLightEmission(FluidVariant variant) {
         return attributes.getLuminosity(FluidStackHooksFabric.fromFabric(variant, FluidStack.bucketAmount()));
     }
     

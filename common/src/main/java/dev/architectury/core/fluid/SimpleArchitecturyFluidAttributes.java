@@ -22,6 +22,7 @@ package dev.architectury.core.fluid;
 import com.google.common.base.Suppliers;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.registry.registries.RegistrySupplier;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -29,7 +30,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
@@ -46,7 +47,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     private boolean canConvertToSource = false;
     private int slopeFindDistance = 4;
     private int dropOff = 1;
-    private Supplier<? extends Optional<Item>> bucketItem = Optional::empty;
+    private Supplier<? extends Optional<? extends Item>> bucketItem = Optional::empty;
     private int tickDelay = 5;
     private float explosionResistance = 100.0F;
     private Supplier<? extends Optional<? extends LiquidBlock>> block = Optional::empty;
@@ -67,7 +68,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     private SoundEvent fillSound = SoundEvents.BUCKET_FILL;
     @Nullable
     private SoundEvent emptySound = SoundEvents.BUCKET_EMPTY;
-    private final Supplier<String> defaultTranslationKey = Suppliers.memoize(() -> Util.makeDescriptionId("fluid", getSourceFluid().arch$registryName()));
+    private final Supplier<String> defaultTranslationKey = Suppliers.memoize(() -> Util.makeDescriptionId("fluid", BuiltInRegistries.FLUID.getKey(getSourceFluid())));
     
     public static SimpleArchitecturyFluidAttributes ofSupplier(Supplier<? extends Supplier<? extends Fluid>> flowingFluid, Supplier<? extends Supplier<? extends Fluid>> sourceFluid) {
         return of(() -> flowingFluid.get().get(), () -> sourceFluid.get().get());
@@ -110,7 +111,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     /**
      * @see ArchitecturyFluidAttributes#getBucketItem()
      */
-    public SimpleArchitecturyFluidAttributes bucketItemSupplier(Supplier<RegistrySupplier<Item>> bucketItem) {
+    public SimpleArchitecturyFluidAttributes bucketItemSupplier(Supplier<RegistrySupplier<? extends Item>> bucketItem) {
         return bucketItem(() -> bucketItem.get().toOptional());
     }
     
@@ -124,7 +125,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     /**
      * @see ArchitecturyFluidAttributes#getBucketItem()
      */
-    public SimpleArchitecturyFluidAttributes bucketItem(Supplier<? extends Optional<Item>> bucketItem) {
+    public SimpleArchitecturyFluidAttributes bucketItem(Supplier<? extends Optional<? extends Item>> bucketItem) {
         this.bucketItem = Objects.requireNonNull(bucketItem);
         return this;
     }
@@ -168,7 +169,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getSourceTexture(FluidState, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getSourceTexture(FluidState, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes sourceTexture(Identifier sourceTexture) {
         this.sourceTexture = sourceTexture;
@@ -176,7 +177,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getFlowingTexture(FluidState, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getFlowingTexture(FluidState, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes flowingTexture(Identifier flowingTexture) {
         this.flowingTexture = flowingTexture;
@@ -184,7 +185,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getFlowingTexture(FluidState, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getFlowingTexture(FluidState, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes overlayTexture(Identifier overlayTexture) {
         this.overlayTexture = overlayTexture;
@@ -192,7 +193,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getColor(FluidState, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getColor(FluidState, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes color(int color) {
         this.color = color;
@@ -200,7 +201,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getLuminosity(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getLuminosity(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes luminosity(int luminosity) {
         this.luminosity = luminosity;
@@ -208,7 +209,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getDensity(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getDensity(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes density(int density) {
         this.density = density;
@@ -216,7 +217,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getTemperature(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getTemperature(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes temperature(int temperature) {
         this.temperature = temperature;
@@ -224,7 +225,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getViscosity(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getViscosity(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes viscosity(int viscosity) {
         this.viscosity = viscosity;
@@ -232,7 +233,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#isLighterThanAir(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#isLighterThanAir(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes lighterThanAir(boolean lighterThanAir) {
         this.lighterThanAir = lighterThanAir;
@@ -240,7 +241,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getRarity(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getRarity(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes rarity(Rarity rarity) {
         this.rarity = rarity;
@@ -248,7 +249,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getFillSound(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getFillSound(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes fillSound(SoundEvent fillSound) {
         this.fillSound = fillSound;
@@ -256,7 +257,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getEmptySound(FluidStack, BlockAndTintGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getEmptySound(FluidStack, BlockAndLightGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes emptySound(SoundEvent emptySound) {
         this.emptySound = emptySound;
@@ -317,64 +318,64 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     @Override
-    public Identifier getSourceTexture(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public Identifier getSourceTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return sourceTexture;
     }
     
     @Override
-    public Identifier getFlowingTexture(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public Identifier getFlowingTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return flowingTexture;
     }
     
     @Override
-    public Identifier getOverlayTexture(@Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public Identifier getOverlayTexture(@Nullable FluidState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return overlayTexture;
     }
     
     @Override
-    public int getColor(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public int getColor(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return color;
     }
     
     @Override
-    public int getLuminosity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public int getLuminosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return luminosity;
     }
     
     @Override
-    public int getDensity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public int getDensity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return density;
     }
     
     @Override
-    public int getTemperature(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public int getTemperature(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return temperature;
     }
     
     @Override
-    public int getViscosity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public int getViscosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return viscosity;
     }
     
     @Override
-    public boolean isLighterThanAir(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public boolean isLighterThanAir(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return lighterThanAir;
     }
     
     @Override
-    public Rarity getRarity(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public Rarity getRarity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return rarity;
     }
     
     @Override
     @Nullable
-    public SoundEvent getFillSound(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public SoundEvent getFillSound(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return fillSound;
     }
     
     @Override
     @Nullable
-    public SoundEvent getEmptySound(@Nullable FluidStack stack, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    public SoundEvent getEmptySound(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
         return emptySound;
     }
 }

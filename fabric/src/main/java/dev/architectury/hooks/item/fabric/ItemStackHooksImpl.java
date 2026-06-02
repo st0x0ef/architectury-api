@@ -20,6 +20,7 @@
 package dev.architectury.hooks.item.fabric;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 public class ItemStackHooksImpl {
     public static boolean hasCraftingRemainingItem(ItemStack stack) {
@@ -27,7 +28,13 @@ public class ItemStackHooksImpl {
     }
     
     public static ItemStack getCraftingRemainingItem(ItemStack stack) {
-        ItemStack remainder = stack.getItem().getRecipeRemainder(stack);
-        return remainder == null || remainder.isEmpty() ? ItemStack.EMPTY : remainder;
+        ItemStackTemplate remainder = stack.getItem().getCraftingRemainder(stack);
+        if (remainder != null) {
+            ItemStack remainderStack = remainder.create();
+            if (!remainderStack.isEmpty()) {
+                return remainderStack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 }
