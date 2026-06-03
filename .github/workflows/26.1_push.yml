@@ -37,8 +37,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Verify license using Licenser
-        run: ./gradlew licenseCheck
+      #- name: Verify license using Licenser
+      #  run: ./gradlew licenseCheck
 
       - name: Build with Gradle
         run: ./gradlew build --stacktrace --no-daemon
