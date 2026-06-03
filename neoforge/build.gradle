@@ -122,7 +122,6 @@ unifiedPublishing {
         displayName = "[NeoForge $rootProject.supported_version] v$project.version"
         releaseType = "$rootProject.artifact_type"
         changelog = releaseChangelog()
-        gameVersions = ["1.21.11"]
         gameLoaders = ["neoforge"]
         mainPublication shadowJar
 
@@ -131,7 +130,7 @@ unifiedPublishing {
             curseforge {
                 token = CURSE_API_KEY
                 id = rootProject.curseforge_id
-                gameVersions.addAll "Java 21"
+                gameVersions.addAll "Java 25", project.supported_version.split("/")
             }
         }
 

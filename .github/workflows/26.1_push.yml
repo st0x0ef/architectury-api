@@ -1,4 +1,4 @@
-name: Build and Release (1.21.11)
+name: Build and Release (26.1)
 
 on:
   push:

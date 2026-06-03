@@ -66,6 +66,10 @@ allprojects {
         ext.archivesBaseName = rootProject.archives_base_name_snapshot
     }
 
+    base {
+        archivesName = archivesBaseName + "-$project.name"
+    }
+
     group = rootProject.maven_group
 
     tasks.withType(JavaCompile) {
