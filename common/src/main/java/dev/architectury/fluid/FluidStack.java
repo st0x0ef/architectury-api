@@ -19,6 +19,7 @@
 
 package dev.architectury.fluid;
 
+import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import dev.architectury.hooks.fluid.FluidStackHooks;
 import dev.architectury.injectables.annotations.ExpectPlatform;
@@ -43,7 +44,7 @@ import java.util.function.UnaryOperator;
 
 public final class FluidStack implements DataComponentHolder {
     private static final FluidStackAdapter<Object> ADAPTER = adapt(FluidStack::getValue, FluidStack::new);
-    private static final FluidStack EMPTY = new FluidStack(() -> Fluids.EMPTY, 0, DataComponentPatch.EMPTY);
+    private static final Supplier<FluidStack> EMPTY = Suppliers.memoize(() -> new FluidStack(() -> Fluids.EMPTY, 0, DataComponentPatch.EMPTY));
     public static final Codec<FluidStack> CODEC = ADAPTER.codec();
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidStack> STREAM_CODEC = ADAPTER.streamCodec();
     
@@ -104,7 +105,7 @@ public final class FluidStack implements DataComponentHolder {
     }
     
     public static FluidStack empty() {
-        return EMPTY;
+        return EMPTY.get();
     }
     
     public static FluidStack create(Fluid fluid, long amount, DataComponentPatch patch) {
