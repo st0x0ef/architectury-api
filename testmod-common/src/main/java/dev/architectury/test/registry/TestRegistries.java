@@ -48,6 +48,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.BlockGetter;
@@ -111,16 +112,15 @@ public class TestRegistries {
     
     public static final RegistrySupplier<Item> TEST_ITEM = ITEMS.register("test_item", () ->
             new Item(new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_item"))));
-    public static final RegistrySupplier<Item> TEST_EDIBLE = ITEMS.register("test_edible", () -> {
-        return new Item(new Item.Properties()
-                .food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build(),
-                        Consumables.defaultFood()
-                                .onConsume(
-                                        new ApplyStatusEffectsConsumeEffect(List.of(new MobEffectInstance(TEST_EFFECT, 100, 1)))
-                                ).build())
-                .arch$tab(TestRegistries.TEST_TAB)
-                .setId(id(Registries.ITEM, "test_edible")));
-    });
+    public static final RegistrySupplier<Item> TEST_EDIBLE = ITEMS.register("test_edible", () ->
+            new Item(new Item.Properties()
+            .food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build(),
+                    Consumables.defaultFood()
+                            .onConsume(
+                                    new ApplyStatusEffectsConsumeEffect(List.of(new MobEffectInstance(TEST_EFFECT, 100, 1)))
+                            ).build())
+            .arch$tab(TestRegistries.TEST_TAB)
+            .setId(id(Registries.ITEM, "test_edible"))));
     public static final RegistrySupplier<Item> TEST_SPAWN_EGG = ITEMS.register("test_spawn_egg", () ->
             new SpawnEggItem(new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_spawn_egg")).spawnEgg(TestRegistries.TEST_ENTITY.get())));
     public static final RegistrySupplier<Item> TEST_SPAWN_EGG_2 = ITEMS.register("test_spawn_egg_2", () ->
@@ -129,7 +129,7 @@ public class TestRegistries {
     public static final RegistrySupplier<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> {
         try {
             // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (Item) Class.forName(!Platform.isForge() ? "dev.architectury.core.item.ArchitecturyBucketItem" : "dev.architectury.core.item.forge.imitator.ArchitecturyBucketItem")
+            return (Item) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.item.ArchitecturyBucketItem" : "dev.architectury.core.item.forge.imitator.ArchitecturyBucketItem")
                     .getDeclaredConstructor(Supplier.class, Item.Properties.class)
                     .newInstance(TestRegistries.TEST_FLUID, new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_fluid_bucket")));
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
@@ -155,9 +155,9 @@ public class TestRegistries {
     public static final RegistrySupplier<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid", () -> {
         try {
             // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (LiquidBlock) Class.forName(!Platform.isForge() ? "dev.architectury.core.block.ArchitecturyLiquidBlock" : "dev.architectury.core.block.forge.imitator.ArchitecturyLiquidBlock")
+            return (LiquidBlock) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.block.ArchitecturyLiquidBlock" : "dev.architectury.core.block.forge.imitator.ArchitecturyLiquidBlock")
                     .getDeclaredConstructor(Supplier.class, BlockBehaviour.Properties.class)
-                    .newInstance(TestRegistries.TEST_FLUID, BlockBehaviour.Properties.ofLegacyCopy(Blocks.WATER).replaceable().noCollision().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY).setId(id(Registries.BLOCK, "test_fluid")));
+                    .newInstance(TestRegistries.TEST_FLUID, BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).replaceable().noCollision().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY).setId(id(Registries.BLOCK, "test_fluid")));
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -167,7 +167,7 @@ public class TestRegistries {
     public static final RegistrySupplier<Fluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> {
         try {
             // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (FlowingFluid) Class.forName(!Platform.isForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Source" : "dev.architectury.core.fluid.forge.imitator.ArchitecturyFlowingFluid$Source")
+            return (FlowingFluid) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Source" : "dev.architectury.core.fluid.forge.imitator.ArchitecturyFlowingFluid$Source")
                     .getDeclaredConstructor(ArchitecturyFluidAttributes.class)
                     .newInstance(TestRegistries.TEST_FLUID_ATTRIBUTES);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
@@ -179,7 +179,7 @@ public class TestRegistries {
     public static final RegistrySupplier<Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> {
         try {
             // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (FlowingFluid) Class.forName(!Platform.isForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Flowing" : "dev.architectury.core.fluid.forge.imitator.ArchitecturyFlowingFluid$Flowing")
+            return (FlowingFluid) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Flowing" : "dev.architectury.core.fluid.forge.imitator.ArchitecturyFlowingFluid$Flowing")
                     .getDeclaredConstructor(ArchitecturyFluidAttributes.class)
                     .newInstance(TestRegistries.TEST_FLUID_ATTRIBUTES);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
@@ -196,9 +196,9 @@ public class TestRegistries {
     public static final RegistrySupplier<EntityType<TestEntity>> TEST_ENTITY = ENTITY_TYPES.register("test_entity", TestEntity.TYPE);
     public static final RegistrySupplier<EntityType<TestEntity>> TEST_ENTITY_2 = ENTITY_TYPES.register("test_entity_2", TestEntity.TYPE_2);
     
-    public static final RegistrySupplier<RecipeSerializer<CustomRecipe>> TEST_SERIALIZER = RECIPE_SERIALIZERS.register("test_serializer", TestRecipeSerializer::new);
+    public static final RegistrySupplier<RecipeSerializer<FireworkRocketRecipe>> TEST_SERIALIZER = RECIPE_SERIALIZERS.register("test_serializer", TestRecipeSerializer::create);
     
-    public static final RegistrySupplier<RecipeType<CustomRecipe>> TEST_RECIPE_TYPE = RECIPE_TYPES.register("test_recipe_type", () -> new RecipeType<CustomRecipe>() {
+    public static final RegistrySupplier<RecipeType<CustomRecipe>> TEST_RECIPE_TYPE = RECIPE_TYPES.register("test_recipe_type", () -> new RecipeType<>() {
         @Override
         public String toString() {
             return TestMod.MOD_ID + ":test_recipe_type";

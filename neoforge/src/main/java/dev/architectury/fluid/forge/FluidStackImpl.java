@@ -21,7 +21,6 @@ package dev.architectury.fluid.forge;
 
 import com.mojang.serialization.Codec;
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -29,6 +28,7 @@ import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -60,18 +60,22 @@ public enum FluidStackImpl implements dev.architectury.fluid.FluidStack.FluidSta
     
     @Override
     public FluidStack create(Supplier<Fluid> fluid, long amount, @Nullable DataComponentPatch patch) {
-        @SuppressWarnings("deprecation")
-        Holder<Fluid> holder = Objects.requireNonNull(fluid).get().builtInRegistryHolder();
+        Fluid fluidType = Objects.requireNonNull(fluid).get();
+        
+        if (fluidType.equals(Fluids.EMPTY)) {
+            return FluidStack.EMPTY;
+        }
+        
         if (patch == null) {
-            return new FluidStack(holder, toInt(amount));
+            return new FluidStack(fluidType, toInt(amount));
         } else {
-            return new FluidStack(holder, toInt(amount), patch);
+            return new FluidStack(fluidType, toInt(amount), patch);
         }
     }
     
     @Override
     public Supplier<Fluid> getRawFluidSupplier(FluidStack object) {
-        return () -> object.getFluidHolder().value();
+        return () -> object.typeHolder().value();
     }
     
     @Override
@@ -96,7 +100,7 @@ public enum FluidStackImpl implements dev.architectury.fluid.FluidStack.FluidSta
     
     @Override
     public PatchedDataComponentMap getComponents(FluidStack value) {
-        return value.getComponents();
+        return (PatchedDataComponentMap) value.getComponents();
     }
     
     @Override

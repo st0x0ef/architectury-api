@@ -55,12 +55,13 @@ public abstract class ArchitecturyFlowingFluid extends FlowingFluid {
     }
     
     private static <T> T checkPlatform(T obj) {
-        if (Platform.isForgeLike()) {
-            throw new IllegalStateException("This class should've been replaced on Forge!");
+        if (Platform.isNeoForge()) {
+            throw new IllegalStateException("This class should've been replaced on NeoForge!");
         }
         
         return obj;
     }
+    
     
     @ExpectPlatform
     private static void addFabricFluidAttributes(FlowingFluid fluid, ArchitecturyFluidAttributes properties) {

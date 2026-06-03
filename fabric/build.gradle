@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "com.gradleup.shadow" version "9.4.2"
     id "me.shedaniel.unified-publishing"
 }
 
@@ -25,11 +25,11 @@ repositories {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    modCompileOnly("com.terraformersmc:modmenu:${rootProject.mod_menu_version}") { transitive false }
+    api "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    api "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    compileOnly("com.terraformersmc:modmenu:${rootProject.mod_menu_version}") { transitive false }
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
@@ -44,29 +44,29 @@ shadowJar {
     exclude "architectury-common.accessWidener"
     exclude "architectury.common.json"
 
+    dependsOn jar
+    mainSpec.sourcePaths.clear()
+    from(zipTree(jar.archiveFile))
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier = "dev-shadow"
-}
-
-remapJar {
-    injectAccessWidener = true
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
     archiveClassifier = null
+    from rootProject.file("LICENSE.md")
 }
-
-task renameJarForPublication(type: Zip, dependsOn: remapJar) {
-    from remapJar.archiveFile.map { zipTree(it) }
-    archiveExtension = "jar"
-    metadataCharset "UTF-8"
-    destinationDirectory = base.libsDirectory
-    archiveClassifier = project.name
-}
-
-assemble.dependsOn renameJarForPublication
 
 jar {
-    archiveClassifier = "dev"
+    archiveClassifier = "raw"
+}
+
+assemble.dependsOn shadowJar
+
+configurations {
+    apiElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
+    runtimeElements {
+        outgoing.artifacts.clear()
+        outgoing.artifact(shadowJar)
+    }
 }
 
 sourcesJar {
@@ -82,6 +82,7 @@ sourcesJar {
 }
 
 components.java {
+    addVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {}
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
     }
@@ -115,7 +116,7 @@ unifiedPublishing {
         changelog = releaseChangelog()
         gameVersions = []
         gameLoaders = ["fabric"]
-        mainPublication renameJarForPublication
+        mainPublication shadowJar
         relations {
             depends {
                 curseforge = "fabric-api"

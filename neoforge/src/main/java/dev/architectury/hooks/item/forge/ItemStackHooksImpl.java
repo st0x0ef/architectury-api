@@ -20,6 +20,7 @@
 package dev.architectury.hooks.item.forge;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 public class ItemStackHooksImpl {
     public static boolean hasCraftingRemainingItem(ItemStack stack) {
@@ -27,6 +28,13 @@ public class ItemStackHooksImpl {
     }
     
     public static ItemStack getCraftingRemainingItem(ItemStack stack) {
-        return stack.getCraftingRemainder();
+        ItemStackTemplate remainder = stack.getCraftingRemainder();
+        if (remainder != null) {
+            ItemStack remainderStack = remainder.create();
+            if (!remainderStack.isEmpty()) {
+                return remainderStack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 }

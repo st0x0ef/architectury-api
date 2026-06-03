@@ -31,7 +31,6 @@ import dev.architectury.test.networking.TestModNet;
 import dev.architectury.test.particle.TestParticles;
 import dev.architectury.test.registry.TestRegistries;
 import dev.architectury.test.tags.TestTags;
-import dev.architectury.test.trade.TestTrades;
 import dev.architectury.test.worldgen.TestWorldGeneration;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
@@ -50,7 +49,6 @@ public class TestMod {
         TestRegistries.initialize();
         TestGameRules.GAME_RULE.register();
         TestTags.initialize();
-        TestTrades.init();
         TestParticles.initialize();
         TestModNet.initialize();
         TestBlockInteractions.init();

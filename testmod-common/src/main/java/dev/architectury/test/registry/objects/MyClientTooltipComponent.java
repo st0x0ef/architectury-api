@@ -20,8 +20,9 @@
 package dev.architectury.test.registry.objects;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import org.jspecify.annotations.NonNull;
 
 public record MyClientTooltipComponent(ItemWithTooltip.MyTooltipComponent component) implements ClientTooltipComponent {
     @Override
@@ -35,10 +36,10 @@ public record MyClientTooltipComponent(ItemWithTooltip.MyTooltipComponent compon
     }
     
     @Override
-    public void renderImage(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
+    public void extractImage(@NonNull Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
         graphics.pose().pushMatrix();
         graphics.pose().translate(0, 0);
-        graphics.drawString(font, "Count: " + component.count(), x + getWidth(font) / 2, y + (getHeight(font) - font.lineHeight) / 2, 0xFF00FF00);
+        graphics.text(font, "Count: " + component.count(), x + getWidth(font) / 2, y + (getHeight(font) - font.lineHeight) / 2, 0xFF00FF00);
         graphics.pose().popMatrix();
     }
 }

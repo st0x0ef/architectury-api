@@ -1,24 +1,24 @@
 {
   "injected_interfaces": {
-    "net/minecraft/class_1792": [
+    "net/minecraft/world/item/Item": [
       "dev/architectury/extensions/injected/InjectedItemExtension"
     ],
-    "net/minecraft/class_1792$class_1793": [
+    "net/minecraft/world/item/Item$Properties": [
       "dev/architectury/extensions/injected/InjectedItemPropertiesExtension"
     ],
-    "net/minecraft/class_2248": [
+    "net/minecraft/world/level/block/Block": [
       "dev/architectury/extensions/injected/InjectedBlockExtension"
     ],
-    "net/minecraft/class_3611": [
+    "net/minecraft/world/level/material/Fluid": [
       "dev/architectury/extensions/injected/InjectedFluidExtension"
     ],
-    "net/minecraft/class_1299": [
+    "net/minecraft/world/entity/EntityType": [
       "dev/architectury/extensions/injected/InjectedEntityTypeExtension"
     ],
-    "net/minecraft/class_1755": [
+    "net/minecraft/world/item/BucketItem": [
       "dev/architectury/extensions/injected/InjectedBucketItemExtension"
     ],
-    "net/minecraft/class_2404": [
+    "net/minecraft/world/level/block/LiquidBlock": [
       "dev/architectury/extensions/injected/InjectedLiquidBlockExtension"
     ]
   }

@@ -275,7 +275,7 @@ public class RegistrarManagerImpl {
         }
         
         private <E extends T> RegistrySupplier<E> asSupplier(Identifier id, Registrar<E> registrar, BooleanSupplier isPresent, Supplier<T> object) {
-            return new RegistrySupplierImpl<E>() {
+            return new RegistrySupplierImpl<>() {
                 @Nullable
                 Holder<E> holder = null;
                 

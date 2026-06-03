@@ -20,8 +20,8 @@
 package dev.architectury.event.forge;
 
 import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.*;
+import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -46,13 +46,13 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.*;
-import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.FarmlandTrampleEvent;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent.Detonate;
 import net.neoforged.neoforge.event.level.ExplosionEvent.Start;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.server.*;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -245,11 +245,10 @@ public class EventHandlerImplCommon {
         }
     }
     
-    // TODO: Hook ourselves when mixin is available
-    //    @SubscribeEvent(priority = EventPriority.HIGH)
-    //    public static void event(EnteringChunk event) {
-    //        EntityEvent.ENTER_SECTION.invoker().enterChunk(event.getEntity(), event.getNewChunkX(), event.getNewChunkZ(), event.getOldChunkX(), event.getOldChunkZ());
-    //    }
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(net.neoforged.neoforge.event.entity.EntityEvent.EnteringSection event) {
+        EntityEvent.ENTER_SECTION.invoker().enterSection(event.getEntity(), event.getNewPos().getX(), event.getNewPos().getY(), event.getNewPos().getZ(), event.getOldPos().getX(), event.getOldPos().getY(), event.getOldPos().getZ());
+    }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventLivingSpawnEvent(FinalizeSpawnEvent event) {
@@ -350,7 +349,7 @@ public class EventHandlerImplCommon {
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void event(BreakEvent event) {
+    public static void event(BreakBlockEvent event) {
         if (event.getPlayer() instanceof ServerPlayer && event.getLevel() instanceof Level) {
             EventResult result = BlockEvent.BREAK.invoker().breakBlock((Level) event.getLevel(), event.getPos(), event.getState(), (ServerPlayer) event.getPlayer(), null);
             if (result.isFalse()) {
