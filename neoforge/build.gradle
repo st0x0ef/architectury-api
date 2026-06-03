@@ -130,7 +130,7 @@ unifiedPublishing {
             curseforge {
                 token = CURSE_API_KEY
                 id = rootProject.curseforge_id
-                gameVersions.addAll "Java 25", project.supported_version.split("/")
+                gameVersions.addAll "Java 25", project.minecraft_version
             }
         }
 
@@ -140,6 +140,7 @@ unifiedPublishing {
                 token = MODRINTH_TOKEN
                 id = rootProject.modrinth_id
                 version = "$project.version+$project.name"
+                gameVersions.addAll project.minecraft_version
             }
         }
     }
