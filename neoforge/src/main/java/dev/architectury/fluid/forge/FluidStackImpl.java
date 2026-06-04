@@ -145,7 +145,7 @@ public enum FluidStackImpl implements dev.architectury.fluid.FluidStack.FluidSta
     
     @Override
     public int hashCode(FluidStack value) {
-        var code = 1;
+        int code = 1;
         code = 31 * code + value.getFluid().hashCode();
         code = 31 * code + value.getAmount();
         code = 31 * code + value.getComponents().hashCode();

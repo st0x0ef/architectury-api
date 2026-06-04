@@ -23,8 +23,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.fluid.FluidStack;
+import dev.architectury.fluid.FluidStackTemplate;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -41,32 +43,30 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 @ApiStatus.Internal
-public enum FluidStackImpl implements FluidStack.FluidStackAdapter<FluidStackImpl.Pair> {
+public enum FluidStackTemplateImpl implements FluidStackTemplate.FluidStackTemplateAdapter<FluidStackTemplateImpl.Pair, FluidStackImpl.Pair> {
     INSTANCE;
     
     static {
-        dev.architectury.fluid.FluidStack.init();
+        FluidStack.init();
     }
     
-    public static Function<FluidStack, Object> toValue;
-    public static Function<Object, FluidStack> fromValue;
+    public static Function<FluidStackTemplate, Object> toValue;
+    public static Function<Object, FluidStackTemplate> fromValue;
     
-    public static FluidStack.FluidStackAdapter<Object> adapt(Function<FluidStack, Object> toValue, Function<Object, dev.architectury.fluid.FluidStack> fromValue) {
-        FluidStackImpl.toValue = toValue;
-        FluidStackImpl.fromValue = fromValue;
-        return (FluidStack.FluidStackAdapter<Object>) (FluidStack.FluidStackAdapter<?>) INSTANCE;
+    public static FluidStackTemplate.FluidStackTemplateAdapter<Object, Object> adapt(Function<FluidStackTemplate, Object> toValue, Function<Object, FluidStackTemplate> fromValue) {
+        FluidStackTemplateImpl.toValue = toValue;
+        FluidStackTemplateImpl.fromValue = fromValue;
+        return (FluidStackTemplate.FluidStackTemplateAdapter<Object, Object>) (FluidStackTemplate.FluidStackTemplateAdapter<?, ?>) INSTANCE;
     }
     
     public static class Pair {
-        public Fluid fluid;
-        public PatchedDataComponentMap components;
-        public long amount;
+        public final Fluid fluid;
+        public final PatchedDataComponentMap components;
+        public final long amount;
         
         public Pair(Fluid fluid, @Nullable DataComponentPatch patch, long amount) {
             this(fluid,
@@ -91,7 +91,7 @@ public enum FluidStackImpl implements FluidStack.FluidStackAdapter<FluidStackImp
     }
     
     @Override
-    public FluidStackImpl.Pair create(Supplier<Fluid> fluid, long amount, @Nullable DataComponentPatch patch) {
+    public Pair of(Supplier<Fluid> fluid, long amount, @Nullable DataComponentPatch patch) {
         Fluid fluidType = Objects.requireNonNull(fluid).get();
         if (fluidType instanceof FlowingFluid flowingFluid) {
             fluidType = flowingFluid.getSource();
@@ -100,75 +100,61 @@ public enum FluidStackImpl implements FluidStack.FluidStackAdapter<FluidStackImp
     }
     
     @Override
-    public Supplier<Fluid> getRawFluidSupplier(FluidStackImpl.Pair object) {
-        return () -> object.fluid;
+    public Holder<Fluid> fluid(Pair object) {
+        return object.fluid.builtInRegistryHolder();
     }
     
     @Override
-    public Fluid getFluid(FluidStackImpl.Pair object) {
-        return object.fluid;
-    }
-    
-    @Override
-    public long getAmount(FluidStackImpl.Pair object) {
+    public long amount(Pair object) {
         return object.amount;
     }
     
     @Override
-    public void setAmount(FluidStackImpl.Pair object, long amount) {
-        object.amount = amount;
-    }
-    
-    public DataComponentPatch getPatch(FluidStackImpl.Pair value) {
-        return value.getPatch();
+    public Pair withAmount(Pair object, int amount) {
+        return new Pair(object.fluid, object.components, amount);
     }
     
     @Override
-    public PatchedDataComponentMap getComponents(Pair value) {
+    public DataComponentMap components(Pair value) {
         return value.components;
     }
     
     @Override
-    public void applyComponents(Pair value, DataComponentPatch patch) {
-        value.components.applyPatch(patch);
+    public DataComponentPatch patch(Pair value) {
+        return value.components.asPatch();
     }
     
     @Override
-    public void applyComponents(Pair value, DataComponentMap patch) {
-        value.components.setAll(patch);
+    public FluidStackImpl.Pair apply(Pair value, DataComponentPatch patch) {
+        FluidStackImpl.Pair newPair =  new FluidStackImpl.Pair(value.fluid, value.components, value.amount);
+        newPair.components.applyPatch(patch);
+        return newPair;
     }
     
     @Override
-    @Nullable
-    public <D> D set(Pair value, DataComponentType<D> type, @Nullable D component) {
-        return value.components.set(type, component);
+    public FluidStackImpl.Pair apply(Pair value, int amount, DataComponentPatch patch) {
+        FluidStackImpl.Pair newPair =  new FluidStackImpl.Pair(value.fluid, value.components, amount);
+        newPair.components.applyPatch(patch);
+        return newPair;
     }
     
     @Override
-    @Nullable
-    public <D> D remove(Pair value, DataComponentType<? extends D> type) {
-        return value.components.remove(type);
+    public @org.jspecify.annotations.Nullable <D> D get(Pair value, DataComponentType<D> type) {
+        return value.components.get(type);
     }
     
     @Override
-    @Nullable
-    public <D> D update(Pair value, DataComponentType<D> type, D component, UnaryOperator<D> updater) {
-        return value.components.set(type, updater.apply(getComponents(value).getOrDefault(type, component)));
+    public @org.jspecify.annotations.Nullable <D> D get(Pair value, Supplier<DataComponentType<D>> type) {
+        return value.components.get(type.get());
     }
     
     @Override
-    @Nullable
-    public <D, U> D update(Pair value, DataComponentType<D> type, D component, U updateContext, BiFunction<D, U, D> updater) {
-        return value.components.set(type, updater.apply(getComponents(value).getOrDefault(type, component), updateContext));
-    }
-    
-    @Override
-    public FluidStackImpl.Pair copy(FluidStackImpl.Pair value) {
+    public Pair copy(FluidStackTemplateImpl.Pair value) {
         return new Pair(value.fluid, value.components.copy(), value.amount);
     }
     
     @Override
-    public int hashCode(FluidStackImpl.Pair value) {
+    public int hashCode(FluidStackTemplateImpl.Pair value) {
         int code = 1;
         code = 31 * code + value.fluid.hashCode();
         code = 31 * code + Long.hashCode(value.amount);
@@ -177,21 +163,21 @@ public enum FluidStackImpl implements FluidStack.FluidStackAdapter<FluidStackImp
     }
     
     @Override
-    public Codec<FluidStack> codec() {
+    public Codec<FluidStackTemplate> codec() {
         return RecordCodecBuilder.create(instance -> instance.group(
-                BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("fluid").forGetter(stack -> stack.getFluid().builtInRegistryHolder()),
+                BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("fluid").forGetter(FluidStackTemplate::fluid),
                 Codec.LONG.validate(value -> value.compareTo(0L) >= 0 && value.compareTo(Long.MAX_VALUE) <= 0
                         ? DataResult.success(value)
-                        : DataResult.error(() -> "Value must be non-negative: " + value)).fieldOf("amount").forGetter(FluidStack::getAmount),
-                DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(FluidStack::getPatch)
-        ).apply(instance, FluidStack::create));
+                        : DataResult.error(() -> "Value must be non-negative: " + value)).fieldOf("amount").forGetter(FluidStackTemplate::amount),
+                DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(FluidStackTemplate::getPatch)
+        ).apply(instance, FluidStackTemplate::of));
     }
     
     @Override
-    public StreamCodec<RegistryFriendlyByteBuf, FluidStack> streamCodec() {
-        return StreamCodec.composite(ByteBufCodecs.holderRegistry(Registries.FLUID), stack -> stack.getFluid().builtInRegistryHolder(),
-                StreamCodec.of(ByteBuf::writeLong, ByteBuf::readLong), FluidStack::getAmount,
-                DataComponentPatch.STREAM_CODEC, FluidStack::getPatch,
-                FluidStack::create);
+    public StreamCodec<RegistryFriendlyByteBuf, FluidStackTemplate> streamCodec() {
+        return StreamCodec.composite(ByteBufCodecs.holderRegistry(Registries.FLUID), FluidStackTemplate::fluid,
+                StreamCodec.of(ByteBuf::writeLong, ByteBuf::readLong), FluidStackTemplate::amount,
+                DataComponentPatch.STREAM_CODEC, FluidStackTemplate::getPatch,
+                FluidStackTemplate::of);
     }
 }
