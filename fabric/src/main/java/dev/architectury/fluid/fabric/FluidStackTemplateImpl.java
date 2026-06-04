@@ -51,7 +51,7 @@ public enum FluidStackTemplateImpl implements FluidStackTemplate.FluidStackTempl
     INSTANCE;
     
     static {
-        FluidStack.init();
+        FluidStackTemplate.init();
     }
     
     public static Function<FluidStackTemplate, Object> toValue;
