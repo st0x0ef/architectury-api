@@ -1,10 +1,14 @@
-plugins {
-    id "com.gradleup.shadow" version "9.4.2"
-    id "me.shedaniel.unified-publishing"
-}
+import org.gradle.jvm.tasks.Jar
+
+apply plugin: "com.gradleup.shadow"
+apply plugin: "me.shedaniel.unified-publishing"
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    neoForge {
+        convertAccessWideners(tasks.named("shadowJar", Jar), "architectury.accessWidener")
+    }
 }
 
 architectury {
@@ -16,7 +20,7 @@ architectury {
 
 configurations {
     common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common
@@ -30,15 +34,18 @@ dependencies {
 }
 
 processResources {
+    inputs.property "version", project.version
     filesMatching("META-INF/neoforge.mods.toml") {
         expand "version": project.version
     }
-    inputs.property "META-INF/neoforge.mods.toml", project.version
+}
+
+jar {
+    archiveClassifier = "raw"
 }
 
 shadowJar {
     exclude "fabric.mod.json"
-    exclude "architectury-common.accessWidener"
     exclude "architectury.common.json"
 
     dependsOn jar
@@ -46,21 +53,18 @@ shadowJar {
     from(zipTree(jar.archiveFile))
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = null
+    zip64 = true
     from rootProject.file("LICENSE.md")
 
-    // Replace classes with forge's version
+    // Replace the common stubs with the NeoForge-native implementations via relocation.
     exclude "dev/architectury/core/block/ArchitecturyLiquidBlock.class"
     exclude "dev/architectury/core/fluid/ArchitecturyFlowingFluid.class"
-    exclude 'dev/architectury/core/fluid/ArchitecturyFlowingFluid$Source.class'
-    exclude 'dev/architectury/core/fluid/ArchitecturyFlowingFluid$Flowing.class'
-    exclude 'dev/architectury/core/item/ArchitecturyBucketItem.class'
+    exclude "dev/architectury/core/fluid/ArchitecturyFlowingFluid\$Source.class"
+    exclude "dev/architectury/core/fluid/ArchitecturyFlowingFluid\$Flowing.class"
+    exclude "dev/architectury/core/item/ArchitecturyBucketItem.class"
     relocate "dev.architectury.core.block.forge.imitator", "dev.architectury.core.block"
     relocate "dev.architectury.core.fluid.forge.imitator", "dev.architectury.core.fluid"
     relocate "dev.architectury.core.item.forge.imitator", "dev.architectury.core.item"
-}
-
-jar {
-    archiveClassifier = "raw"
 }
 
 assemble.dependsOn shadowJar
@@ -78,12 +82,10 @@ configurations {
 
 sourcesJar {
     afterEvaluate {
-        [":common"].forEach {
-            def depSources = project(it).sourcesJar
-            dependsOn depSources
-            from(depSources.archiveFile.map { zipTree(it) }) {
-                exclude "architectury.accessWidener"
-            }
+        def depSources = project(":common").sourcesJar
+        dependsOn depSources
+        from(depSources.archiveFile.map { zipTree(it) }) {
+            exclude "architectury.accessWidener"
         }
     }
 }
@@ -117,7 +119,7 @@ publishing {
 }
 
 unifiedPublishing {
-    if (rootProject.neoforge_pr != "") return // Don't publish PRs
+    if (rootProject.neoforge_pr != "") return
     project {
         displayName = "[NeoForge $rootProject.supported_version] v$project.version"
         releaseType = "$rootProject.artifact_type"
@@ -145,4 +147,3 @@ unifiedPublishing {
         }
     }
 }
-

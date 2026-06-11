@@ -1,7 +1,5 @@
-plugins {
-    id "com.gradleup.shadow" version "9.4.2"
-    id "me.shedaniel.unified-publishing"
-}
+apply plugin: "com.gradleup.shadow"
+apply plugin: "me.shedaniel.unified-publishing"
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
@@ -14,7 +12,7 @@ architectury {
 
 configurations {
     common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common
@@ -34,14 +32,17 @@ dependencies {
 }
 
 processResources {
+    inputs.property "version", project.version
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
-    inputs.property "version", project.version
+}
+
+jar {
+    archiveClassifier = "raw"
 }
 
 shadowJar {
-    exclude "architectury-common.accessWidener"
     exclude "architectury.common.json"
 
     dependsOn jar
@@ -49,11 +50,8 @@ shadowJar {
     from(zipTree(jar.archiveFile))
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = null
+    zip64 = true
     from rootProject.file("LICENSE.md")
-}
-
-jar {
-    archiveClassifier = "raw"
 }
 
 assemble.dependsOn shadowJar
@@ -71,12 +69,10 @@ configurations {
 
 sourcesJar {
     afterEvaluate {
-        [":common"].forEach {
-            def depSources = project(it).sourcesJar
-            dependsOn depSources
-            from(depSources.archiveFile.map { zipTree(it) }) {
-                exclude "architectury.accessWidener"
-            }
+        def depSources = project(":common").sourcesJar
+        dependsOn depSources
+        from(depSources.archiveFile.map { zipTree(it) }) {
+            exclude "architectury.accessWidener"
         }
     }
 }

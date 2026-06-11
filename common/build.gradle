@@ -43,10 +43,10 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 
-task generateAccessWidener {
+tasks.register("generateAccessWidener") {
     doLast {
         List<String> lines = ["", "##############################", "# This section is generated automatically with Gradle task generateAccessWidener!!!", "##############################", ""]
-        Path inputJar = loom.namedMinecraftProvider.parentMinecraftProvider.mergedJar.path
+        Path inputJar = loom.namedMinecraftProvider.minecraftProvider.mergedJar
         logger.lifecycle("Generating access widener for $inputJar")
 
         try (def fs = FileSystems.newFileSystem(URI.create("jar:${inputJar.toUri()}"), [create: false])) {
@@ -139,11 +139,9 @@ static def generateCreativeTabs(List<String> lines, FileSystem fs) {
 
 static ClassNode loadClass(Path path) {
     def node = new ClassNode()
-
     try (def is = Files.newInputStream(path)) {
         new ClassReader(is).accept(node, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES)
     }
-
     return node
 }
 
