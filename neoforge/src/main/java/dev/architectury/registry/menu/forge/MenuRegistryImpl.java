@@ -21,9 +21,7 @@ package dev.architectury.registry.menu.forge;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry.ExtendedMenuTypeFactory;
-import dev.architectury.registry.menu.MenuRegistry.SimpleMenuTypeFactory;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -31,11 +29,6 @@ import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 public class MenuRegistryImpl {
     public static void openExtendedMenu(ServerPlayer player, ExtendedMenuProvider provider) {
         player.openMenu(provider, provider::saveExtraData);
-    }
-    
-    @SuppressWarnings("removal")
-    public static <T extends AbstractContainerMenu> MenuType<T> of(SimpleMenuTypeFactory<T> factory) {
-        return new MenuType<>(factory::create, FeatureFlags.VANILLA_SET);
     }
     
     public static <T extends AbstractContainerMenu> MenuType<T> ofExtended(ExtendedMenuTypeFactory<T> factory) {

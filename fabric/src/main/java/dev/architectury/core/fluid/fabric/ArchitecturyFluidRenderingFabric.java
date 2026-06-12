@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandle
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
@@ -41,6 +42,6 @@ class ArchitecturyFluidRenderingFabric implements FluidVariantRenderHandler, Flu
     
     @Override
     public int getColor(FluidVariant fluidVariant, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
-        return attributes.getColor(FluidStackHooksFabric.fromFabric(fluidVariant, FluidStack.bucketAmount()), level, pos);
+        return attributes.getColor(FluidStackHooksFabric.fromFabric(fluidVariant, FluidStack.bucketAmount()).getFluid().defaultFluidState(), level, pos);
     }
 }

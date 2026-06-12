@@ -75,16 +75,6 @@ public class FluidStackHooksImpl {
         return fluid.getFluid().getFluidType().getLightLevel(FluidStackHooksForge.toForge(fluid));
     }
     
-    @Deprecated(forRemoval = true)
-    public static int getLuminosity(Fluid fluid, @Nullable Level level, @Nullable BlockPos pos) {
-        if (level != null && pos != null) {
-            var state = level.getFluidState(pos);
-            return fluid.getFluidType().getLightLevel(state, level, pos);
-        }
-        
-        return fluid.getFluidType().getLightLevel();
-    }
-    
     public static int getTemperature(FluidStack fluid, @Nullable Level level, @Nullable BlockPos pos) {
         return fluid.getFluid().getFluidType().getTemperature(FluidStackHooksForge.toForge(fluid));
     }

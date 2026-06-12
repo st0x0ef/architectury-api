@@ -20,18 +20,12 @@
 package dev.architectury.hooks.fluid.forge;
 
 import com.mojang.logging.LogUtils;
-import dev.architectury.fluid.FluidStack;
 import dev.architectury.fluid.FluidStackTemplate;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Optional;

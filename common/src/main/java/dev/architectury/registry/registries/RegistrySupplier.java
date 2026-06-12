@@ -25,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
-public interface RegistrySupplier<T> extends DeferredSupplier<T>, Holder<T> {
+public interface RegistrySupplier<T> extends DeferredSupplier<T>, Holder.Reference<T> {
     RegistrarManager getRegistrarManager();
     
     Registrar<T> getRegistrar();
