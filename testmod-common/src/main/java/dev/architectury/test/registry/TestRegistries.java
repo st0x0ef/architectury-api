@@ -25,6 +25,7 @@ import dev.architectury.hooks.level.entity.EntityHooks;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
+import dev.architectury.registry.level.entity.EntityDataSerializerRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
@@ -37,6 +38,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
@@ -216,6 +219,10 @@ public class TestRegistries {
         RECIPE_SERIALIZERS.register();
         EntityAttributeRegistry.register(TEST_ENTITY, TestEntity::createAttributes);
         EntityAttributeRegistry.register(TEST_ENTITY_2, TestEntity::createAttributes);
+        EntityDataSerializerRegistry.register(
+                Identifier.fromNamespaceAndPath(TestMod.MOD_ID, "test_int_serializer"),
+                EntityDataSerializer.forValueType(ByteBufCodecs.VAR_INT)
+        );
         TEST_BLOCK_ITEM.listen(item -> {
             System.out.println("Registered item!");
         });
