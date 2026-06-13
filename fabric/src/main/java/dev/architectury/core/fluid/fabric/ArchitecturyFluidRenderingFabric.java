@@ -29,7 +29,6 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandle
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)

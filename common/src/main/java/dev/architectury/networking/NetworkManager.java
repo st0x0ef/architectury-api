@@ -38,7 +38,6 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collections;
 import java.util.Iterator;

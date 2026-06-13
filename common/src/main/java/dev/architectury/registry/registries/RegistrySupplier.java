@@ -21,7 +21,6 @@ package dev.architectury.registry.registries;
 
 import net.minecraft.core.Holder;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
