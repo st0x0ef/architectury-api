@@ -117,7 +117,7 @@ public class TestRegistries {
             .food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build(),
                     Consumables.defaultFood()
                             .onConsume(
-                                    new ApplyStatusEffectsConsumeEffect(List.of(new MobEffectInstance(TEST_EFFECT, 100, 1)))
+                                    new ApplyStatusEffectsConsumeEffect(List.of(new MobEffectInstance(TEST_EFFECT.asHolder(), 100, 1)))
                             ).build())
             .arch$tab(TestRegistries.TEST_TAB)
             .setId(id(Registries.ITEM, "test_edible"))));

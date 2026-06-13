@@ -139,12 +139,12 @@ public class ParticleProviderRegistryImpl {
             return new ParticleProviderRegistrar() {
                 @Override
                 public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider) {
-                    Minecraft.getInstance().particleResources.register(type, provider);
+                    Minecraft.getInstance().particleEngine.resourceManager.register(type, provider);
                 }
                 
                 @Override
                 public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleResources.SpriteParticleRegistration<T> registration) {
-                    Minecraft.getInstance().particleResources.register(type, registration);
+                    Minecraft.getInstance().particleEngine.resourceManager.register(type, registration);
                 }
             };
         }

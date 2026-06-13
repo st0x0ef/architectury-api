@@ -23,7 +23,6 @@ import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import dev.architectury.impl.RegistrySupplierImpl;
 import dev.architectury.platform.hooks.EventBusesHooks;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarBuilder;
@@ -35,8 +34,8 @@ import dev.architectury.registry.registries.options.StandardRegistrarOption;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -275,22 +274,17 @@ public class RegistrarManagerImpl {
         }
         
         private <E extends T> RegistrySupplier<E> asSupplier(Identifier id, Registrar<E> registrar, BooleanSupplier isPresent, Supplier<T> object) {
-            return new RegistrySupplierImpl<>() {
+            return new RegistrySupplier<>() {
                 @Nullable
                 Holder<E> holder = null;
                 
                 @Nullable
                 @Override
-                public Holder<E> getHolder() {
+                public Holder<E> asHolder() {
                     if (holder != null) return holder;
                     return holder = registrar.getHolder(getId());
                 }
-                
-                @Override
-                public ResourceKey<E> getKey() {
-                    return RegistrySupplierImpl.super.getKey();
-                }
-                
+
                 @Override
                 public RegistrarManager getRegistrarManager() {
                     return RegistrarManager.get(modId);

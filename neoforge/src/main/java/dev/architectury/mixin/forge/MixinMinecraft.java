@@ -34,8 +34,7 @@ public abstract class MixinMinecraft {
         ClientLifecycleEvent.CLIENT_STARTED.invoker().stateChanged((Minecraft) (Object) this);
     }
     
-    // using {1} rather than Log4j directly for 1.18.2+ support
-    @Inject(at = @At(value = "INVOKE", target = "{1}(Ljava/lang/String;)V" /* Logger.info */, shift = At.Shift.AFTER, remap = false), method = "destroy")
+    @Inject(at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;info(Ljava/lang/String;)V", shift = At.Shift.AFTER, remap = false), method = "exitWorldAndClose")
     private void onStopping(CallbackInfo ci) {
         ClientLifecycleEvent.CLIENT_STOPPING.invoker().stateChanged((Minecraft) (Object) this);
     }

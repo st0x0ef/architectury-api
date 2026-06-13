@@ -17,6 +17,7 @@ architectury {
 
 configurations {
     common
+    forgeLike
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common
@@ -26,6 +27,6 @@ dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 
     implementation(project(path: ":neoforge")) { transitive false }
-    common(project(path: ":common")) { transitive false }
+    compileOnly(project(path: ":common")) { transitive false }
     common(project(path: ":testmod-common")) { transitive false }
 }

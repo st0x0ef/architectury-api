@@ -1,5 +1,3 @@
-import org.gradle.jvm.tasks.Jar
-
 apply plugin: "com.gradleup.shadow"
 apply plugin: "me.shedaniel.unified-publishing"
 

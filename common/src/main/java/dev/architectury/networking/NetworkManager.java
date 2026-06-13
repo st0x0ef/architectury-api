@@ -192,7 +192,7 @@ public final class NetworkManager {
      *
      * @param entity The entity which should be spawned.
      * @return The ready to use packet to spawn the entity on the client.
-     * @see Entity#getAddEntityPacket()
+     * @see Entity#getAddEntityPacket(ServerEntity) ()
      */
     @ExpectPlatform
     public static Packet<ClientGamePacketListener> createAddEntityPacket(Entity entity, ServerEntity serverEntity) {

@@ -23,7 +23,6 @@ import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import dev.architectury.impl.RegistrySupplierImpl;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarBuilder;
 import dev.architectury.registry.registries.RegistrarManager;
@@ -38,8 +37,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -167,13 +166,13 @@ public class RegistrarManagerImpl {
         public RegistrySupplier<T> delegate(Identifier id) {
             Supplier<T> value = Suppliers.memoize(() -> get(id));
             RegistrarImpl<T> registrar = this;
-            return new RegistrySupplierImpl<>() {
+            return new RegistrySupplier<>() {
                 @Nullable
                 Holder<T> holder = null;
                 
                 @Nullable
                 @Override
-                public Holder<T> getHolder() {
+                public Holder<T> asHolder() {
                     if (holder != null) return holder;
                     return holder = registrar.getHolder(getId());
                 }
@@ -222,7 +221,7 @@ public class RegistrarManagerImpl {
                 
                 @Override
                 public String toString() {
-                    return getRegistryId().toString() + "@" + id.toString();
+                    return getRegistryId() + "@" + id.toString();
                 }
             };
         }

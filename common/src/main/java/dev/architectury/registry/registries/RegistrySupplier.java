@@ -21,15 +21,19 @@ package dev.architectury.registry.registries;
 
 import net.minecraft.core.Holder;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
-public interface RegistrySupplier<T> extends DeferredSupplier<T>, Holder.Reference<T> {
+public interface RegistrySupplier<T> extends DeferredSupplier<T> {
     RegistrarManager getRegistrarManager();
-    
+
     Registrar<T> getRegistrar();
-    
+
+    @Nullable
+    Holder<T> asHolder();
+
     /**
      * Listens to when the registry entry is registered, and calls the given action.
      * Evaluates immediately if the entry is already registered.
