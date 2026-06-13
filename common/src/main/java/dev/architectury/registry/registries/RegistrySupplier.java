@@ -31,7 +31,6 @@ public interface RegistrySupplier<T> extends DeferredSupplier<T> {
 
     Registrar<T> getRegistrar();
 
-    @Nullable
     Holder<T> asHolder();
 
     /**

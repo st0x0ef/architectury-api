@@ -59,6 +59,6 @@ public class ClientNetworkManagerImpl {
     public static <T extends CustomPacketPayload> void sendToServer(T payload) {
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
         if (connection == null) return;
-        NetworkManager.collectPackets(PacketSink.client(), NetworkManager.clientToServer(), payload, connection.registryAccess());
+        NetworkManager.collectPackets(PacketSink.client(), NetworkManager.c2s(), payload, connection.registryAccess());
     }
 }

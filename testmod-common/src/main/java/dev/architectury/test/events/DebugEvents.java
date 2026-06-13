@@ -21,14 +21,19 @@ package dev.architectury.test.events;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
+import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
 import dev.architectury.test.TestMod;
+import dev.architectury.test.networking.SyncDataMessage;
 import dev.architectury.utils.Env;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.Position;
 import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -77,6 +82,21 @@ public class DebugEvents {
         });
         CommandRegistrationEvent.EVENT.register((dispatcher, registry, selection) -> {
             TestMod.SINK.accept("Server commands registers");
+            dispatcher.register(Commands.literal("archtest")
+                .then(Commands.literal("s2c")
+                    .executes(ctx -> {
+                        ServerPlayer player = ctx.getSource().getPlayerOrException();
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("source", "archtest s2c command");
+                        NetworkManager.sendToPlayer(player, new SyncDataMessage(tag));
+                        ctx.getSource().sendSuccess(
+                            () -> Component.literal("Sent SyncDataMessage to " + player.getName().getString()),
+                            false
+                        );
+                        return 1;
+                    })
+                )
+            );
         });
         EntityEvent.LIVING_DEATH.register((entity, source) -> {
             if (entity instanceof Player) {

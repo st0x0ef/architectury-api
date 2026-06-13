@@ -20,6 +20,8 @@
 package dev.architectury.test.networking;
 
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.test.registry.TestRegistries;
+import dev.architectury.utils.ArchitecturyConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -27,9 +29,10 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.effect.MobEffectInstance;
 
 public record SyncDataMessage(CompoundTag serverData) implements CustomPacketPayload {
-    public static final Type<SyncDataMessage> TYPE = new Type<>(Identifier.fromNamespaceAndPath("architectury", "sync_data"));
+    public static final Type<SyncDataMessage> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ArchitecturyConstants.MOD_ID, "sync_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncDataMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG,
             SyncDataMessage::serverData,
