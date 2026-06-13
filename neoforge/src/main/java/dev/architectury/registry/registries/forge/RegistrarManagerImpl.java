@@ -409,5 +409,10 @@ public class RegistrarManagerImpl {
                 RegistrarManagerImpl.listen(key(), id, callback);
             }
         }
+
+        @Override
+        public Registry<T> asVanillaRegistry() {
+            return delegate;
+        }
     }
 }

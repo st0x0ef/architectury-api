@@ -155,7 +155,7 @@ public class RegistrarManagerImpl {
     
     public static class RegistrarImpl<T> implements Registrar<T> {
         private final String modId;
-        private Registry<T> delegate;
+        private final Registry<T> delegate;
         
         public RegistrarImpl(String modId, Registry<T> delegate) {
             this.modId = modId;
@@ -300,6 +300,11 @@ public class RegistrarManagerImpl {
             } else {
                 RegistrarManagerImpl.listen(key(), id, callback);
             }
+        }
+
+        @Override
+        public Registry<T> asVanillaRegistry() {
+            return delegate;
         }
     }
 }

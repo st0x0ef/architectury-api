@@ -19,6 +19,7 @@
 
 package dev.architectury.registry.registries;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -104,4 +105,9 @@ public interface Registrar<T> extends Iterable<T> {
      * @param callback the action to call when the registry entry is registered
      */
     void listen(Identifier id, Consumer<T> callback);
+
+    /**
+     * Returns the underlying vanilla {@link Registry} backing this registrar.
+     */
+    Registry<T> asVanillaRegistry();
 }
