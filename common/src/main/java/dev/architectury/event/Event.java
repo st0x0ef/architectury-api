@@ -20,13 +20,39 @@
 package dev.architectury.event;
 
 public interface Event<T> {
+    /**
+     * Returns the combined invoker for all registered listeners. The returned object is a
+     * proxy whose methods delegate to every registered listener in registration order.
+     * The reference may change after each call to {@link #register} or {@link #unregister},
+     * so do not cache it across registrations.
+     */
     T invoker();
-    
+
+    /**
+     * Registers a listener. Duplicate registrations are allowed and will cause the listener
+     * to be invoked multiple times per event fire.
+     *
+     * @param listener the listener to add; must not be {@code null}
+     */
     void register(T listener);
-    
+
+    /**
+     * Removes the first occurrence of the given listener. Has no effect if the listener
+     * is not registered.
+     *
+     * @param listener the listener to remove
+     */
     void unregister(T listener);
-    
+
+    /**
+     * Returns {@code true} if the given listener is currently registered.
+     *
+     * @param listener the listener to check
+     */
     boolean isRegistered(T listener);
-    
+
+    /**
+     * Removes all registered listeners.
+     */
     void clearListeners();
 }
