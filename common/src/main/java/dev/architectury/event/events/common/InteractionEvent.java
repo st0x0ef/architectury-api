@@ -25,7 +25,6 @@ import dev.architectury.event.EventResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -35,15 +34,15 @@ public interface InteractionEvent {
     /**
      * @see LeftClickBlock#click(Player, InteractionHand, BlockPos, Direction)
      */
-    Event<LeftClickBlock> LEFT_CLICK_BLOCK = EventFactory.createInteractionResult();
+    Event<LeftClickBlock> LEFT_CLICK_BLOCK = EventFactory.createEventResult();
     /**
      * @see RightClickBlock#click(Player, InteractionHand, BlockPos, Direction)
      */
-    Event<RightClickBlock> RIGHT_CLICK_BLOCK = EventFactory.createInteractionResult();
+    Event<RightClickBlock> RIGHT_CLICK_BLOCK = EventFactory.createEventResult();
     /**
      * @see RightClickItem#click(Player, InteractionHand)
      */
-    Event<RightClickItem> RIGHT_CLICK_ITEM = EventFactory.createInteractionResult();
+    Event<RightClickItem> RIGHT_CLICK_ITEM = EventFactory.createEventResult();
     /**
      * @see ClientLeftClickAir#click(Player, InteractionHand)
      */
@@ -59,7 +58,7 @@ public interface InteractionEvent {
     /**
      * @see FarmlandTrample#trample(Level, BlockPos, BlockState, double, Entity)
      */
-    Event<FarmlandTrample> FARMLAND_TRAMPLE = EventFactory.createInteractionResult();
+    Event<FarmlandTrample> FARMLAND_TRAMPLE = EventFactory.createEventResult();
     
     interface RightClickBlock {
         /**
@@ -70,12 +69,12 @@ public interface InteractionEvent {
          * @param hand   The hand that is used.
          * @param pos    The position of the block in the level.
          * @param face   The face of the block clicked.
-         * @return A {@link InteractionResult} determining the outcome of the event,
+         * @return A {@link EventResult} determining the outcome of the event,
          * the action may be cancelled by the result.
          */
-        InteractionResult click(Player player, InteractionHand hand, BlockPos pos, Direction face);
+        EventResult click(Player player, InteractionHand hand, BlockPos pos, Direction face);
     }
-    
+
     interface LeftClickBlock {
         /**
          * Invoked whenever a player left clicks a block.
@@ -83,14 +82,14 @@ public interface InteractionEvent {
          *
          * @param player The player left clicking the block.
          * @param hand   The hand that is used.
-         * @param pos    The position of the block in the level. Use {@link Player#getCommandSenderWorld()} to get the level.
+         * @param pos    The position of the block in the level. Use {@link Player#level()} to get the level.
          * @param face   The face of the block clicked.
-         * @return A {@link InteractionResult} determining the outcome of the event,
+         * @return A {@link EventResult} determining the outcome of the event,
          * the action may be cancelled by the result.
          */
-        InteractionResult click(Player player, InteractionHand hand, BlockPos pos, Direction face);
+        EventResult click(Player player, InteractionHand hand, BlockPos pos, Direction face);
     }
-    
+
     interface RightClickItem {
         /**
          * Invoked whenever a player uses an item on a block.
@@ -98,10 +97,10 @@ public interface InteractionEvent {
          *
          * @param player The player right clicking the block.
          * @param hand   The hand that is used.
-         * @return A {@link InteractionResult} determining the outcome of the event,
+         * @return A {@link EventResult} determining the outcome of the event,
          * the action may be cancelled by the result.
          */
-        InteractionResult click(Player player, InteractionHand hand);
+        EventResult click(Player player, InteractionHand hand);
     }
     
     interface ClientRightClickAir {
@@ -152,9 +151,9 @@ public interface InteractionEvent {
          * @param state    The state of the block.
          * @param distance The distance of the player to the block.
          * @param entity   The entity trampling.
-         * @return A {@link InteractionResult} determining the outcome of the event,
+         * @return A {@link EventResult} determining the outcome of the event,
          * the action may be cancelled by the result.
          */
-        InteractionResult trample(Level world, BlockPos pos, BlockState state, double distance, Entity entity);
+        EventResult trample(Level world, BlockPos pos, BlockState state, double distance, Entity entity);
     }
 }

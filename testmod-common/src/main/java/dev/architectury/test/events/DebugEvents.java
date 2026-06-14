@@ -35,7 +35,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -53,7 +52,7 @@ public class DebugEvents {
     }
     
     public static void debugEvents() {
-        BlockEvent.BREAK.register((world, pos, state, player, xp) -> {
+        BlockEvent.BREAK.register((world, pos, state, player) -> {
             TestMod.SINK.accept(player.getScoreboardName() + " breaks " + toShortString(pos) + logSide(player.level()));
             return EventResult.pass();
         });
@@ -152,15 +151,15 @@ public class DebugEvents {
         });
         InteractionEvent.LEFT_CLICK_BLOCK.register((player, hand, pos, face) -> {
             TestMod.SINK.accept(player.getScoreboardName() + " left clicks " + toShortString(pos) + logSide(player.level()));
-            return InteractionResult.PASS;
+            return EventResult.pass();
         });
         InteractionEvent.RIGHT_CLICK_BLOCK.register((player, hand, pos, face) -> {
             TestMod.SINK.accept(player.getScoreboardName() + " right clicks " + toShortString(pos) + logSide(player.level()));
-            return InteractionResult.PASS;
+            return EventResult.pass();
         });
         InteractionEvent.RIGHT_CLICK_ITEM.register((player, hand) -> {
             TestMod.SINK.accept(player.getScoreboardName() + " uses " + (hand == InteractionHand.MAIN_HAND ? "main hand" : "off hand") + logSide(player.level()));
-            return InteractionResult.PASS;
+            return EventResult.pass();
         });
         InteractionEvent.INTERACT_ENTITY.register((player, entity, hand) -> {
             TestMod.SINK.accept(player.getScoreboardName() + " interacts with " + entity.getScoreboardName() + " using " + (hand == InteractionHand.MAIN_HAND ? "main hand" : "off hand") + logSide(player.level()));
@@ -168,10 +167,10 @@ public class DebugEvents {
         });
         InteractionEvent.FARMLAND_TRAMPLE.register((level, pos, state, distance, entity) -> {
             if (entity instanceof Player && ((Player) entity).getItemBySlot(EquipmentSlot.FEET).getItem() == Items.DIAMOND_BOOTS) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
             TestMod.SINK.accept("%s trampled farmland (%s) at %s in %s (Fall height: %f blocks)", entity, state, pos, level, distance);
-            return InteractionResult.PASS;
+            return EventResult.pass();
         });
         LifecycleEvent.SERVER_BEFORE_START.register(instance -> {
             TestMod.SINK.accept("Server ready to start");
@@ -238,7 +237,7 @@ public class DebugEvents {
         });
         PlayerEvent.FILL_BUCKET.register(((player, level, stack, target) -> {
             TestMod.SINK.accept("%s used a bucket (%s) in %s%s while looking at %s", player.getScoreboardName(), stack, level.dimension().identifier(), logSide(level), target == null ? "nothing" : target.getLocation());
-            return InteractionResult.PASS;
+            return EventResult.pass();
         }));
         LightningEvent.STRIKE.register((bolt, level, pos, toStrike) -> {
             TestMod.SINK.accept(bolt.getScoreboardName() + " struck at " + toShortString(pos) + logSide(level));

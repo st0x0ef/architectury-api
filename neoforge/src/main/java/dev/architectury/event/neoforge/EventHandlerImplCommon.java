@@ -29,8 +29,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -240,7 +243,7 @@ public class EventHandlerImplCommon {
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(FarmlandTrampleEvent event) {
-        if (event.getLevel() instanceof Level && InteractionEvent.FARMLAND_TRAMPLE.invoker().trample((Level) event.getLevel(), event.getPos(), event.getState(), event.getFallDistance(), event.getEntity()) != InteractionResult.PASS) {
+        if (event.getLevel() instanceof Level && InteractionEvent.FARMLAND_TRAMPLE.invoker().trample((Level) event.getLevel(), event.getPos(), event.getState(), event.getFallDistance(), event.getEntity()).interruptsFurtherEvaluation()) {
             event.setCanceled(true);
         }
     }
@@ -252,7 +255,14 @@ public class EventHandlerImplCommon {
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventLivingSpawnEvent(FinalizeSpawnEvent event) {
-        EventResult result = EntityEvent.LIVING_CHECK_SPAWN.invoker().canSpawn(event.getEntity(), event.getLevel(), event.getX(), event.getY(), event.getZ(), event.getSpawnType(), null);//TODO FIX: , event.getSpawner());
+        // NeoForge exposes the spawn source as Either<BlockEntity, Entity>; the common API's BaseSpawner
+        // param only models a classic mob spawner, so extract it when present (null otherwise, as before).
+        BaseSpawner spawner = null;
+        var spawnerSource = event.getSpawner();
+        if (spawnerSource != null && spawnerSource.left().orElse(null) instanceof SpawnerBlockEntity blockEntity) {
+            spawner = blockEntity.getSpawner();
+        }
+        EventResult result = EntityEvent.LIVING_CHECK_SPAWN.invoker().canSpawn(event.getEntity(), event.getLevel(), event.getX(), event.getY(), event.getZ(), event.getSpawnType(), spawner);
         if (result.interruptsFurtherEvaluation()) {
             if (!result.isEmpty()) {
                 event.setSpawnCancelled(result.value());
@@ -310,19 +320,19 @@ public class EventHandlerImplCommon {
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventPlayerInteractEvent(PlayerInteractEvent.RightClickItem event) {
-        InteractionResult result = InteractionEvent.RIGHT_CLICK_ITEM.invoker().click(event.getEntity(), event.getHand());
-        if (result != InteractionResult.PASS) {
+        EventResult result = InteractionEvent.RIGHT_CLICK_ITEM.invoker().click(event.getEntity(), event.getHand());
+        if (result.interruptsFurtherEvaluation()) {
             event.setCanceled(true);
-            event.setCancellationResult(result);
+            event.setCancellationResult(result.asMinecraft());
         }
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventPlayerInteractEvent(PlayerInteractEvent.RightClickBlock event) {
-        InteractionResult result = InteractionEvent.RIGHT_CLICK_BLOCK.invoker().click(event.getEntity(), event.getHand(), event.getPos(), event.getFace());
-        if (result != InteractionResult.PASS) {
+        EventResult result = InteractionEvent.RIGHT_CLICK_BLOCK.invoker().click(event.getEntity(), event.getHand(), event.getPos(), event.getFace());
+        if (result.interruptsFurtherEvaluation()) {
             event.setCanceled(true);
-            event.setCancellationResult(result);
+            event.setCancellationResult(result.asMinecraft());
             event.setUseBlock(TriState.FALSE);
             event.setUseItem(TriState.FALSE);
         }
@@ -340,18 +350,19 @@ public class EventHandlerImplCommon {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventPlayerInteractEvent(PlayerInteractEvent.LeftClickBlock event) {
         if (event.getAction() != PlayerInteractEvent.LeftClickBlock.Action.START) return;
-        InteractionResult result = InteractionEvent.LEFT_CLICK_BLOCK.invoker().click(event.getEntity(), event.getHand(), event.getPos(), event.getFace());
-        if (result != InteractionResult.PASS) {
+        EventResult result = InteractionEvent.LEFT_CLICK_BLOCK.invoker().click(event.getEntity(), event.getHand(), event.getPos(), event.getFace());
+        if (result.interruptsFurtherEvaluation()) {
             event.setCanceled(true);
-            event.setUseBlock(result.consumesAction() ? TriState.TRUE : TriState.FALSE);
-            event.setUseItem(result.consumesAction() ? TriState.TRUE : TriState.FALSE);
+            InteractionResult mcResult = result.asMinecraft();
+            event.setUseBlock(mcResult.consumesAction() ? TriState.TRUE : TriState.FALSE);
+            event.setUseItem(mcResult.consumesAction() ? TriState.TRUE : TriState.FALSE);
         }
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(BreakBlockEvent event) {
         if (event.getPlayer() instanceof ServerPlayer && event.getLevel() instanceof Level) {
-            EventResult result = BlockEvent.BREAK.invoker().breakBlock((Level) event.getLevel(), event.getPos(), event.getState(), (ServerPlayer) event.getPlayer(), null);
+            EventResult result = BlockEvent.BREAK.invoker().breakBlock((Level) event.getLevel(), event.getPos(), event.getState(), (ServerPlayer) event.getPlayer());
             if (result.isFalse()) {
                 event.setCanceled(true);
             }
@@ -403,7 +414,7 @@ public class EventHandlerImplCommon {
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(AttackEntityEvent event) {
-        EventResult result = PlayerEvent.ATTACK_ENTITY.invoker().attack(event.getEntity(), event.getEntity().level(), event.getTarget(), event.getEntity().getUsedItemHand(), null);
+        EventResult result = PlayerEvent.ATTACK_ENTITY.invoker().attack(event.getEntity(), event.getEntity().level(), event.getTarget(), event.getEntity().getUsedItemHand(), new EntityHitResult(event.getTarget()));
         if (result.isFalse()) {
             event.setCanceled(true);
         }

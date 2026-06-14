@@ -27,7 +27,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -94,7 +93,7 @@ public interface PlayerEvent {
     /**
      * @see FillBucket#fill(Player, Level, ItemStack, HitResult)
      */
-    Event<FillBucket> FILL_BUCKET = EventFactory.createInteractionResult();
+    Event<FillBucket> FILL_BUCKET = EventFactory.createEventResult();
     /**
      * @see AttackEntity#attack(Player, Level, Entity, InteractionHand, EntityHitResult)
      */
@@ -265,9 +264,9 @@ public interface PlayerEvent {
          * @param level  The level the player is in.
          * @param stack  The bucket stack.
          * @param target The target which the player has aimed at.
-         * @return A {@link InteractionResult} determining the outcome of the event.
+         * @return A {@link EventResult} determining the outcome of the event.
          */
-        InteractionResult fill(Player player, Level level, ItemStack stack, @Nullable HitResult target);
+        EventResult fill(Player player, Level level, ItemStack stack, @Nullable HitResult target);
     }
     
     interface AttackEntity {
@@ -279,7 +278,8 @@ public interface PlayerEvent {
          * @param level  The level the player is in.
          * @param target The entity about to be attacked.
          * @param hand   The hand the player is using.
-         * @param result The entity hit result.
+         * @param result The entity hit result. On Fabric this is the ray-trace result of the attack (and
+         *               may be {@code null}); on NeoForge it wraps the target entity without a precise hit location.
          * @return An {@link EventResult} determining the outcome of the event,
          * the attack may be cancelled by the result.
          */
