@@ -103,7 +103,7 @@ public interface PlayerEvent {
     interface PlayerJoin {
         /**
          * Invoked after a player joined a server level.
-         * Equivalent to Forge's {@code PlayerLoggedInEvent} event.
+         * Equivalent to NeoForge's {@code PlayerLoggedInEvent} event.
          *
          * @param player The joined player.
          */
@@ -113,7 +113,7 @@ public interface PlayerEvent {
     interface PlayerQuit {
         /**
          * Invoked after a player logged out of a server level.
-         * Equivalent to Forge's {@code PlayerLoggedOutEvent} event.
+         * Equivalent to NeoForge's {@code PlayerLoggedOutEvent} event.
          *
          * @param player The now logged out player.
          */
@@ -123,7 +123,7 @@ public interface PlayerEvent {
     interface PlayerRespawn {
         /**
          * Invoked when a player is respawned (e.g. changing dimension).
-         * Equivalent to Forge's {@code PlayerRespawnEvent} event.
+         * Equivalent to NeoForge's {@code PlayerRespawnEvent} event.
          * To manipulate the player use {@link PlayerClone#clone(ServerPlayer, ServerPlayer, boolean)}.
          *
          * @param newPlayer    The respawned player.
@@ -136,7 +136,7 @@ public interface PlayerEvent {
         /**
          * Invoked when a player respawns.
          * This can be used to manipulate the new player.
-         * Equivalent to Forge's {@code PlayerEvent.Clone} event.
+         * Equivalent to NeoForge's {@code PlayerEvent.Clone} event.
          *
          * @param oldPlayer The old player.
          * @param newPlayer The new player.
@@ -148,7 +148,7 @@ public interface PlayerEvent {
     interface PlayerAdvancement {
         /**
          * Invoked when a player gets an advancement.
-         * Equivalent to Forge's {@code AdvancementEvent} event.
+         * Equivalent to NeoForge's {@code AdvancementEvent} event.
          *
          * @param player      The player who got the advancement.
          * @param advancement The advancement the player got.
@@ -159,7 +159,7 @@ public interface PlayerEvent {
     interface CraftItem {
         /**
          * Invoked when a player crafts an item.
-         * Equivalent to Forge's {@code ItemCraftedEvent} event.
+         * Equivalent to NeoForge's {@code ItemCraftedEvent} event.
          * This only applies for the vanilla crafting table (or any crafting table using the {@link net.minecraft.world.inventory.ResultSlot}) and
          * the player inventory crafting grid.
          * This is invoked when the player takes something out of the result slot.
@@ -174,7 +174,7 @@ public interface PlayerEvent {
     interface SmeltItem {
         /**
          * Invoked when a player smelts an item.
-         * Equivalent to Forge's {@code ItemSmeltedEvent} event.
+         * Equivalent to NeoForge's {@code ItemSmeltedEvent} event.
          * This is invoked when the player takes the stack out of the output slot.
          *
          * @param player  The player.
@@ -186,7 +186,7 @@ public interface PlayerEvent {
     interface PickupItemPredicate {
         /**
          * Invoked when a player tries to pickup an {@link ItemEntity}.
-         * Equivalent to Forge's {@code EntityItemPickupEvent} event.
+         * Equivalent to NeoForge's {@code EntityItemPickupEvent} event.
          *
          * @param player The player picking up.
          * @param entity The {@link ItemEntity} that the player tries to pick up.
@@ -200,7 +200,7 @@ public interface PlayerEvent {
     interface PickupItem {
         /**
          * Invoked when a player has picked up an {@link ItemEntity}.
-         * Equivalent to Forge's {@code ItemPickupEvent} event.
+         * Equivalent to NeoForge's {@code ItemPickupEvent} event.
          *
          * @param player The player.
          * @param entity The {@link ItemEntity} that the player picked up.
@@ -212,7 +212,7 @@ public interface PlayerEvent {
     interface ChangeDimension {
         /**
          * Invoked when a player changes their dimension.
-         * Equivalent to Forge's {@code PlayerChangedDimensionEvent} event.
+         * Equivalent to NeoForge's {@code PlayerChangedDimensionEvent} event.
          *
          * @param player   The teleporting player.
          * @param oldLevel The level the player comes from.
@@ -224,7 +224,7 @@ public interface PlayerEvent {
     interface DropItem {
         /**
          * Invoked when a player drops an item.
-         * Equivalent to Forge's {@code ItemTossEvent} event.
+         * Equivalent to NeoForge's {@code ItemTossEvent} event.
          *
          * @param player The player dropping something.
          * @param entity The entity that has spawned when the player dropped a ItemStack.
@@ -237,7 +237,7 @@ public interface PlayerEvent {
     interface OpenMenu {
         /**
          * Invoked when a player opens a menu.
-         * Equivalent to Forge's {@code PlayerContainerEvent.Open} event.
+         * Equivalent to NeoForge's {@code PlayerContainerEvent.Open} event.
          *
          * @param player The player opening the menu.
          * @param menu   The menu that is opened.
@@ -248,7 +248,7 @@ public interface PlayerEvent {
     interface CloseMenu {
         /**
          * Invoked when a player closes a menu.
-         * Equivalent to Forge's {@code PlayerContainerEvent.Close} event.
+         * Equivalent to NeoForge's {@code PlayerContainerEvent.Close} event.
          *
          * @param player The player closing the menu.
          * @param menu   The menu that is closed.
@@ -273,7 +273,7 @@ public interface PlayerEvent {
     interface AttackEntity {
         /**
          * Invoked when a player is about to attack an entity using left-click.
-         * Equivalent to Forge's {@code AttackEntityEvent} and Fabric API's {@code AttackEntityCallback} events.
+         * Equivalent to NeoForge's {@code AttackEntityEvent} and Fabric API's {@code AttackEntityCallback} events.
          *
          * @param player The player attacking the entity.
          * @param level  The level the player is in.

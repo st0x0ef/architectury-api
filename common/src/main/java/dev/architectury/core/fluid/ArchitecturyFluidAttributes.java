@@ -358,7 +358,7 @@ public interface ArchitecturyFluidAttributes {
     }
     
     /**
-     * Returns the density of the fluid, this is 1000 for water and 3000 for lava on forge.
+     * Returns the density of the fluid, this is 1000 for water and 3000 for lava on NeoForge.
      *
      * @param stack the fluid stack, can be {@code null}
      * @param level the level, can be {@code null}
@@ -368,7 +368,7 @@ public interface ArchitecturyFluidAttributes {
     int getDensity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos);
     
     /**
-     * Returns the density of the fluid, this is 1000 for water and 3000 for lava on forge.
+     * Returns the density of the fluid, this is 1000 for water and 3000 for lava on NeoForge.
      *
      * @param stack the fluid stack, can be {@code null}
      * @return the density
@@ -378,7 +378,7 @@ public interface ArchitecturyFluidAttributes {
     }
     
     /**
-     * Returns the density of the fluid, this is 1000 for water and 3000 for lava on forge.
+     * Returns the density of the fluid, this is 1000 for water and 3000 for lava on NeoForge.
      *
      * @return the density
      */

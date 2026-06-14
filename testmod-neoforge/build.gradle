@@ -2,7 +2,7 @@ loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
 
     mods {
-        forge {
+        neoforge {
             sourceSet project(":neoforge").sourceSets.main
         }
     }
@@ -10,9 +10,7 @@ loom {
 
 architectury {
     platformSetupLoomIde()
-    neoForge {
-        platformPackage = "forge"
-    }
+    neoForge()
 }
 
 configurations {

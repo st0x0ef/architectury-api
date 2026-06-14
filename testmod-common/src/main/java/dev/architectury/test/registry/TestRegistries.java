@@ -131,8 +131,8 @@ public class TestRegistries {
     
     public static final RegistrySupplier<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> {
         try {
-            // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (Item) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.item.ArchitecturyBucketItem" : "dev.architectury.core.item.forge.imitator.ArchitecturyBucketItem")
+            // In example mod the neoforge class isn't being replaced, this is not required in mods depending on architectury
+            return (Item) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.item.ArchitecturyBucketItem" : "dev.architectury.core.item.neoforge.imitator.ArchitecturyBucketItem")
                     .getDeclaredConstructor(Supplier.class, Item.Properties.class)
                     .newInstance(TestRegistries.TEST_FLUID, new Item.Properties().arch$tab(TestRegistries.TEST_TAB).setId(id(Registries.ITEM, "test_fluid_bucket")));
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
@@ -157,8 +157,8 @@ public class TestRegistries {
     
     public static final RegistrySupplier<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid", () -> {
         try {
-            // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (LiquidBlock) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.block.ArchitecturyLiquidBlock" : "dev.architectury.core.block.forge.imitator.ArchitecturyLiquidBlock")
+            // In example mod the neoforge class isn't being replaced, this is not required in mods depending on architectury
+            return (LiquidBlock) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.block.ArchitecturyLiquidBlock" : "dev.architectury.core.block.neoforge.imitator.ArchitecturyLiquidBlock")
                     .getDeclaredConstructor(Supplier.class, BlockBehaviour.Properties.class)
                     .newInstance(TestRegistries.TEST_FLUID, BlockBehaviour.Properties.ofFullCopy(Blocks.WATER).replaceable().noCollision().strength(100.0F).pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY).setId(id(Registries.BLOCK, "test_fluid")));
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
@@ -169,8 +169,8 @@ public class TestRegistries {
     
     public static final RegistrySupplier<Fluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> {
         try {
-            // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (FlowingFluid) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Source" : "dev.architectury.core.fluid.forge.imitator.ArchitecturyFlowingFluid$Source")
+            // In example mod the neoforge class isn't being replaced, this is not required in mods depending on architectury
+            return (FlowingFluid) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Source" : "dev.architectury.core.fluid.neoforge.imitator.ArchitecturyFlowingFluid$Source")
                     .getDeclaredConstructor(ArchitecturyFluidAttributes.class)
                     .newInstance(TestRegistries.TEST_FLUID_ATTRIBUTES);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
@@ -181,8 +181,8 @@ public class TestRegistries {
     
     public static final RegistrySupplier<Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> {
         try {
-            // In example mod the forge class isn't being replaced, this is not required in mods depending on architectury
-            return (FlowingFluid) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Flowing" : "dev.architectury.core.fluid.forge.imitator.ArchitecturyFlowingFluid$Flowing")
+            // In example mod the neoforge class isn't being replaced, this is not required in mods depending on architectury
+            return (FlowingFluid) Class.forName(!Platform.isNeoForge() ? "dev.architectury.core.fluid.ArchitecturyFlowingFluid$Flowing" : "dev.architectury.core.fluid.neoforge.imitator.ArchitecturyFlowingFluid$Flowing")
                     .getDeclaredConstructor(ArchitecturyFluidAttributes.class)
                     .newInstance(TestRegistries.TEST_FLUID_ATTRIBUTES);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |

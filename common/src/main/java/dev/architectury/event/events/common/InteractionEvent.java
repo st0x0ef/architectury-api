@@ -64,7 +64,7 @@ public interface InteractionEvent {
     interface RightClickBlock {
         /**
          * Invoked whenever a player right clicks a block.
-         * Equivalent to Forge's {@code PlayerInteractEvent.RightClickBlock} event and Fabric's {@code UseBlockCallback}.
+         * Equivalent to NeoForge's {@code PlayerInteractEvent.RightClickBlock} event and Fabric's {@code UseBlockCallback}.
          *
          * @param player The player right clicking the block.
          * @param hand   The hand that is used.
@@ -79,7 +79,7 @@ public interface InteractionEvent {
     interface LeftClickBlock {
         /**
          * Invoked whenever a player left clicks a block.
-         * Equivalent to Forge's {@code PlayerInteractEvent.LeftClickBlock} event and Fabric's {@code AttackBlockCallback}.
+         * Equivalent to NeoForge's {@code PlayerInteractEvent.LeftClickBlock} event and Fabric's {@code AttackBlockCallback}.
          *
          * @param player The player left clicking the block.
          * @param hand   The hand that is used.
@@ -94,7 +94,7 @@ public interface InteractionEvent {
     interface RightClickItem {
         /**
          * Invoked whenever a player uses an item on a block.
-         * Equivalent to Forge's {@code PlayerInteractEvent.RightClickItem} event and Fabric's {@code UseItemCallback}.
+         * Equivalent to NeoForge's {@code PlayerInteractEvent.RightClickItem} event and Fabric's {@code UseItemCallback}.
          *
          * @param player The player right clicking the block.
          * @param hand   The hand that is used.
@@ -108,7 +108,7 @@ public interface InteractionEvent {
         /**
          * Invoked whenever a player right clicks the air.
          * This only occurs on the client.
-         * Equivalent to Forge's {@code PlayerInteractEvent.RightClickEmpty} event.
+         * Equivalent to NeoForge's {@code PlayerInteractEvent.RightClickEmpty} event.
          *
          * @param player The player. Always {@link net.minecraft.client.player.LocalPlayer}
          * @param hand   The hand used.
@@ -120,7 +120,7 @@ public interface InteractionEvent {
         /**
          * Invoked whenever a player left clicks the air.
          * This only occurs on the client.
-         * Equivalent to Forge's {@code PlayerInteractEvent.LeftClickEmpty} event.
+         * Equivalent to NeoForge's {@code PlayerInteractEvent.LeftClickEmpty} event.
          *
          * @param player The player. Always {@link net.minecraft.client.player.LocalPlayer}
          * @param hand   The hand used.
@@ -131,7 +131,7 @@ public interface InteractionEvent {
     interface InteractEntity {
         /**
          * Invoked whenever a player right clicks an entity.
-         * Equivalent to Forge's {@code PlayerInteractEvent.EntityInteract} event.
+         * Equivalent to NeoForge's {@code PlayerInteractEvent.EntityInteract} event.
          *
          * @param player The player clicking the entity.
          * @param entity Then entity the player clicks.
@@ -145,7 +145,7 @@ public interface InteractionEvent {
     interface FarmlandTrample {
         /**
          * Invoked when an entity attempts to trample farmland.
-         * Equivalent to Forge's {@code BlockEvent.FarmlandTrampleEvent} event.
+         * Equivalent to NeoForge's {@code BlockEvent.FarmlandTrampleEvent} event.
          *
          * @param world    The level where the block and the player are located in.
          * @param pos      The position of the block.

@@ -82,8 +82,8 @@ public interface Registrar<T> extends Iterable<T> {
      * Evaluates immediately if the entry is already registered.
      * <p>
      * Whenever the callback is called is dependent on the registry implementation.
-     * On fabric, this will be called when the registry entry is registered.
-     * On forge, this will be called when the registry entry is registered or when Minecraft has started.
+     * On Fabric, this will be called when the registry entry is registered.
+     * On NeoForge, this will be called when the registry entry is registered or when Minecraft has started.
      *
      * @param supplier the entry to listen to
      * @param callback the action to call when the registry entry is registered
@@ -97,8 +97,8 @@ public interface Registrar<T> extends Iterable<T> {
      * Evaluates immediately if the entry is already registered.
      * <p>
      * Whenever the callback is called is dependent on the registry implementation.
-     * On fabric, this will be called when the registry entry is registered.
-     * On forge, this will be called when the registry entry is registered or when Minecraft has started.
+     * On Fabric, this will be called when the registry entry is registered.
+     * On NeoForge, this will be called when the registry entry is registered or when Minecraft has started.
      *
      * @param id       the entry to listen to
      * @param callback the action to call when the registry entry is registered
