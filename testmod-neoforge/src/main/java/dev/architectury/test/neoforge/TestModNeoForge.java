@@ -23,8 +23,8 @@ import dev.architectury.test.TestMod;
 import net.neoforged.fml.common.Mod;
 
 @Mod(TestMod.MOD_ID)
-public class TestModForge {
-    public TestModForge() {
+public class TestModNeoForge {
+    public TestModNeoForge() {
         TestMod.initialize();
     }
 }
