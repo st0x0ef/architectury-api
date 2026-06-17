@@ -22,7 +22,6 @@ package dev.architectury.core.fluid;
 import com.google.common.base.Suppliers;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
