@@ -94,24 +94,24 @@ public class ClientFluidStackHooksImpl {
     }
     
     @Nullable
-    private static Identifier sourceTexture(Fluid fluid, @Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    private static Identifier sourceTexture(Fluid fluid, @Nullable FluidState state, @Nullable BlockAndTintGetter getter, @Nullable BlockPos pos) {
         if (fluid.getFluidType() instanceof ArchitecturyFluidAttributesForge archType) {
-            return state != null ? archType.getAttributes().getSourceTexture(state, level, pos) : archType.getAttributes().getSourceTexture();
+            return state != null ? archType.getAttributes().getSourceTexture(state, getter, pos) : archType.getAttributes().getSourceTexture();
         }
         return null;
     }
     
     @Nullable
-    private static Identifier flowingTexture(Fluid fluid, @Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos) {
+    private static Identifier flowingTexture(Fluid fluid, @Nullable FluidState state, @Nullable BlockAndTintGetter getter, @Nullable BlockPos pos) {
         if (fluid.getFluidType() instanceof ArchitecturyFluidAttributesForge archType) {
-            return state != null ? archType.getAttributes().getFlowingTexture(state, level, pos) : archType.getAttributes().getFlowingTexture();
+            return state != null ? archType.getAttributes().getFlowingTexture(state, getter, pos) : archType.getAttributes().getFlowingTexture();
         }
         return null;
     }
     
-    private static int color(Fluid fluid, @Nullable FluidState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, @Nullable FluidStack stack) {
+    private static int color(Fluid fluid, @Nullable FluidState state, @Nullable BlockAndTintGetter getter, @Nullable BlockPos pos, @Nullable FluidStack stack) {
         if (fluid.getFluidType() instanceof ArchitecturyFluidAttributesForge archType) {
-            return state != null ? archType.getAttributes().getColor(state, level, pos) : archType.getAttributes().getColor();
+            return state != null ? archType.getAttributes().getColor(state, getter, pos) : archType.getAttributes().getColor();
         }
         
         FluidState fluidState = state != null ? state : fluid.defaultFluidState();
@@ -122,8 +122,8 @@ public class ClientFluidStackHooksImpl {
         
         if (stack != null) {
             return tint.colorAsStack(FluidStackHooksForge.toForge(stack));
-        } else if (level != null && pos != null) {
-            return tint.colorInWorld(fluidState, fluidState.createLegacyBlock(), level, pos);
+        } else if (getter != null && pos != null) {
+            return tint.colorInWorld(fluidState, fluidState.createLegacyBlock(), getter, pos);
         } else {
             return tint.color(fluidState);
         }

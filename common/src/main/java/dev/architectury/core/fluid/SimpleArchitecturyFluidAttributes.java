@@ -30,6 +30,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.BlockAndLightGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
@@ -248,7 +249,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getFillSound(FluidStack, BlockAndLightGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getFillSound(FluidStack, BlockGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes fillSound(SoundEvent fillSound) {
         this.fillSound = fillSound;
@@ -256,7 +257,7 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     /**
-     * @see ArchitecturyFluidAttributes#getEmptySound(FluidStack, BlockAndLightGetter, BlockPos)
+     * @see ArchitecturyFluidAttributes#getEmptySound(FluidStack, BlockGetter, BlockPos)
      */
     public SimpleArchitecturyFluidAttributes emptySound(SoundEvent emptySound) {
         this.emptySound = emptySound;
@@ -317,64 +318,64 @@ public class SimpleArchitecturyFluidAttributes implements ArchitecturyFluidAttri
     }
     
     @Override
-    public Identifier getSourceTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public Identifier getSourceTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return sourceTexture;
     }
     
     @Override
-    public Identifier getFlowingTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public Identifier getFlowingTexture(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return flowingTexture;
     }
     
     @Override
-    public Identifier getOverlayTexture(@Nullable FluidState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public Identifier getOverlayTexture(@Nullable FluidState state, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return overlayTexture;
     }
     
     @Override
-    public int getColor(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public int getColor(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return color;
     }
     
     @Override
-    public int getLuminosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public int getLuminosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return luminosity;
     }
     
     @Override
-    public int getDensity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public int getDensity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return density;
     }
     
     @Override
-    public int getTemperature(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public int getTemperature(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return temperature;
     }
     
     @Override
-    public int getViscosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public int getViscosity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return viscosity;
     }
     
     @Override
-    public boolean isLighterThanAir(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public boolean isLighterThanAir(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return lighterThanAir;
     }
     
     @Override
-    public Rarity getRarity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public Rarity getRarity(@Nullable FluidStack stack, @Nullable BlockAndLightGetter getter, @Nullable BlockPos pos) {
         return rarity;
     }
     
     @Override
     @Nullable
-    public SoundEvent getFillSound(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public SoundEvent getFillSound(@Nullable FluidStack stack, @Nullable BlockGetter getter, @Nullable BlockPos pos) {
         return fillSound;
     }
     
     @Override
     @Nullable
-    public SoundEvent getEmptySound(@Nullable FluidStack stack, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos) {
+    public SoundEvent getEmptySound(@Nullable FluidStack stack, @Nullable BlockGetter getter, @Nullable BlockPos pos) {
         return emptySound;
     }
 }

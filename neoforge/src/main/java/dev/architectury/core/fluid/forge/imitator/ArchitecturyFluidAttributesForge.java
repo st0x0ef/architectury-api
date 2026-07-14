@@ -22,7 +22,6 @@ package dev.architectury.core.fluid.forge.imitator;
 import com.google.common.base.MoreObjects;
 import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -32,8 +31,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.BlockAndLightGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -77,11 +76,8 @@ public class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getLightLevel(FluidState state, BlockAndLightGetter level, BlockPos pos) {
-        if (level instanceof BlockAndTintGetter getter) {
-            return attributes.getLuminosity(convertSafe(state), getter, pos);
-        }
-        return super.getLightLevel(state, level, pos);
+    public int getLightLevel(FluidState state, BlockAndLightGetter getter, BlockPos pos) {
+        return attributes.getLuminosity(convertSafe(state), getter, pos);
     }
     
     @Override
@@ -90,11 +86,8 @@ public class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getDensity(FluidState state, BlockAndLightGetter level, BlockPos pos) {
-        if (level instanceof BlockAndTintGetter getter) {
-            return attributes.getDensity(convertSafe(state), getter, pos);
-        }
-        return super.getDensity(state, level, pos);
+    public int getDensity(FluidState state, BlockAndLightGetter getter, BlockPos pos) {
+        return attributes.getDensity(convertSafe(state), getter, pos);
     }
     
     @Override
@@ -103,11 +96,8 @@ public class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getTemperature(FluidState state, BlockAndLightGetter level, BlockPos pos) {
-        if (level instanceof BlockAndTintGetter getter) {
-            return attributes.getTemperature(convertSafe(state), getter, pos);
-        }
-        return super.getTemperature(state, level, pos);
+    public int getTemperature(FluidState state, BlockAndLightGetter getter, BlockPos pos) {
+        return attributes.getTemperature(convertSafe(state), getter, pos);
     }
     
     @Override
@@ -116,11 +106,8 @@ public class ArchitecturyFluidAttributesForge extends FluidType {
     }
     
     @Override
-    public int getViscosity(FluidState state, BlockAndLightGetter level, BlockPos pos) {
-        if (level instanceof BlockAndTintGetter getter) {
-            return attributes.getViscosity(convertSafe(state), getter, pos);
-        }
-        return super.getViscosity(state, level, pos);
+    public int getViscosity(FluidState state, BlockAndLightGetter getter, BlockPos pos) {
+        return attributes.getViscosity(convertSafe(state), getter, pos);
     }
     
     @Override
@@ -174,14 +161,13 @@ public class ArchitecturyFluidAttributesForge extends FluidType {
     @Override
     @Nullable
     public SoundEvent getSound(@Nullable LivingEntity entity, BlockGetter getter, BlockPos pos, SoundAction action) {
-        if (getter instanceof BlockAndTintGetter level) {
-            if (SoundActions.BUCKET_FILL.equals(action)) {
-                return attributes.getFillSound(null, level, pos);
-            } else if (SoundActions.BUCKET_EMPTY.equals(action)) {
-                return attributes.getEmptySound(null, level, pos);
-            }
+        if (SoundActions.BUCKET_FILL.equals(action)) {
+            return attributes.getFillSound(null, getter, pos);
+        } else if (SoundActions.BUCKET_EMPTY.equals(action)) {
+            return attributes.getEmptySound(null, getter, pos);
         }
-        return getSound((FluidStack) null, action);
+        
+        return null;
     }
     
     @Override
