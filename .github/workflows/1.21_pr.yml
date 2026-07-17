@@ -12,7 +12,7 @@ on:
 jobs:
   validate-gradle:
     name: "Validate Gradle wrapper"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -21,7 +21,7 @@ jobs:
       - uses: gradle/wrapper-validation-action@v1
   license:
     name: "Verify License integrity"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
 
@@ -38,7 +38,7 @@ jobs:
 
   build:
     name: "Build"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     if: |
       !contains(github.event.pull_request.title, '[ci skip]')
     steps:
