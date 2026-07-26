@@ -79,12 +79,7 @@ sourcesJar {
     }
 }
 
-components.java {
-    addVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {}
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
-}
+shadow.addShadowVariantIntoJavaComponent = false
 
 publishing {
     publications {
