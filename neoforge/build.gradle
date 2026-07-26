@@ -69,17 +69,6 @@ shadowJar {
 
 assemble.dependsOn shadowJar
 
-configurations {
-    apiElements {
-        outgoing.artifacts.clear()
-        outgoing.artifact(shadowJar)
-    }
-    runtimeElements {
-        outgoing.artifacts.clear()
-        outgoing.artifact(shadowJar)
-    }
-}
-
 sourcesJar {
     afterEvaluate {
         def depSources = project(":common").sourcesJar
@@ -102,6 +91,7 @@ publishing {
         mavenNeoForge(MavenPublication) {
             artifactId = rootProject.archivesBaseName + "-neoforge"
             from components.java
+            artifact(shadowJar)
         }
     }
 

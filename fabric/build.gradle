@@ -61,17 +61,6 @@ shadowJar {
 
 assemble.dependsOn shadowJar
 
-configurations {
-    apiElements {
-        outgoing.artifacts.clear()
-        outgoing.artifact(shadowJar)
-    }
-    runtimeElements {
-        outgoing.artifacts.clear()
-        outgoing.artifact(shadowJar)
-    }
-}
-
 sourcesJar {
     afterEvaluate {
         def depSources = project(":common").sourcesJar
@@ -94,6 +83,7 @@ publishing {
         mavenFabric(MavenPublication) {
             artifactId = rootProject.archivesBaseName + "-fabric"
             from components.java
+            artifact(shadowJar)
         }
     }
 
