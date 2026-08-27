@@ -20,6 +20,7 @@
 package dev.architectury.event.forge;
 
 import com.mojang.datafixers.util.Either;
+import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -30,6 +31,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
 import net.minecraft.world.level.BaseSpawner;
@@ -37,24 +39,32 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.*;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.*;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.FarmlandTrampleEvent;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent.Detonate;
 import net.neoforged.neoforge.event.level.ExplosionEvent.Start;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -244,6 +254,87 @@ public class EventHandlerImplCommon {
             event.setCanceled(true);
         }
     }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(EntityLeaveLevelEvent event) {
+        EntityEvent.REMOVE.invoker().remove(event.getEntity(), event.getLevel());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(LivingEquipmentChangeEvent event) {
+        EntityEvent.EQUIPMENT_CHANGE.invoker().change(event.getEntity(), event.getSlot(), event.getFrom(), event.getTo());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(StartTracking event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            EntityEvent.START_TRACKING.invoker().startTracking(event.getTarget(), player);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(StopTracking event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            EntityEvent.STOP_TRACKING.invoker().stopTracking(event.getTarget(), player);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(LivingDamageEvent.Post event) {
+        EntityEvent.LIVING_DAMAGE_POST.invoker().damage(event.getEntity(), event.getSource(),
+                event.getOriginalDamage(), event.getHealthDamage(), event.getBlockedDamage() > 0.0F);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(MobEffectEvent.Applicable event) {
+        EventResult result = dev.architectury.event.events.common.MobEffectEvent.ALLOW_ADD.invoker()
+                .allowAdd(event.getEntity(), event.getEffectInstance());
+        if (result.isFalse()) {
+            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(MobEffectEvent.Added event) {
+        dev.architectury.event.events.common.MobEffectEvent.AFTER_ADD.invoker()
+                .afterAdd(event.getEntity(), event.getEffectInstance());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(MobEffectEvent.Remove event) {
+        MobEffectInstance effect = event.getEffectInstance();
+        if (effect == null) return;
+        EventResult result = dev.architectury.event.events.common.MobEffectEvent.ALLOW_REMOVE.invoker()
+                .allowRemove(event.getEntity(), effect);
+        if (result.isFalse()) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(ChunkEvent.Load event) {
+        if (event.getLevel() instanceof Level level) {
+            dev.architectury.event.events.common.ChunkEvent.LOAD.invoker().load(event.getChunk(), level, event.isNewChunk());
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(ChunkEvent.Unload event) {
+        if (event.getLevel() instanceof Level level) {
+            dev.architectury.event.events.common.ChunkEvent.UNLOAD.invoker().unload(event.getChunk(), level);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(TagsUpdatedEvent event) {
+        LifecycleEvent.TAGS_UPDATED.invoker().tagsUpdated(event.getRegistries(), event instanceof TagsUpdatedEvent.ClientPacketReceived);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(OnDatapackSyncEvent event) {
+        boolean joined = event.getPlayer() != null;
+        event.getRelevantPlayers().forEach(player -> LifecycleEvent.DATAPACK_SYNC.invoker().sync(player, joined));
+    }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(FarmlandTrampleEvent event) {
@@ -401,7 +492,7 @@ public class EventHandlerImplCommon {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventChunkDataEvent(ChunkDataEvent.Save event) {
         if (event.getLevel() instanceof ServerLevel) {
-            ChunkEvent.SAVE_DATA.invoker().save(event.getChunk(), (ServerLevel) event.getLevel(), event.getData());
+            dev.architectury.event.events.common.ChunkEvent.SAVE_DATA.invoker().save(event.getChunk(), (ServerLevel) event.getLevel(), event.getData());
         }
     }
     
@@ -411,12 +502,17 @@ public class EventHandlerImplCommon {
         if (!(level instanceof ServerLevel) && event instanceof LevelEventAttachment) {
             level = ((LevelEventAttachment) event).architectury$getAttachedLevel();
         }
-        ChunkEvent.LOAD_DATA.invoker().load(event.getChunk(), level instanceof ServerLevel ? (ServerLevel) level : null, event.getData());
+        dev.architectury.event.events.common.ChunkEvent.LOAD_DATA.invoker().load(event.getChunk(), level instanceof ServerLevel ? (ServerLevel) level : null, event.getData());
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(LootTableLoadEvent event) {
-        LootEvent.MODIFY_LOOT_TABLE.invoker().modifyLootTable(event.getRegistries(), ResourceKey.create(Registries.LOOT_TABLE, event.getName()), new LootTableModificationContextImpl(event.getTable()), true);
+        ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, event.getName());
+        CompoundEventResult<LootTable> replacement = LootEvent.REPLACE_LOOT_TABLE.invoker().replaceLootTable(event.getRegistries(), key, event.getTable());
+        if (replacement.isPresent() && replacement.object() != null) {
+            event.setTable(replacement.object());
+        }
+        LootEvent.MODIFY_LOOT_TABLE.invoker().modifyLootTable(event.getRegistries(), key, new LootTableModificationContextImpl(event.getTable()), true);
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)

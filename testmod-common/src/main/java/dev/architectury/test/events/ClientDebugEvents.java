@@ -98,6 +98,12 @@ public class ClientDebugEvents {
 //        ClientTextureStitchEvent.POST.register(atlas -> {
 //            TestMod.SINK.accept("Client texture stitched: " + atlas.location());
 //        });
+        ClientGuiEvent.SCREEN_CLOSING.register(screen -> {
+            TestMod.SINK.accept("Screen closing: " + screen.getClass().getSimpleName());
+        });
+        ClientGuiEvent.RENDER_BACKGROUND.register((screen, graphics, mouseX, mouseY, delta) -> {
+//            TestMod.SINK.accept("Screen background rendered: " + screen.getClass().getSimpleName());
+        });
         ClientScreenInputEvent.MOUSE_SCROLLED_PRE.register((client, screen, mouseX, mouseY, amountX, amountY) -> {
             TestMod.SINK.accept("Screen Mouse scrolled: %.2f x-distance %.2f y-distance", amountX, amountY);
             return EventResult.pass();

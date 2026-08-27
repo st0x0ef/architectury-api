@@ -22,12 +22,15 @@ package dev.architectury.event.events.common;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -47,9 +50,29 @@ public interface EntityEvent {
      */
     Event<LivingCheckSpawn> LIVING_CHECK_SPAWN = EventFactory.createEventResult();
     /**
+     * @see LivingDamagePost#damage(LivingEntity, DamageSource, float, float, boolean)
+     */
+    Event<LivingDamagePost> LIVING_DAMAGE_POST = EventFactory.createLoop();
+    /**
      * @see Add#add(Entity, Level)
      */
     Event<Add> ADD = EventFactory.createEventResult();
+    /**
+     * @see Remove#remove(Entity, Level)
+     */
+    Event<Remove> REMOVE = EventFactory.createLoop();
+    /**
+     * @see EquipmentChange#change(LivingEntity, EquipmentSlot, ItemStack, ItemStack)
+     */
+    Event<EquipmentChange> EQUIPMENT_CHANGE = EventFactory.createLoop();
+    /**
+     * @see StartTracking#startTracking(Entity, ServerPlayer)
+     */
+    Event<StartTracking> START_TRACKING = EventFactory.createLoop();
+    /**
+     * @see StopTracking#stopTracking(Entity, ServerPlayer)
+     */
+    Event<StopTracking> STOP_TRACKING = EventFactory.createLoop();
     /**
      * @see EnterSection#enterSection(Entity, int, int, int, int, int, int)
      */
@@ -119,7 +142,74 @@ public interface EntityEvent {
          */
         EventResult add(Entity entity, Level world);
     }
-    
+
+    interface Remove {
+        /**
+         * Invoked when an entity is removed from the world.
+         * Equivalent to NeoForge's {@code EntityLeaveLevelEvent} event.
+         *
+         * <p>This is the counterpart to {@link Add#add(Entity, Level)} and fires on both the client and the server.
+         *
+         * @param entity The entity being removed from the level.
+         * @param world  The level the entity is removed from.
+         */
+        void remove(Entity entity, Level world);
+    }
+
+    interface EquipmentChange {
+        /**
+         * Invoked when a living entity's equipment changes in any slot.
+         * Equivalent to NeoForge's {@code LivingEquipmentChangeEvent} event.
+         *
+         * <p>Only fires on the server.
+         *
+         * @param entity        The entity whose equipment changed.
+         * @param slot          The slot that changed.
+         * @param previousStack The stack that was previously in the slot.
+         * @param currentStack  The stack that is now in the slot.
+         */
+        void change(LivingEntity entity, EquipmentSlot slot, ItemStack previousStack, ItemStack currentStack);
+    }
+
+    interface StartTracking {
+        /**
+         * Invoked when an entity starts being tracked by a player.
+         * Equivalent to NeoForge's {@code PlayerEvent.StartTracking} event.
+         *
+         * @param entity The entity that started being tracked.
+         * @param player The player now tracking the entity.
+         */
+        void startTracking(Entity entity, ServerPlayer player);
+    }
+
+    interface StopTracking {
+        /**
+         * Invoked when an entity stops being tracked by a player.
+         * Equivalent to NeoForge's {@code PlayerEvent.StopTracking} event.
+         *
+         * @param entity The entity that stopped being tracked.
+         * @param player The player that is no longer tracking the entity.
+         */
+        void stopTracking(Entity entity, ServerPlayer player);
+    }
+
+    interface LivingDamagePost {
+        /**
+         * Invoked after damage has been applied to a living entity.
+         * Equivalent to NeoForge's {@code LivingDamageEvent.Post} event.
+         *
+         * <p>Unlike {@link LivingHurt}, this fires once the damage is final and cannot be cancelled
+         * or modified. Only fires on the server.
+         *
+         * @param entity         The entity that was damaged.
+         * @param source         The source of the damage.
+         * @param originalDamage The damage amount before any reductions were applied.
+         * @param appliedDamage  The damage amount that was actually taken off the entity's health.
+         * @param blocked        Whether the damage was blocked, for example by a shield.
+         */
+        void damage(LivingEntity entity, DamageSource source, float originalDamage, float appliedDamage, boolean blocked);
+    }
+
     interface EnterSection {
         /**
          * Invoked whenever an entity enters a chunk.

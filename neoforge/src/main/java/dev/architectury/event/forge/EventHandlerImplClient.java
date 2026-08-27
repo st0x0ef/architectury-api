@@ -152,6 +152,16 @@ public class EventHandlerImplClient {
     public static void eventDrawScreenEvent(ScreenEvent.Render.Post event) {
         ClientGuiEvent.RENDER_POST.invoker().render(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
     }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void eventDrawScreenEvent(ScreenEvent.Render.Background event) {
+        ClientGuiEvent.RENDER_BACKGROUND.invoker().render(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(ScreenEvent.Closing event) {
+        ClientGuiEvent.SCREEN_CLOSING.invoker().closing(event.getScreen());
+    }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventContainerScreenEvent(ContainerScreenEvent.Render.Foreground event) {

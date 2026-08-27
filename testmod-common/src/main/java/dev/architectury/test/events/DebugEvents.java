@@ -19,6 +19,7 @@
 
 package dev.architectury.test.events;
 
+import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
 import dev.architectury.platform.Platform;
@@ -228,6 +229,65 @@ public class DebugEvents {
         });
         ChunkEvent.SAVE_DATA.register((chunk, level, data) -> {
 //            TestMod.SINK.accept("Chunk saved at x=" + chunk.getPos().x + ", z=" + chunk.getPos().z + " in dimension '" + level.dimension().location() + "'");
+        });
+        EntityEvent.REMOVE.register((entity, level) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept(entity.getScoreboardName() + " was removed from " + level.dimension().identifier().toString() + logSide(level));
+            }
+        });
+        EntityEvent.EQUIPMENT_CHANGE.register((entity, slot, previousStack, currentStack) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept("%s changed %s: %s => %s", entity.getScoreboardName(), slot.getName(), previousStack, currentStack);
+            }
+        });
+        EntityEvent.START_TRACKING.register((entity, player) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept(player.getScoreboardName() + " started tracking " + entity.getScoreboardName());
+            }
+        });
+        EntityEvent.STOP_TRACKING.register((entity, player) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept(player.getScoreboardName() + " stopped tracking " + entity.getScoreboardName());
+            }
+        });
+        EntityEvent.LIVING_DAMAGE_POST.register((entity, source, originalDamage, appliedDamage, blocked) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept("%s took %.2f of %.2f damage from %s (blocked: %s)",
+                        entity.getScoreboardName(), appliedDamage, originalDamage, source.getMsgId(), blocked);
+            }
+        });
+        MobEffectEvent.ALLOW_ADD.register((entity, effect) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept(entity.getScoreboardName() + " is gaining effect " + effect.getEffect().getRegisteredName());
+            }
+            return EventResult.pass();
+        });
+        MobEffectEvent.AFTER_ADD.register((entity, effect) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept(entity.getScoreboardName() + " gained effect " + effect.getEffect().getRegisteredName());
+            }
+        });
+        MobEffectEvent.ALLOW_REMOVE.register((entity, effect) -> {
+            if (entity instanceof Player) {
+                TestMod.SINK.accept(entity.getScoreboardName() + " is losing effect " + effect.getEffect().getRegisteredName());
+            }
+            return EventResult.pass();
+        });
+        ChunkEvent.LOAD.register((chunk, level, newChunk) -> {
+//            TestMod.SINK.accept("Chunk loaded at x=" + chunk.getPos().x + ", z=" + chunk.getPos().z + " (new: " + newChunk + ")" + logSide(level));
+        });
+        ChunkEvent.UNLOAD.register((chunk, level) -> {
+//            TestMod.SINK.accept("Chunk unloaded at x=" + chunk.getPos().x + ", z=" + chunk.getPos().z + logSide(level));
+        });
+        LifecycleEvent.TAGS_UPDATED.register((registries, client) -> {
+            TestMod.SINK.accept("Tags updated (client: " + client + ")");
+        });
+        LifecycleEvent.DATAPACK_SYNC.register((player, joined) -> {
+            TestMod.SINK.accept("Datapack contents synced to " + player.getScoreboardName() + " (joined: " + joined + ")");
+        });
+        LootEvent.REPLACE_LOOT_TABLE.register((registries, key, original) -> {
+//            TestMod.SINK.accept("Loot table loading: " + key.identifier());
+            return CompoundEventResult.pass();
         });
     }
     

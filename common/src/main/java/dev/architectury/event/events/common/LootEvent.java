@@ -19,6 +19,7 @@
 
 package dev.architectury.event.events.common;
 
+import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.core.HolderLookup;
@@ -61,6 +62,34 @@ public interface LootEvent {
      * @see ModifyLootTable#modifyLootTable(HolderLookup.Provider, ResourceKey, LootTableModificationContext, boolean)
      */
     Event<ModifyLootTable> MODIFY_LOOT_TABLE = EventFactory.createLoop();
+
+    /**
+     * An event to replace loot tables outright as they are loaded.
+     *
+     * <p>Unlike {@link #MODIFY_LOOT_TABLE}, which appends pools to the existing table, this event
+     * swaps the whole table for a different one. Interrupt the result with the replacement table to
+     * take effect; the first listener to interrupt wins and later listeners still see the original.
+     *
+     * <p>Equivalent to NeoForge's {@code LootTableLoadEvent#setTable} and
+     * Fabric's {@code LootTableEvents#REPLACE}.
+     *
+     * @see ReplaceLootTable#replaceLootTable(HolderLookup.Provider, ResourceKey, LootTable)
+     */
+    Event<ReplaceLootTable> REPLACE_LOOT_TABLE = EventFactory.createCompoundEventResult();
+
+    @FunctionalInterface
+    interface ReplaceLootTable {
+        /**
+         * Replaces a loot table.
+         *
+         * @param registries the registries provider
+         * @param key        the loot table key
+         * @param original   the loot table that would otherwise be used
+         * @return a {@link CompoundEventResult} carrying the replacement table,
+         * or {@link CompoundEventResult#pass()} to leave the table alone
+         */
+        CompoundEventResult<LootTable> replaceLootTable(HolderLookup.Provider registries, ResourceKey<LootTable> key, LootTable original);
+    }
     
     @FunctionalInterface
     interface ModifyLootTable {
