@@ -101,8 +101,19 @@ public class EventHandlerImplClient {
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void event(ClientChatReceivedEvent event) {
+    public static void event(ClientChatReceivedEvent.Player event) {
         CompoundEventResult<Component> process = ClientChatEvent.RECEIVED.invoker().process(event.getBoundChatType(), event.getMessage());
+        if (process.isPresent()) {
+            if (process.isFalse())
+                event.setCanceled(true);
+            else if (process.object() != null)
+                event.setMessage(process.object());
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(ClientChatReceivedEvent.System event) {
+        CompoundEventResult<Component> process = ClientSystemMessageEvent.RECEIVED.invoker().process(event.getMessage());
         if (process.isPresent()) {
             if (process.isFalse())
                 event.setCanceled(true);
@@ -225,7 +236,7 @@ public class EventHandlerImplClient {
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventMouseReleasedEvent(ScreenEvent.MouseButtonReleased.Post event) {
-        ClientScreenInputEvent.MOUSE_RELEASED_PRE.invoker().mouseReleased(Minecraft.getInstance(), event.getScreen(), event.getMouseButtonEvent());
+        ClientScreenInputEvent.MOUSE_RELEASED_POST.invoker().mouseReleased(Minecraft.getInstance(), event.getScreen(), event.getMouseButtonEvent());
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)

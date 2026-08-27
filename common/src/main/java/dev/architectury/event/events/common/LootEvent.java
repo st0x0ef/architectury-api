@@ -42,8 +42,9 @@ public interface LootEvent {
      * Otherwise, it's from a user data pack. The parameter can be used to only modify built-in loot tables
      * and let user-provided loot tables act as full "overwrites".
      *
-     * <p>This event only runs for built-in loot tables on Forge due to the limitations of
-     * {@code LootTableLoadEvent}.
+     * <p>On NeoForge, {@code builtin} is always {@code true}: the event runs for every loot table,
+     * but {@code LootTableLoadEvent} does not expose where the table came from, so data pack tables
+     * cannot be told apart from built-in ones. Only Fabric reports the real value.
      *
      * <h2>Example: adding diamonds as a drop for dirt</h2>
      * <pre>{@code

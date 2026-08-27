@@ -66,9 +66,12 @@ public class EventHandlerImpl {
                 ClientCommandRegistrationEvent.EVENT.invoker().register((CommandDispatcher<ClientCommandRegistrationEvent.ClientCommandSourceStack>)
                         (CommandDispatcher<?>) dispatcher, access));
         
-        ScreenEvents.AFTER_INIT.register((minecraft, screen, scaledWidth, scaledHeight) ->
-                ScreenKeyboardEvents.allowCharType(screen).register((parent, event) ->
-                        ClientScreenInputEvent.CHAR_TYPED_PRE.invoker().charTyped(minecraft, parent, event).isEmpty()));
+        ScreenEvents.AFTER_INIT.register((minecraft, screen, scaledWidth, scaledHeight) -> {
+            ScreenKeyboardEvents.allowCharType(screen).register((parent, event) ->
+                    ClientScreenInputEvent.CHAR_TYPED_PRE.invoker().charTyped(minecraft, parent, event).isEmpty());
+            ScreenKeyboardEvents.afterCharType(screen).register((parent, event) ->
+                    ClientScreenInputEvent.CHAR_TYPED_POST.invoker().charTyped(minecraft, parent, event));
+        });
     }
     
     public static void registerCommon() {

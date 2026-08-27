@@ -58,6 +58,13 @@ public class ClientDebugEvents {
             }
             return CompoundEventResult.pass();
         });
+        ClientSystemMessageEvent.RECEIVED.register(message -> {
+            TestMod.SINK.accept("Client system message received: " + message.getString());
+            if (message.getString().contains("stardew")) {
+                return CompoundEventResult.interruptTrue(message.copy().append(" + stardew valley is a great game!"));
+            }
+            return CompoundEventResult.pass();
+        });
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world -> {
             TestMod.SINK.accept("Client world loaded: " + world.dimension().identifier().toString());
         });
@@ -103,12 +110,24 @@ public class ClientDebugEvents {
             TestMod.SINK.accept("Screen Mouse released: " + event.button());
             return EventResult.pass();
         });
+        ClientScreenInputEvent.MOUSE_RELEASED_POST.register((client, screen, event) -> {
+            TestMod.SINK.accept("Screen Mouse released (post): " + event.button());
+            return EventResult.pass();
+        });
         ClientScreenInputEvent.MOUSE_DRAGGED_PRE.register((client, screen, event, mouseX2, mouseY2) -> {
             TestMod.SINK.accept("Screen Mouse dragged: %d (%d,%d) by (%d,%d)", event.button(), (int) event.x(), (int) event.y(), (int) mouseX2, (int) mouseY2);
             return EventResult.pass();
         });
+        ClientScreenInputEvent.MOUSE_DRAGGED_POST.register((client, screen, event, mouseX2, mouseY2) -> {
+            TestMod.SINK.accept("Screen Mouse dragged (post): %d (%d,%d) by (%d,%d)", event.button(), (int) event.x(), (int) event.y(), (int) mouseX2, (int) mouseY2);
+            return EventResult.pass();
+        });
         ClientScreenInputEvent.CHAR_TYPED_PRE.register((client, screen, characterEvent) -> {
             TestMod.SINK.accept("Screen Char typed: " + characterEvent.codepointAsString());
+            return EventResult.pass();
+        });
+        ClientScreenInputEvent.CHAR_TYPED_POST.register((client, screen, characterEvent) -> {
+            TestMod.SINK.accept("Screen Char typed (post): " + characterEvent.codepointAsString());
             return EventResult.pass();
         });
         ClientScreenInputEvent.KEY_PRESSED_PRE.register((client, screen, keyEvent) -> {

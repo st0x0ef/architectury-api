@@ -19,6 +19,7 @@
 
 package dev.architectury.event.forge;
 
+import com.mojang.datafixers.util.Either;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -29,8 +30,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
+import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -58,6 +64,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 
 public class EventHandlerImplCommon {
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -252,7 +259,7 @@ public class EventHandlerImplCommon {
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void eventLivingSpawnEvent(FinalizeSpawnEvent event) {
-        EventResult result = EntityEvent.LIVING_CHECK_SPAWN.invoker().canSpawn(event.getEntity(), event.getLevel(), event.getX(), event.getY(), event.getZ(), event.getSpawnType(), null);//TODO FIX: , event.getSpawner());
+        EventResult result = EntityEvent.LIVING_CHECK_SPAWN.invoker().canSpawn(event.getEntity(), event.getLevel(), event.getX(), event.getY(), event.getZ(), event.getSpawnType(), unwrapSpawner(event.getSpawner()));
         if (result.interruptsFurtherEvaluation()) {
             if (!result.isEmpty()) {
                 event.setSpawnCancelled(result.value());
@@ -260,6 +267,15 @@ public class EventHandlerImplCommon {
         }
     }
     
+    @Nullable
+    private static BaseSpawner unwrapSpawner(@Nullable Either<BlockEntity, Entity> spawner) {
+        if (spawner == null) return null;
+        return spawner.map(
+                blockEntity -> blockEntity instanceof SpawnerBlockEntity spawnerBlockEntity ? spawnerBlockEntity.getSpawner() : null,
+                entity -> entity instanceof MinecartSpawner minecartSpawner ? minecartSpawner.getSpawner() : null
+        );
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(AnimalTameEvent event) {
         EventResult result = EntityEvent.ANIMAL_TAME.invoker().tame(event.getAnimal(), event.getTamer());
@@ -295,7 +311,9 @@ public class EventHandlerImplCommon {
     
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void event(ItemTossEvent event) {
-        PlayerEvent.DROP_ITEM.invoker().drop(event.getPlayer(), event.getEntity());
+        if (PlayerEvent.DROP_ITEM.invoker().drop(event.getPlayer(), event.getEntity()).isFalse()) {
+            event.setCanceled(true);
+        }
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)

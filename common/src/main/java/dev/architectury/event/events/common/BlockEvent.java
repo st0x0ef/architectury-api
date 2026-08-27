@@ -53,7 +53,8 @@ public interface BlockEvent {
          * @param pos    The position of the block.
          * @param state  The current state of the block.
          * @param player The player who is breaking the block.
-         * @param xp     The experience that are dropped when the block was destroyed. Always {@code null} on fabric.
+         * @param xp     The experience that is dropped when the block was destroyed. Currently always
+         *               {@code null} on both loaders; do not rely on it being present.
          * @return A {@link EventResult} determining the outcome of the event,
          * the execution of the vanilla block breaking may be cancelled by the result.
          */
