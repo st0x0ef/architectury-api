@@ -32,8 +32,10 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -49,6 +51,7 @@ import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.BlockEvents;
 import net.fabricmc.fabric.api.event.player.ItemEvents;
+import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
@@ -57,6 +60,7 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,6 +99,24 @@ public class EventHandlerImpl {
         ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> ChunkEvent.UNLOAD.invoker().unload(chunk, level));
 
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, level) -> EntityEvent.REMOVE.invoker().remove(entity, level));
+        
+        ClientPreAttackCallback.EVENT.register((client, player, clickCount) ->
+                InteractionEvent.CLIENT_PRE_ATTACK.invoker().preAttack(player, clickCount).isFalse());
+        
+        LevelRenderEvents.END_EXTRACTION.register(context ->
+                ClientLevelRenderEvent.END_EXTRACTION.invoker().extract(new LevelExtractionContextImpl(context)));
+        LevelRenderEvents.AFTER_OPAQUE_TERRAIN.register(context ->
+                ClientLevelRenderEvent.AFTER_OPAQUE_BLOCKS.invoker().render(new LevelRenderContextImpl(context)));
+        LevelRenderEvents.COLLECT_SUBMITS.register(context ->
+                ClientLevelRenderEvent.COLLECT_SUBMITS.invoker().collectSubmits(new LevelSubmitContextImpl(context)));
+        LevelRenderEvents.AFTER_SOLID_FEATURES.register(context ->
+                ClientLevelRenderEvent.AFTER_OPAQUE_FEATURES.invoker().render(new LevelSubmitContextImpl(context)));
+        LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register(context ->
+                ClientLevelRenderEvent.AFTER_TRANSLUCENT_FEATURES.invoker().render(new LevelSubmitContextImpl(context)));
+        LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register(context ->
+                ClientLevelRenderEvent.AFTER_TRANSLUCENT_BLOCKS.invoker().render(new LevelSubmitContextImpl(context)));
+        LevelRenderEvents.END_MAIN.register(context ->
+                ClientLevelRenderEvent.AFTER_TRANSLUCENT_PARTICLES.invoker().render(new LevelSubmitContextImpl(context)));
     }
     
     public static void registerCommon() {
@@ -126,6 +148,14 @@ public class EventHandlerImpl {
                 orNull(InteractionEvent.USE_ITEM_ON.invoker().useOn(context)));
         ItemEvents.USE.register((level, player, hand) ->
                 orNull(InteractionEvent.USE_ITEM.invoker().use(level, player, hand)));
+        PlayerPickItemEvents.BLOCK.register((player, pos, state, includeData) -> {
+            CompoundEventResult<ItemStack> result = InteractionEvent.PICK_ITEM_FROM_BLOCK.invoker().pick(player, pos, state, includeData);
+            return result.isPresent() ? result.object() : null;
+        });
+        PlayerPickItemEvents.ENTITY.register((player, entity, includeData) -> {
+            CompoundEventResult<ItemStack> result = InteractionEvent.PICK_ITEM_FROM_ENTITY.invoker().pick(player, entity, includeData);
+            return result.isPresent() ? result.object() : null;
+        });
         
         LootTableEvents.MODIFY.register((key, tableBuilder, source, provider) -> LootEvent.MODIFY_LOOT_TABLE.invoker().modifyLootTable(provider, key, new LootTableModificationContextImpl(tableBuilder), source.isBuiltin()));
         

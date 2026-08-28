@@ -22,6 +22,8 @@ package dev.architectury.event.events.common;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
+import dev.architectury.utils.value.DoubleValue;
+import dev.architectury.utils.value.FloatValue;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -81,6 +83,15 @@ public interface EntityEvent {
      * @see AnimalTame#tame(Animal, Player)
      */
     Event<AnimalTame> ANIMAL_TAME = EventFactory.createEventResult();
+    
+    /**
+     * @see LivingFall#fall(LivingEntity, DoubleValue, FloatValue)
+     */
+    Event<LivingFall> LIVING_FALL = EventFactory.createEventResult();
+    /**
+     * @see Mount#mount(Entity, Entity, boolean)
+     */
+    Event<Mount> MOUNT = EventFactory.createEventResult();
     
     interface LivingDeath {
         /**
@@ -238,5 +249,38 @@ public interface EntityEvent {
          * the action may be cancelled by the result.
          */
         EventResult tame(Animal animal, Player player);
+    }
+    
+    interface LivingFall {
+        /**
+         * Invoked when a living entity lands and fall damage is about to be worked out, from
+         * {@link LivingEntity#causeFallDamage(double, float, net.minecraft.world.damagesource.DamageSource)}.
+         * Both values are pre-filled with what vanilla would use and may be changed to scale the resulting damage.
+         *
+         * <p>Equivalent to NeoForge's {@code LivingFallEvent}; Architectury supplies it with a mixin on Fabric.
+         *
+         * @param entity           The entity that fell.
+         * @param distance         The distance fallen, in blocks.
+         * @param damageMultiplier The multiplier applied to the fall damage.
+         * @return A {@link EventResult} determining the outcome of the event. An interrupted false result cancels the
+         * fall entirely, so no fall damage is dealt and no fall side effects (such as farmland trampling) happen.
+         */
+        EventResult fall(LivingEntity entity, DoubleValue distance, FloatValue damageMultiplier);
+    }
+    
+    interface Mount {
+        /**
+         * Invoked when an entity starts or stops riding another entity, from {@link Entity#startRiding(Entity)} and
+         * {@link Entity#removeVehicle()}. Fires on both the logical client and the logical server.
+         *
+         * <p>Equivalent to NeoForge's {@code EntityMountEvent}; Architectury supplies it with a mixin on Fabric.
+         *
+         * @param entity   The entity mounting or dismounting.
+         * @param vehicle  The entity being mounted or dismounted. When dismounting this is the vehicle being left.
+         * @param mounting {@code true} when mounting, {@code false} when dismounting.
+         * @return A {@link EventResult} determining the outcome of the event. An interrupted false result stops the
+         * entity from mounting, or keeps it on its vehicle when dismounting.
+         */
+        EventResult mount(Entity entity, Entity vehicle, boolean mounting);
     }
 }

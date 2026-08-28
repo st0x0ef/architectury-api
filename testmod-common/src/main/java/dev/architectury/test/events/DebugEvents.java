@@ -170,6 +170,36 @@ public class DebugEvents {
             TestMod.SINK.accept(player.getScoreboardName() + " uses item " + player.getItemInHand(hand).getItem() + logSide(level));
             return InteractionResult.PASS;
         });
+        InteractionEvent.PICK_ITEM_FROM_BLOCK.register((player, pos, state, includeData) -> {
+            TestMod.SINK.accept(player.getScoreboardName() + " picks item from block " + toShortString(pos) + " (data: " + includeData + ")");
+            return CompoundEventResult.pass();
+        });
+        InteractionEvent.PICK_ITEM_FROM_ENTITY.register((player, entity, includeData) -> {
+            TestMod.SINK.accept(player.getScoreboardName() + " picks item from " + entity.getScoreboardName() + " (data: " + includeData + ")");
+            return CompoundEventResult.pass();
+        });
+        PlayerEvent.BREAK_SPEED.register((player, state, pos, speed) -> {
+            // Diamond boots double your mining speed, because why not.
+            if (player.getItemBySlot(EquipmentSlot.FEET).getItem() == Items.DIAMOND_BOOTS) {
+                speed.accept(speed.getAsFloat() * 2.0F);
+            }
+            return EventResult.pass();
+        });
+        EntityEvent.LIVING_FALL.register((entity, distance, damageMultiplier) -> {
+            TestMod.SINK.accept("%s fell %.2f blocks (multiplier %.2f)", entity, distance.getAsDouble(), damageMultiplier.getAsFloat());
+            return EventResult.pass();
+        });
+        EntityEvent.MOUNT.register((entity, vehicle, mounting) -> {
+            TestMod.SINK.accept(entity + (mounting ? " mounts " : " dismounts ") + vehicle + logSide(entity.level()));
+            return EventResult.pass();
+        });
+        BlockEvent.PISTON_PRE.register((level, pos, direction, extending) -> {
+            TestMod.SINK.accept("Piston at %s is about to %s facing %s%s", toShortString(pos), extending ? "extend" : "retract", direction, logSide(level));
+            return EventResult.pass();
+        });
+        BlockEvent.PISTON_POST.register((level, pos, direction, extending) -> {
+            TestMod.SINK.accept("Piston at %s %s facing %s%s", toShortString(pos), extending ? "extended" : "retracted", direction, logSide(level));
+        });
         LifecycleEvent.SERVER_BEFORE_START.register(instance -> {
             TestMod.SINK.accept("Server ready to start");
         });

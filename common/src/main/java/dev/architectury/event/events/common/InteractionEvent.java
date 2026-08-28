@@ -19,6 +19,7 @@
 
 package dev.architectury.event.events.common;
 
+import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
@@ -26,6 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -79,6 +81,18 @@ public interface InteractionEvent {
      * @see UseItem#use(Level, Player, InteractionHand)
      */
     Event<UseItem> USE_ITEM = EventFactory.createInteractionResult();
+    /**
+     * @see PickItemFromBlock#pick(ServerPlayer, BlockPos, BlockState, boolean)
+     */
+    Event<PickItemFromBlock> PICK_ITEM_FROM_BLOCK = EventFactory.createCompoundEventResult();
+    /**
+     * @see PickItemFromEntity#pick(ServerPlayer, Entity, boolean)
+     */
+    Event<PickItemFromEntity> PICK_ITEM_FROM_ENTITY = EventFactory.createCompoundEventResult();
+    /**
+     * @see ClientPreAttack#preAttack(Player, int)
+     */
+    Event<ClientPreAttack> CLIENT_PRE_ATTACK = EventFactory.createEventResult();
     
     interface RightClickBlock {
         /**
@@ -264,5 +278,60 @@ public interface InteractionEvent {
          * {@link InteractionResult#PASS} replaces the item's behaviour and is returned to vanilla in its place.
          */
         InteractionResult use(Level level, Player player, InteractionHand hand);
+    }
+    
+    interface PickItemFromBlock {
+        /**
+         * Invoked when a player picks the item for a block, before vanilla works out what that item should be.
+         * This runs on the server, in response to the pick-block packet, so it applies in both single and multiplayer.
+         *
+         * <p>Equivalent to Fabric's {@code PlayerPickItemEvents.BLOCK}; NeoForge has no such event, so Architectury
+         * supplies it with a mixin there.
+         *
+         * @param player      The player picking the item.
+         * @param pos         The position of the block being picked.
+         * @param state       The state of the block being picked.
+         * @param includeData {@code true} when the player asked for the block's data to be copied onto the item,
+         *                    which vanilla only honours in creative mode.
+         * @return A {@link CompoundEventResult} determining the outcome of the event. An interrupted result replaces
+         * the picked stack; an empty stack picks nothing at all.
+         */
+        CompoundEventResult<ItemStack> pick(ServerPlayer player, BlockPos pos, BlockState state, boolean includeData);
+    }
+    
+    interface PickItemFromEntity {
+        /**
+         * Invoked when a player picks the item for an entity, before vanilla works out what that item should be.
+         * This runs on the server, in response to the pick-block packet, so it applies in both single and multiplayer.
+         *
+         * <p>Equivalent to Fabric's {@code PlayerPickItemEvents.ENTITY}; NeoForge has no such event, so Architectury
+         * supplies it with a mixin there.
+         *
+         * @param player      The player picking the item.
+         * @param entity      The entity being picked.
+         * @param includeData {@code true} when the player asked for the entity's data to be copied onto the item,
+         *                    which vanilla only honours in creative mode.
+         * @return A {@link CompoundEventResult} determining the outcome of the event. An interrupted result replaces
+         * the picked stack; an empty stack picks nothing at all.
+         */
+        CompoundEventResult<ItemStack> pick(ServerPlayer player, Entity entity, boolean includeData);
+    }
+    
+    interface ClientPreAttack {
+        /**
+         * Invoked once per client tick while the attack key is held or was pressed, before the attack is processed.
+         * This only occurs on the client. Use it to swallow an attack before it turns into a swing, a block break or
+         * a hit.
+         *
+         * <p>Equivalent to Fabric's {@code ClientPreAttackCallback}; NeoForge has no such event, so Architectury
+         * supplies it with a mixin there.
+         *
+         * @param player     The player. Always {@link net.minecraft.client.player.LocalPlayer}.
+         * @param clickCount How many times the attack key was pressed since the last tick. Zero means the key is
+         *                   merely being held down.
+         * @return A {@link EventResult} determining the outcome of the event. An interrupted false result cancels the
+         * attack and any block breaking that would have continued this tick.
+         */
+        EventResult preAttack(Player player, int clickCount);
     }
 }

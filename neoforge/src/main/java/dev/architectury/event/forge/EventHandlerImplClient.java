@@ -315,6 +315,41 @@ public class EventHandlerImplClient {
                 (CommandDispatcher<?>) event.getDispatcher(), event.getBuildContext());
     }
     
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(ExtractLevelRenderStateEvent event) {
+        ClientLevelRenderEvent.END_EXTRACTION.invoker().extract(new LevelExtractionContextImpl(event));
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(RenderLevelStageEvent.AfterOpaqueBlocks event) {
+        ClientLevelRenderEvent.AFTER_OPAQUE_BLOCKS.invoker().render(new LevelStageContextImpl(event));
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(SubmitCustomGeometryEvent event) {
+        ClientLevelRenderEvent.COLLECT_SUBMITS.invoker().collectSubmits(new LevelSubmitContextImpl(event));
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(RenderLevelStageEvent.AfterOpaqueFeatures event) {
+        ClientLevelRenderEvent.AFTER_OPAQUE_FEATURES.invoker().render(new LevelStageContextImpl(event));
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(RenderLevelStageEvent.AfterTranslucentFeatures event) {
+        ClientLevelRenderEvent.AFTER_TRANSLUCENT_FEATURES.invoker().render(new LevelStageContextImpl(event));
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(RenderLevelStageEvent.AfterTranslucentBlocks event) {
+        ClientLevelRenderEvent.AFTER_TRANSLUCENT_BLOCKS.invoker().render(new LevelStageContextImpl(event));
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(RenderLevelStageEvent.AfterTranslucentParticles event) {
+        ClientLevelRenderEvent.AFTER_TRANSLUCENT_PARTICLES.invoker().render(new LevelStageContextImpl(event));
+    }
+    
     @EventBusSubscriber(modid = "architectury", value = Dist.CLIENT)
     public static class ModBasedEventHandler {
         // @SubscribeEvent(priority = EventPriority.HIGH)

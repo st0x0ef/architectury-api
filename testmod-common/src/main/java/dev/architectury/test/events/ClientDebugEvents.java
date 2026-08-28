@@ -92,6 +92,12 @@ public class ClientDebugEvents {
         InteractionEvent.CLIENT_RIGHT_CLICK_AIR.register((player, hand) -> {
             TestMod.SINK.accept(player.getScoreboardName() + " right clicks air" + logSide(player.level()));
         });
+        InteractionEvent.CLIENT_PRE_ATTACK.register((player, clickCount) -> {
+            if (clickCount != 0) {
+                TestMod.SINK.accept(player.getScoreboardName() + " pre-attack (%d clicks)", clickCount);
+            }
+            return EventResult.pass();
+        });
         ClientRecipeUpdateEvent.EVENT.register(recipeManager -> {
             TestMod.SINK.accept("Client recipes received");
         });
@@ -103,6 +109,28 @@ public class ClientDebugEvents {
         });
         ClientGuiEvent.RENDER_BACKGROUND.register((screen, graphics, mouseX, mouseY, delta) -> {
 //            TestMod.SINK.accept("Screen background rendered: " + screen.getClass().getSimpleName());
+        });
+        // These fire every frame, so they only log when uncommented.
+        ClientLevelRenderEvent.END_EXTRACTION.register(context -> {
+//            TestMod.SINK.accept("Level render state extracted for " + context.level().dimension().identifier());
+        });
+        ClientLevelRenderEvent.AFTER_OPAQUE_BLOCKS.register(context -> {
+//            TestMod.SINK.accept("After opaque blocks");
+        });
+        ClientLevelRenderEvent.COLLECT_SUBMITS.register(context -> {
+//            TestMod.SINK.accept("Collecting submits into " + context.submitNodeCollector());
+        });
+        ClientLevelRenderEvent.AFTER_OPAQUE_FEATURES.register(context -> {
+//            TestMod.SINK.accept("After opaque features");
+        });
+        ClientLevelRenderEvent.AFTER_TRANSLUCENT_FEATURES.register(context -> {
+//            TestMod.SINK.accept("After translucent features");
+        });
+        ClientLevelRenderEvent.AFTER_TRANSLUCENT_BLOCKS.register(context -> {
+//            TestMod.SINK.accept("After translucent blocks");
+        });
+        ClientLevelRenderEvent.AFTER_TRANSLUCENT_PARTICLES.register(context -> {
+//            TestMod.SINK.accept("After translucent particles");
         });
         ClientScreenInputEvent.MOUSE_SCROLLED_PRE.register((client, screen, mouseX, mouseY, amountX, amountY) -> {
             TestMod.SINK.accept("Screen Mouse scrolled: %.2f x-distance %.2f y-distance", amountX, amountY);

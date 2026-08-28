@@ -8,6 +8,7 @@
     "client.MixinClientPacketListener",
     "client.MixinCommandSourceStack",
     "client.MixinAbstractContainerScreen",
+    "client.KeyMappingAccessor",
     "MixinClientLevel",
     "MixinMinecraft"
   ],
@@ -19,7 +20,8 @@
     "MixinBlockStateBase",
     "MixinFallingBlockEntity",
     "MixinItemStack",
-    "MixinLevelEvent"
+    "MixinLevelEvent",
+    "MixinServerGamePacketListenerImpl"
   ],
   "injectors": {
     "defaultRequire": 1

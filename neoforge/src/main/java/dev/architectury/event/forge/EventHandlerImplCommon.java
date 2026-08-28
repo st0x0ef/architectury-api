@@ -22,6 +22,8 @@ package dev.architectury.event.forge;
 import com.mojang.datafixers.util.Either;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
+import dev.architectury.utils.value.DoubleValue;
+import dev.architectury.utils.value.FloatValue;
 import dev.architectury.event.events.common.*;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.core.registries.Registries;
@@ -53,12 +55,14 @@ import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.AnimalTameEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.*;
@@ -70,6 +74,7 @@ import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent.Detonate;
 import net.neoforged.neoforge.event.level.ExplosionEvent.Start;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.server.*;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -457,6 +462,76 @@ public class EventHandlerImplCommon {
             event.setUseBlock(result.consumesAction() ? TriState.TRUE : TriState.FALSE);
             event.setUseItem(result.consumesAction() ? TriState.TRUE : TriState.FALSE);
         }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(BreakSpeed event) {
+        EventResult result = PlayerEvent.BREAK_SPEED.invoker().breakSpeed(event.getEntity(), event.getState(),
+                event.getPosition().orElse(null), new FloatValue() {
+                    @Override
+                    public float getAsFloat() {
+                        return event.getNewSpeed();
+                    }
+                    
+                    @Override
+                    public void accept(float value) {
+                        event.setNewSpeed(value);
+                    }
+                });
+        if (result.isFalse()) {
+            event.setCanceled(true);
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(LivingFallEvent event) {
+        EventResult result = EntityEvent.LIVING_FALL.invoker().fall(event.getEntity(), new DoubleValue() {
+            @Override
+            public double getAsDouble() {
+                return event.getDistance();
+            }
+            
+            @Override
+            public void accept(double value) {
+                event.setDistance(value);
+            }
+        }, new FloatValue() {
+            @Override
+            public float getAsFloat() {
+                return event.getDamageMultiplier();
+            }
+            
+            @Override
+            public void accept(float value) {
+                event.setDamageMultiplier(value);
+            }
+        });
+        if (result.isFalse()) {
+            event.setCanceled(true);
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(EntityMountEvent event) {
+        EventResult result = EntityEvent.MOUNT.invoker().mount(event.getEntityMounting(), event.getEntityBeingMounted(), event.isMounting());
+        if (result.isFalse()) {
+            event.setCanceled(true);
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(PistonEvent.Pre event) {
+        EventResult result = BlockEvent.PISTON_PRE.invoker().piston((Level) event.getLevel(), event.getPos(),
+                event.getDirection(), event.getPistonMoveType() == PistonEvent.PistonMoveType.EXTEND);
+        if (result.isFalse()) {
+            event.setCanceled(true);
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(PistonEvent.Post event) {
+        BlockEvent.PISTON_POST.invoker().piston((Level) event.getLevel(), event.getPos(),
+                event.getDirection(), event.getPistonMoveType() == PistonEvent.PistonMoveType.EXTEND);
     }
     
     @SubscribeEvent(priority = EventPriority.HIGH)
