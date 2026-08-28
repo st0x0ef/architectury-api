@@ -21,7 +21,6 @@ package dev.architectury.mixin.fabric;
 
 import dev.architectury.event.events.common.BlockEvent;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.piston.PistonBaseBlock;
