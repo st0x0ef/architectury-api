@@ -16,7 +16,9 @@
     "neoforge.BucketItemAccessor",
     "neoforge.LiquidBlockAccessor",
     "neoforge.MixinChunkMap",
+    "MixinBlockStateBase",
     "MixinFallingBlockEntity",
+    "MixinItemStack",
     "MixinLevelEvent"
   ],
   "injectors": {

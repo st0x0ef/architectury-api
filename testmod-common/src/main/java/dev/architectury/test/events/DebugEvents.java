@@ -154,6 +154,22 @@ public class DebugEvents {
             TestMod.SINK.accept("%s trampled farmland (%s) at %s in %s (Fall height: %f blocks)", entity, state, pos, level, distance);
             return InteractionResult.PASS;
         });
+        InteractionEvent.USE_ITEM_ON_BLOCK.register((level, player, hand, stack, state, hitResult) -> {
+            TestMod.SINK.accept(player.getScoreboardName() + " uses " + stack.getItem() + " on block " + toShortString(hitResult.getBlockPos()) + logSide(level));
+            return InteractionResult.PASS;
+        });
+        InteractionEvent.USE_BLOCK_WITHOUT_ITEM.register((level, player, state, hitResult) -> {
+            TestMod.SINK.accept(player.getScoreboardName() + " uses block " + toShortString(hitResult.getBlockPos()) + " without an item" + logSide(level));
+            return InteractionResult.PASS;
+        });
+        InteractionEvent.USE_ITEM_ON.register(context -> {
+            TestMod.SINK.accept(context.getItemInHand().getItem() + " is used on " + toShortString(context.getClickedPos()) + logSide(context.getLevel()));
+            return InteractionResult.PASS;
+        });
+        InteractionEvent.USE_ITEM.register((level, player, hand) -> {
+            TestMod.SINK.accept(player.getScoreboardName() + " uses item " + player.getItemInHand(hand).getItem() + logSide(level));
+            return InteractionResult.PASS;
+        });
         LifecycleEvent.SERVER_BEFORE_START.register(instance -> {
             TestMod.SINK.accept("Server ready to start");
         });

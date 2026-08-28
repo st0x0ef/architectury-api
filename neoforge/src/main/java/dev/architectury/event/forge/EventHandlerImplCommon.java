@@ -33,7 +33,9 @@ import net.minecraft.util.TriState;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -454,6 +456,28 @@ public class EventHandlerImplCommon {
             event.setCanceled(true);
             event.setUseBlock(result.consumesAction() ? TriState.TRUE : TriState.FALSE);
             event.setUseItem(result.consumesAction() ? TriState.TRUE : TriState.FALSE);
+        }
+    }
+    
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void event(UseItemOnBlockEvent event) {
+        UseOnContext context = event.getUseOnContext();
+        InteractionResult result;
+        switch (event.getUsePhase()) {
+            case BLOCK -> {
+                Player player = context.getPlayer();
+                // The block phase is only reached from BlockStateBase#useItemOn, which always has a player.
+                if (player == null) return;
+                result = InteractionEvent.USE_ITEM_ON_BLOCK.invoker().useItemOn(context.getLevel(), player, context.getHand(),
+                        context.getItemInHand(), context.getLevel().getBlockState(context.getClickedPos()), context.getHitResult());
+            }
+            case ITEM_AFTER_BLOCK -> result = InteractionEvent.USE_ITEM_ON.invoker().useOn(context);
+            default -> {
+                return;
+            }
+        }
+        if (result != InteractionResult.PASS) {
+            event.cancelWithResult(result);
         }
     }
     

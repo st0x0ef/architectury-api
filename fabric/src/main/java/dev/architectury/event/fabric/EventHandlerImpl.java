@@ -47,6 +47,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.BlockEvents;
+import net.fabricmc.fabric.api.event.player.ItemEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
@@ -54,7 +56,9 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.storage.loot.LootTable;
+import org.jetbrains.annotations.Nullable;
 
 public class EventHandlerImpl {
     @Environment(EnvType.CLIENT)
@@ -114,6 +118,15 @@ public class EventHandlerImpl {
         AttackBlockCallback.EVENT.register((player, world, hand, pos, face) -> InteractionEvent.LEFT_CLICK_BLOCK.invoker().click(player, hand, pos, face));
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> PlayerEvent.ATTACK_ENTITY.invoker().attack(player, world, entity, hand, hitResult).asMinecraft());
         
+        BlockEvents.USE_ITEM_ON.register((stack, state, level, pos, player, hand, hitResult) ->
+                orNull(InteractionEvent.USE_ITEM_ON_BLOCK.invoker().useItemOn(level, player, hand, stack, state, hitResult)));
+        BlockEvents.USE_WITHOUT_ITEM.register((state, level, pos, player, hitResult) ->
+                orNull(InteractionEvent.USE_BLOCK_WITHOUT_ITEM.invoker().useWithoutItem(level, player, state, hitResult)));
+        ItemEvents.USE_ON.register(context ->
+                orNull(InteractionEvent.USE_ITEM_ON.invoker().useOn(context)));
+        ItemEvents.USE.register((level, player, hand) ->
+                orNull(InteractionEvent.USE_ITEM.invoker().use(level, player, hand)));
+        
         LootTableEvents.MODIFY.register((key, tableBuilder, source, provider) -> LootEvent.MODIFY_LOOT_TABLE.invoker().modifyLootTable(provider, key, new LootTableModificationContextImpl(tableBuilder), source.isBuiltin()));
         
         ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, (player, component) -> {
@@ -155,5 +168,14 @@ public class EventHandlerImpl {
     @Environment(EnvType.SERVER)
     public static void registerServer() {
     
+    }
+    
+    /**
+     * Fabric's use callbacks treat {@code null} as "not handled, carry on", while Architectury spells that
+     * {@link InteractionResult#PASS}. This translates between the two.
+     */
+    @Nullable
+    private static InteractionResult orNull(InteractionResult result) {
+        return result == InteractionResult.PASS ? null : result;
     }
 }
